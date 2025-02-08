@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  learnease-api:
+    image: :latest   # Thay 'your-docker-image-name' b?ng tên image c?a b?n
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080
+    networks:
+      - keycloak_network
+
+  keycloak:
+    image: jboss/keycloak:latest
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=H2
+      - KEYCLOAK_IMPORT=/opt/keycloak/realm-config/myrealm.json
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./realm-config:/opt/keycloak/realm

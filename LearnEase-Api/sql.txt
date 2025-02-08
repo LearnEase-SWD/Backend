@@ -1,0 +1,44 @@
+
+
+create database learnEase
+use learnEase
+
+-- Create the Users table first (since UserDetails will reference it)
+CREATE TABLE [Users] (
+                         Id NVARCHAR(50) PRIMARY KEY,                -- Khóa chính là Id người dùng (GUID)
+                         UserName NVARCHAR(100) NOT NULL,            -- Tên đăng nhập
+                         Email NVARCHAR(255) NOT NULL,               -- Địa chỉ email
+                         IsActive BIT NOT NULL,                      -- Trạng thái kích hoạt
+                         CreatedUser NVARCHAR(100),                  -- Người tạo
+                         UpdatedUser NVARCHAR(100)                   -- Người cập nhật
+);
+
+-- Create the UserDetails table after Users (with a foreign key reference to Users)
+CREATE TABLE [UserDetails] (
+                               Id NVARCHAR(50) PRIMARY KEY,          -- Tạo trường Id tự động tăng
+                               FirstName NVARCHAR(100) NOT NULL,           -- Tên người dùng
+                               LastName NVARCHAR(100) NOT NULL,            -- Họ người dùng
+                               Phone NVARCHAR(15),                         -- Số điện thoại
+                               ImageUrl NVARCHAR(255),                     -- URL hình ảnh
+                               Dbo DATETIME,                               -- Ngày sinh
+                               Address NVARCHAR(255),                      -- Địa chỉ
+                               CreatedUser NVARCHAR(100),                  -- Người tạo
+                               UpdatedUser NVARCHAR(100),                  -- Người cập nhật
+                               UserId NVARCHAR(50) NOT NULL,               -- Khóa ngoại tham chiếu đến User
+                               FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE  -- Quan hệ với bảng User
+);
+
+-- Create the Roles table
+CREATE TABLE [Roles] (
+                         Id NVARCHAR(50) PRIMARY KEY,          -- Tạo trường Id tự động tăng
+                         Name NVARCHAR(100) NOT NULL                -- Tên Role
+);
+CREATE TABLE [UserRoles] (
+                             UserId NVARCHAR(50) NOT NULL,               -- Khóa ngoại tham chiếu đến User
+                             RoleId NVARCHAR(50) NOT NULL,                        -- Khóa ngoại tham chiếu đến Role
+                             PRIMARY KEY (UserId, RoleId),              -- Đảm bảo không có kết nối trùng
+                             FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,   -- Quan hệ với bảng Users
+                             FOREIGN KEY (RoleId) REFERENCES Roles(Id) ON DELETE CASCADE    -- Quan hệ với bảng Roles
+);
+
+

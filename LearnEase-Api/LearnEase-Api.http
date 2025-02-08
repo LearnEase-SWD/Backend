@@ -1,0 +1,6 @@
+@LearnEase_Api_HostAddress = http://localhost:5121
+
+GET {{LearnEase_Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
