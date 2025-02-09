@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\LearnEase-Api.props" />
+</Project>

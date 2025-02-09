@@ -22,7 +22,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 builder.Services.AddScoped<IRoles, RolesRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserDetailRepository, UserDetailRepository>();
@@ -42,6 +42,31 @@ builder.Services.AddSwaggerGen(options =>
         License = new OpenApiLicense
         {
             Name = "Apache 2.0"
+        }
+    });
+
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        BearerFormat = "JWT",
+        Description = "Enter 'Bearer' [space] and then your JWT token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
         }
     });
 });
@@ -73,8 +98,12 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie()
+}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.LoginPath = "/api/auth/login"; // Or your login path
+    options.AccessDeniedPath = "/api/auth/access-denied"; // Or your access denied path
+}
+    )
 .AddGoogle(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -101,7 +130,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<TokenValidationMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();

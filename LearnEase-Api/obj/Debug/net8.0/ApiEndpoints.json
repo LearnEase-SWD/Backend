@@ -1,6 +1,6 @@
 [
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "Callback",
     "RelativePath": "api/auth/callback",
     "HttpMethod": "GET",
@@ -10,7 +10,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "Login",
     "RelativePath": "api/auth/login",
     "HttpMethod": "GET",
@@ -20,7 +20,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "RefreshToken",
     "RelativePath": "api/auth/refresh-token",
     "HttpMethod": "POST",
@@ -36,7 +36,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "GetTokenInfo",
     "RelativePath": "api/auth/token-info",
     "HttpMethod": "POST",
@@ -52,7 +52,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "VerifyAccessToken",
     "RelativePath": "api/auth/verify-access-token",
     "HttpMethod": "POST",
@@ -306,7 +306,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "Logout",
     "RelativePath": "logout",
     "HttpMethod": "POST",
@@ -322,7 +322,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "LearnEase_Api.Controllers.AuthController",
+    "ContainingType": "AuthController",
     "Method": "RevokeToken",
     "RelativePath": "revokeToken",
     "HttpMethod": "POST",
