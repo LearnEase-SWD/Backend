@@ -31,7 +31,6 @@ namespace LearnEase_Api.Controllers
             _httpClient = httpClient;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -42,8 +41,6 @@ namespace LearnEase_Api.Controllers
             }
             return Ok(result);
         }
-
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -70,7 +67,6 @@ namespace LearnEase_Api.Controllers
             }
             return CreatedAtAction(nameof(GetUserById), new { id = result.id }, result);
         }
-        [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request, string id)
         {
@@ -88,7 +84,6 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [Authorize]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var result = await _userService.deleteUserReponseById(id);
