@@ -3,12 +3,12 @@
     public class UserDetail
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string? firstName { get; set; }
-        public string? lastName { get; set; }
-        public string? phone { get; set; }
-        public string? imageUrl { get; set; }
-        public DateTime? dbo { get; set; }
-        public string? address { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Phone { get; set; }
+        public string? ImageUrl { get; set; }
+        public DateTime? Dbo { get; set; }
+        public string? Address { get; set; }
         public string? CreatedUser { get; set; }
         public string? UpdatedUser { get; set; }
 
