@@ -30,7 +30,7 @@ namespace LearnEase_Api.Repository.UserDetailRepository
 
         public async Task<UserDetail> getUserDetailByUserId(string userId)
         {
-            return  _context.UserDetails.FirstOrDefault(x => x.User.Id.Equals(userId));
+            return  _context.UserDetails.FirstOrDefault(x => x.User.UserId.Equals(userId));
         }
 
         public async Task<UserDetail> UpdateUserDetail(UserDetail userDetail)

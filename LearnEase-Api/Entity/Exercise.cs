@@ -24,5 +24,7 @@ namespace LearnEase_Api.Entity
         public string CorrectAnswer { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
     }
 }

@@ -6,7 +6,6 @@ namespace LearnEase_Api.Entity
     public class Course
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CourseID { get; set; }
 
         [Required]
@@ -27,6 +26,8 @@ namespace LearnEase_Api.Entity
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public Forum Forum { get; set; }
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+        public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
     }
 }

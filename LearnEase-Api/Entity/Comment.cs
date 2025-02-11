@@ -3,19 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase_Api.Entity
 {
-    public class Leaderboard
+    public class Comment
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid RankID { get; set; }
+        public Guid CommentID { get; set; }
+
+        [ForeignKey("Post")]
+        public Guid PostID { get; set; }
+        public Post Post { get; set; }
 
         [ForeignKey("User")]
         public string UserID { get; set; }
         public User User { get; set; }
 
         [Required]
-        public int TotalScore { get; set; }
+        public string CommentText { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
+
 }

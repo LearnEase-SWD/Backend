@@ -6,8 +6,7 @@ namespace LearnEase_Api.Entity
     public class User
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid UserID { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public string UserName { get; set; }
@@ -18,11 +17,17 @@ namespace LearnEase_Api.Entity
 
         public bool IsActive { get; set; } = true;
 
-        public string? CreatedUser { get; set; }
-        public string? UpdatedUser { get; set; }
+        public string? CreatedAt { get; set; }
+        public string? UpdatedAt { get; set; }
 
         public UserDetail UserDetail { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; }
         public Leaderboard Leaderboard { get; set; }
+        public Subscription Subscription { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserProgress> UserProgresses { get; set; } = new List<UserProgress>();
+        public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
+        public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>(); 
     }
 }

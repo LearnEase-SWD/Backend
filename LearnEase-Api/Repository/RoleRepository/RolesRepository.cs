@@ -16,11 +16,11 @@ namespace LearnEase_Api.Repository.RoleRepository
            var countRole = await _context.Roles.CountAsync();
             if (countRole == 0)
             {
-                role.Id = "1";
+                role.RoleId = "1";
             }
             else
             {
-                role.Id=(countRole+1).ToString();
+                role.RoleId = (countRole+1).ToString();
             }
 
            await _context.Roles.AddAsync(role);
@@ -48,7 +48,7 @@ namespace LearnEase_Api.Repository.RoleRepository
 
         public async Task<Role> findByName(string name)
         {
-            var result = await _context.Roles.FirstOrDefaultAsync(x => x.Name == name);
+            var result = await _context.Roles.FirstOrDefaultAsync(x => x.RoleName == name);
             if (result == null) throw new ArgumentNullException(nameof(name));
             return result;
         }

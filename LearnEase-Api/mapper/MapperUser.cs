@@ -8,8 +8,8 @@ namespace LearnEase_Api.mapper
         public UserReponse mapperUserReponse(User user)
         {
             UserReponse userReponse = 
-                new UserReponse(user.Id,user.userName,user.email,user.isActive,
-                user.CreatedUser,user.UpdatedUser);
+                new UserReponse(user.UserId,user.UserName,user.Email,user.IsActive,
+                user.CreatedAt,user.UpdatedAt);
             return userReponse;
         }
     }

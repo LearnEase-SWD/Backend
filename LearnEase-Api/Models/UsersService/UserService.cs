@@ -35,11 +35,11 @@ namespace LearnEase_Api.Models.Users
 
             var user = new User
             {
-                UpdatedUser = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                CreatedUser = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                isActive = true,
-                email = request.email,
-                userName = request.userName
+                UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                IsActive = true,
+                Email = request.email,
+                UserName = request.userName
             };
             string[] userNames = request.userName.Split(' ');
 
@@ -49,17 +49,17 @@ namespace LearnEase_Api.Models.Users
             {
                 user.UserRoles = new List<UserRole>
             {
-                new UserRole { UserId = user.Id, RoleId = defaultRole.id }
+                new UserRole { UserId = user.UserId, RoleId = defaultRole.id }
             };
             }
 
             var result = await _userRepository.createNewUser(user);
-            var getUserEmail = await  _userRepository.FindByEmail(user.email);
+            var getUserEmail = await  _userRepository.FindByEmail(user.Email);
 
 
             //save detail
             var saveUserDetail = await _userDetailService.CreateUserDetail(new UserDetailRequest(userNames[0],
-               userNames[1], null, null, null, null, user.CreatedUser, user.UpdatedUser, getUserEmail.Id));
+               userNames[1], null, null, null, null, user.CreatedAt, user.UpdatedAt, getUserEmail.UserId));
             return _mapper.mapperUserReponse(result);
         }
 
@@ -102,10 +102,10 @@ namespace LearnEase_Api.Models.Users
             var findUser = await _userRepository.FindById(id);
             if (findUser == null) return null;
 
-            findUser.UpdatedUser = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            findUser.isActive = true;
-            findUser.email = request.email;
-            findUser.userName = request.userName;
+            findUser.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            findUser.IsActive = true;
+            findUser.Email = request.email;
+            findUser.UserName = request.userName;
 
             var result = await _userRepository.updateUser(findUser,id);
             return _mapper.mapperUserReponse(result);

@@ -16,10 +16,10 @@ namespace LearnEase_Api.Models.RolesService
         public async Task<RoleReponse> createRole(RoleRequest request)
         {
             Role role = new Role();
-            role.Name = request.name;
+            role.RoleName = request.name;
             
             var result = await _roleRepository.createRole(role);
-            return new RoleReponse(null,result.Name);
+            return new RoleReponse(null,result.RoleName);
         }
 
         public async Task<RoleReponse> deleteRole(RoleRequest request)
@@ -27,19 +27,19 @@ namespace LearnEase_Api.Models.RolesService
             var findRoleByName = await _roleRepository.findByName(request.name);
 
             var result = await _roleRepository.deleteRole(findRoleByName);
-            return new RoleReponse(null, result.Name);
+            return new RoleReponse(null, result.RoleName);
         }
 
         public async Task<List<RoleReponse>> getAllRoles()
         {
             var result = await _roleRepository.getAllRoles();
-            return result.ConvertAll(role => new RoleReponse(role.Id,role.Name));
+            return result.ConvertAll(role => new RoleReponse(role.RoleId, role.RoleName));
         }
 
         public async Task<RoleReponse> getRole(string request)
         {
             var result = await _roleRepository.findByName(request);
-            return  new RoleReponse(result.Id, result.Name);
+            return  new RoleReponse(result.RoleId, result.RoleName);
         }
     }
 }

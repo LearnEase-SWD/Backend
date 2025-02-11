@@ -13,14 +13,14 @@ namespace LearnEase_Api.mapper
 
             return new UserDetailResponse(
                 userDetail.Id,
-                userDetail.firstName,
-                userDetail.lastName,
-                userDetail.phone,
-                userDetail.imageUrl,
-                userDetail.dbo,
-                userDetail.address,
-                userDetail.CreatedUser,
-                userDetail.UpdatedUser,
+                userDetail.FirstName,
+                userDetail.LastName,
+                userDetail.Phone,
+                userDetail.ImageUrl,
+                userDetail.DateOfBirth,
+                userDetail.Address,
+                userDetail.CreatedAt,
+                userDetail.UpdatedAt,
                 userDetail.UserId
             );
         }
@@ -32,14 +32,14 @@ namespace LearnEase_Api.mapper
 
             return new UserDetail
             {
-                firstName = userDetailRequest.firstName,
-                lastName = userDetailRequest.lastName,
-                phone = userDetailRequest.phone,
-                imageUrl = userDetailRequest.imageUrl,
-                dbo = userDetailRequest.dbo,
-                address = userDetailRequest.address,
-                CreatedUser = userDetailRequest.CreatedUser,
-                UpdatedUser = userDetailRequest.UpdatedUser,
+                FirstName = userDetailRequest.firstName,
+                LastName = userDetailRequest.lastName,
+                Phone = userDetailRequest.phone,
+                ImageUrl = userDetailRequest.imageUrl,
+                DateOfBirth = userDetailRequest.dbo,
+                Address = userDetailRequest.address,
+                CreatedAt = userDetailRequest.CreatedUser,
+                UpdatedAt = userDetailRequest.UpdatedUser,
                 UserId = userDetailRequest.UserId,
             };
         }
@@ -49,9 +49,9 @@ namespace LearnEase_Api.mapper
             if (userDetail == null)
                 throw new ArgumentNullException(nameof(userDetail));
 
-            return new UserDetailRequest(userDetail.firstName, userDetail.lastName,
-                userDetail.phone, userDetail.imageUrl, userDetail.dbo, userDetail.address, userDetail.CreatedUser,
-                userDetail.UpdatedUser, userDetail.UserId)
+            return new UserDetailRequest(userDetail.FirstName, userDetail.LastName,
+                userDetail.Phone, userDetail.ImageUrl, userDetail.DateOfBirth, userDetail.Address, userDetail.CreatedAt,
+                userDetail.UpdatedAt, userDetail.UserId)
             {
                 
             };

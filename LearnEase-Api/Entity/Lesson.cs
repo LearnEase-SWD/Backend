@@ -6,7 +6,6 @@ namespace LearnEase_Api.Entity
     public class Lesson
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid LessonID { get; set; }
 
         [ForeignKey("Course")]
@@ -25,6 +24,7 @@ namespace LearnEase_Api.Entity
 
         public VideoLesson VideoLesson { get; set; }
         public TheoryLesson TheoryLesson { get; set; }
+        public UserProgress UserProgress { get; set; }
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
     }
 

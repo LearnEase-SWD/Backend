@@ -6,7 +6,6 @@ namespace LearnEase_Api.Entity
     public class VideoLesson
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid VideoID { get; set; }
 
         [ForeignKey("Lesson")]

@@ -41,14 +41,14 @@ namespace LearnEase_Api.Repository.UserRepository
         {
             _logger.LogInformation($"Deleting user with ID: {id}");
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.Equals(id));
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {id} not found.");
                 return null;
             }
 
-            user.isActive = false;
+            user.IsActive = false;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
@@ -59,19 +59,19 @@ namespace LearnEase_Api.Repository.UserRepository
         public async Task<User> FindByEmail(string email)
         {
             _logger.LogInformation($"Finding user by email: {email}");
-            return await _context.Users.FirstOrDefaultAsync(x => x.email.Equals( email));
+            return await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals( email));
         }
 
         public async Task<User> FindById(string id)
         {
             _logger.LogInformation($"Finding user by ID: {id}");
-            return await _context.Users.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            return await _context.Users.FirstOrDefaultAsync(x => x.UserId.Equals(id));
         }
 
         public async Task<User> FindByName(string name)
         {
             _logger.LogInformation($"Finding user by name: {name}");
-            return await _context.Users.FirstOrDefaultAsync(x => x.userName == name);
+            return await _context.Users.FirstOrDefaultAsync(x => x.UserName == name);
         }
 
         public async Task<List<User>> GetAll()
