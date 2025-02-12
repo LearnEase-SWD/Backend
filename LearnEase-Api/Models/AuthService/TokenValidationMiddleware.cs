@@ -16,7 +16,11 @@ public class TokenValidationMiddleware
      
         if (context.Request.Path.StartsWithSegments("/api/auth/login") ||
             context.Request.Path.StartsWithSegments("/api/auth/callback") ||
-            context.Request.Path.StartsWithSegments("/callback"))
+            context.Request.Path.StartsWithSegments("/api/auth") ||
+            context.Request.Path.StartsWithSegments("/api/users")||
+            context.Request.Path.StartsWithSegments("/api/redis") ||
+            context.Request.Path.StartsWithSegments("/api/")
+            )
         {
 
             await _next(context);
