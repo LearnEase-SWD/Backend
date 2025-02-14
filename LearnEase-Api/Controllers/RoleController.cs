@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-using LearnEase_Api.Models.RolesService;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using LearnEase_Api.dto.request;
+using LearnEase_Api.LearnEase.Core.IServices;
+using LearnEase_Api.Dtos.request;
 
 namespace LearnEase_Api.Controllers
 {

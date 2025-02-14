@@ -1,7 +1,4 @@
-﻿using LearnEase_Api.dto.reponse;
-using LearnEase_Api.dto.request;
-using LearnEase_Api.Models.Users;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,6 +12,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
+using LearnEase_Api.LearnEase.Core.IServices;
+using LearnEase_Api.Dtos.request;
 
 namespace LearnEase_Api.Controllers
 {

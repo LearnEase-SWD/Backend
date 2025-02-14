@@ -1,18 +1,14 @@
-﻿using LearnEase_Api.Models.AuthService;
-using LearnEase_Api.Models.RedisCacheService;
-using LearnEase_Api.Models.Users;
-using LearnEase_Api.Repository.UserRepository;
-using LearnEase_Api.Repository;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.Authorization;
-using LearnEase_Api.Repository.RoleRepository;
-using LearnEase_Api.Models.RolesService;
-using LearnEase_Api.Repository.UserDetailRepository;
-using LearnEase_Api.Models.UserDetailService;
+using LearnEase_Api.LearnEase.Core.IServices;
+using LearnEase_Api.LearnEase.Core.Services;
+using LearnEase_Api.LearnEase.Infrastructure.IRepository;
+using LearnEase_Api.LearnEase.Infrastructure.Repository;
+using LearnEase_Api.LearnEase.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

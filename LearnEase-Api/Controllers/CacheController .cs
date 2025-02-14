@@ -1,5 +1,5 @@
-﻿using LearnEase_Api.dto.request;
-using LearnEase_Api.Models.RedisCacheService;
+﻿using LearnEase_Api.Dtos.request;
+using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers

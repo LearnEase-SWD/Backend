@@ -1,12 +1,10 @@
-﻿using LearnEase_Api.dto.request;
-using LearnEase_Api.Models.AuthService;
-using LearnEase_Api.Models.RedisCacheService;
-using LearnEase_Api.Models.Users;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using LearnEase_Api.LearnEase.Core.IServices;
+using LearnEase_Api.Dtos.request;
 
 [AllowAnonymous]
 [Route("api/auth")]

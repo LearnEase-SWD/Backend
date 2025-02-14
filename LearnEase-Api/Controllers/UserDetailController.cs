@@ -1,8 +1,6 @@
-﻿using LearnEase_Api.dto.reponse;
-using LearnEase_Api.dto.request;
-using LearnEase_Api.Models.UserDetailService;
+﻿using LearnEase_Api.Dtos.request;
+using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace LearnEase_Api.Controllers
 {
