@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LearnEase.BLL\LearnEase.BLL.csproj" />
+    <ProjectReference Include="..\LearnEase.BLL\LearnEase.Service.csproj" />
   </ItemGroup>
 
 </Project>

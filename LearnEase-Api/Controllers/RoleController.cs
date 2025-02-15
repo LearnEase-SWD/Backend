@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.Dtos.request;
 

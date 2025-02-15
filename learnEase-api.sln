@@ -5,11 +5,11 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearnEase.API", "LearnEase-Api\LearnEase.API.csproj", "{36E2B2B9-4C07-43F4-BA5C-F7D298F792AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnEase.Core", "LearnEase.Core\LearnEase.Core.csproj", "{03828CE4-D011-4349-9669-2BF89C129CF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearnEase.Core", "LearnEase.Core\LearnEase.Core.csproj", "{03828CE4-D011-4349-9669-2BF89C129CF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnEase.BLL", "LearnEase.BLL\LearnEase.BLL.csproj", "{8655EB97-CFDC-4858-AE02-E5C95B6BC989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearnEase.Service", "LearnEase.BLL\LearnEase.Service.csproj", "{8655EB97-CFDC-4858-AE02-E5C95B6BC989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnEase.DAL", "LearnEase.DAL\LearnEase.DAL.csproj", "{499E24DE-C5E5-4065-B28A-60169311F873}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LearnEase.Repository", "LearnEase.DAL\LearnEase.Repository.csproj", "{499E24DE-C5E5-4065-B28A-60169311F873}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

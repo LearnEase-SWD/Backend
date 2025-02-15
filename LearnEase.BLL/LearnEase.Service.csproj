@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LearnEase.Core\LearnEase.Core.csproj" />
-    <ProjectReference Include="..\LearnEase.DAL\LearnEase.DAL.csproj" />
+    <ProjectReference Include="..\LearnEase.DAL\LearnEase.Repository.csproj" />
   </ItemGroup>
 
 </Project>
