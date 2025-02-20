@@ -13,6 +13,9 @@ namespace LearnEase_Api.Entity
         public Course Course { get; set; }
 
         [Required]
+        public int Index { get; set; }
+
+        [Required]
         [MaxLength(255)]
         public string Title { get; set; }
 
@@ -26,6 +29,8 @@ namespace LearnEase_Api.Entity
         public TheoryLesson TheoryLesson { get; set; }
         public UserProgress UserProgress { get; set; }
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
+        public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
+
     }
 
 }

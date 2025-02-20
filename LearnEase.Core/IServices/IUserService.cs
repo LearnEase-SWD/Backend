@@ -5,11 +5,10 @@ namespace LearnEase_Api.LearnEase.Core.IServices
 {
     public interface IUserService
     {
-        Task<List<UserReponse>> getAllUser();
-        Task<UserReponse> getUserReponseById(string id);
-        Task<UserReponse> createNewUser(userCreationRequest request);
-        Task<UserReponse> updateUserReponse(UserUpdateRequest request, string id);
-        Task<UserReponse> deleteUserReponseById(string id);
-        Task<UserReponse> findUserByEmail(string email);
+        Task<UserReponse> GetUserReponseById(string id);
+        Task<UserReponse> CreateNewUser(userCreationRequest request);
+        Task<UserReponse> UpdateUserReponse(UserUpdateRequest request, string id);
+        Task<UserReponse> DeleteUserReponseById(string id);
+        Task<UserReponse> FindUserByEmail(string email);
     }
 }

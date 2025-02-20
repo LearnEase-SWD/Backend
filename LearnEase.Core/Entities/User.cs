@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase_Api.Entity
 {
@@ -21,12 +20,9 @@ namespace LearnEase_Api.Entity
         public string? UpdatedAt { get; set; }
 
         public UserDetail UserDetail { get; set; }
-        public Leaderboard Leaderboard { get; set; }
-        public Subscription Subscription { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<UserProgress> UserProgresses { get; set; } = new List<UserProgress>();
         public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
         public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>(); 
     }

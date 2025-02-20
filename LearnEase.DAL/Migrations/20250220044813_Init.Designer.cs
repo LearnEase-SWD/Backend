@@ -3,14 +3,16 @@ using System;
 using LearnEase_Api.LearnEase.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LearnEase_Api.Migrations
+namespace LearnEase.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250211100249_Init")]
+    [Migration("20250220044813_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -18,39 +20,10 @@ namespace LearnEase_Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Comment", b =>
-                {
-                    b.Property<Guid>("CommentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PostID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("CommentID");
-
-                    b.HasIndex("PostID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Comments");
-                });
 
             modelBuilder.Entity("LearnEase_Api.Entity.Course", b =>
                 {
@@ -80,6 +53,10 @@ namespace LearnEase_Api.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -131,10 +108,6 @@ namespace LearnEase_Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -142,60 +115,21 @@ namespace LearnEase_Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("LessonID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PronunciationAudioURL")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Topic")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("FlashcardID");
 
+                    b.HasIndex("LessonID");
+
                     b.ToTable("Flashcards");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Forum", b =>
-                {
-                    b.Property<Guid>("ForumID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CourseID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ForumID");
-
-                    b.HasIndex("CourseID")
-                        .IsUnique();
-
-                    b.ToTable("Forums");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Leaderboard", b =>
-                {
-                    b.Property<Guid>("RankID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalScore")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RankID");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
-
-                    b.ToTable("Leaderboards");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
@@ -209,6 +143,9 @@ namespace LearnEase_Api.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
 
                     b.Property<string>("LessonType")
                         .IsRequired()
@@ -227,45 +164,6 @@ namespace LearnEase_Api.Migrations
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Post", b =>
-                {
-                    b.Property<Guid>("PostID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ContentHtml")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DislikeCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LikeCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TopicID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("PostID");
-
-                    b.HasIndex("TopicID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Posts");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.Role", b =>
                 {
                     b.Property<string>("RoleId")
@@ -278,40 +176,6 @@ namespace LearnEase_Api.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Subscription", b =>
-                {
-                    b.Property<Guid>("SubscriptionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PlanType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("SubscriptionID");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
-
-                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.TheoryLesson", b =>
@@ -340,33 +204,6 @@ namespace LearnEase_Api.Migrations
                         .IsUnique();
 
                     b.ToTable("TheoryLessons");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Topic", b =>
-                {
-                    b.Property<Guid>("TopicID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ForumID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TopicID");
-
-                    b.HasIndex("ForumID");
-
-                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.User", b =>
@@ -630,25 +467,6 @@ namespace LearnEase_Api.Migrations
                     b.ToTable("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Comment", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Post", "Post")
-                        .WithMany("Comments")
-                        .HasForeignKey("PostID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.Exercise", b =>
                 {
                     b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
@@ -660,26 +478,15 @@ namespace LearnEase_Api.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Forum", b =>
+            modelBuilder.Entity("LearnEase_Api.Entity.Flashcard", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Course", "Course")
-                        .WithOne("Forum")
-                        .HasForeignKey("LearnEase_Api.Entity.Forum", "CourseID")
+                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
+                        .WithMany("Flashcards")
+                        .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Leaderboard", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithOne("Leaderboard")
-                        .HasForeignKey("LearnEase_Api.Entity.Leaderboard", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
@@ -693,36 +500,6 @@ namespace LearnEase_Api.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Post", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Topic", "Topic")
-                        .WithMany("Posts")
-                        .HasForeignKey("TopicID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Topic");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Subscription", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithOne("Subscription")
-                        .HasForeignKey("LearnEase_Api.Entity.Subscription", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.TheoryLesson", b =>
                 {
                     b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
@@ -732,17 +509,6 @@ namespace LearnEase_Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Lesson");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.Topic", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Forum", "Forum")
-                        .WithMany("Topics")
-                        .HasForeignKey("ForumID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Forum");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.UserCourse", b =>
@@ -864,9 +630,6 @@ namespace LearnEase_Api.Migrations
 
             modelBuilder.Entity("LearnEase_Api.Entity.Course", b =>
                 {
-                    b.Navigation("Forum")
-                        .IsRequired();
-
                     b.Navigation("Lessons");
 
                     b.Navigation("UserCourses");
@@ -882,14 +645,11 @@ namespace LearnEase_Api.Migrations
                     b.Navigation("UserFlashcards");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Forum", b =>
-                {
-                    b.Navigation("Topics");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
                 {
                     b.Navigation("Exercises");
+
+                    b.Navigation("Flashcards");
 
                     b.Navigation("TheoryLesson")
                         .IsRequired();
@@ -901,31 +661,13 @@ namespace LearnEase_Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Post", b =>
-                {
-                    b.Navigation("Comments");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Topic", b =>
-                {
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.User", b =>
                 {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Leaderboard")
-                        .IsRequired();
-
-                    b.Navigation("Subscription")
-                        .IsRequired();
-
                     b.Navigation("UserCourses");
 
                     b.Navigation("UserDetail")

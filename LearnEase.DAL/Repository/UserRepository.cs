@@ -1,22 +1,23 @@
-﻿using LearnEase_Api.Entity;
+﻿using LearnEase.Repository.Repository;
+using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace LearnEase_Api.LearnEase.Infrastructure.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<UserRepository> _logger;
 
-        public UserRepository(ApplicationDbContext context, ILogger<UserRepository> logger)
+        public UserRepository(ApplicationDbContext context, ILogger<UserRepository> logger) : base(context)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<User> createNewUser(User user)
+        public async Task<User> CreateNewUser(User user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
@@ -34,7 +35,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repository
             return user;
         }
 
-        public async Task<User> deleteUser(string id)
+        public async Task<User> DeleteUser(string id)
         {
             _logger.LogInformation($"Deleting user with ID: {id}");
 
@@ -71,18 +72,11 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repository
             return await _context.Users.FirstOrDefaultAsync(x => x.UserName == name);
         }
 
-        public async Task<List<User>> GetAll()
-        {
-            _logger.LogInformation("Fetching all users.");
-            return await _context.Users.ToListAsync();
-        }
-
-        public async Task<User> updateUser(User user, string id)
+        public async Task<User> UpdateUser(User user, string id)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             _logger.LogInformation($"Updating user: {user.ToString()}");
-
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

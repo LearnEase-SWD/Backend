@@ -1,30 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using StackExchange.Redis;
 using Microsoft.AspNetCore.Authorization;
-using LearnEase_Api.LearnEase.Core.IServices;
-using LearnEase_Api.LearnEase.Core.Services;
-using LearnEase_Api.LearnEase.Infrastructure.IRepository;
-using LearnEase_Api.LearnEase.Infrastructure.Repository;
-using LearnEase_Api.LearnEase.Infrastructure;
+using LearnEase_Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
-builder.Services.AddScoped<IRoles, RolesRepository>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IUserDetailRepository, UserDetailRepository>();
-builder.Services.AddScoped<IUserDetailService, UserDetailService>();
-
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
@@ -40,7 +24,6 @@ builder.Services.AddSwaggerGen(options =>
             Name = "Apache 2.0"
         }
     });
-
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -67,27 +50,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Redis configuration
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
-
-// SQL Server configuration
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Logging configuration
-builder.Services.AddLogging(config =>
-{
-    config.AddConsole();
-    config.AddDebug();
-});
-
-// CORS policy
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-});
+builder.Services.AddConfig(builder.Configuration);
 
 // Authentication setup
 builder.Services.AddAuthentication(options =>
@@ -110,13 +73,13 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("profile");
     options.SaveTokens = true;
 });
+
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()  // Enforce authenticated users
         .Build();
 });
-
 
 var app = builder.Build();
 
@@ -126,11 +89,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseMiddleware<TokenValidationMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.Run();

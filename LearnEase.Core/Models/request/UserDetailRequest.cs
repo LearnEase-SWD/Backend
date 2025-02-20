@@ -7,8 +7,8 @@
         string imageUrl,
         DateTime? dbo,
         string? address,
-        string? CreatedUser,
-        string? UpdatedUser,
+        string? CreatedAt,
+        string? UpdatedAt,
         string UserId
 )
     {

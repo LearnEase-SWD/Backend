@@ -30,7 +30,10 @@ namespace LearnEase_Api.Controllers
             _httpClient = httpClient;
         }
 
-        [HttpGet]
+        //Thầy Không cho lấy hết toàn bộ, muốn lấy phải phân trang
+        //(dùng BasePaginatedList trong folder Base để phân trang)
+
+        /*[HttpGet]      
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userService.getAllUser();
@@ -39,11 +42,12 @@ namespace LearnEase_Api.Controllers
                 return NotFound("No users found.");
             }
             return Ok(result);
-        }
+        }*/
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var result = await _userService.getUserReponseById(id);
+            var result = await _userService.GetUserReponseById(id);
             if (result == null)
             {
                 return NotFound($"User with ID {id} not found.");
@@ -59,7 +63,7 @@ namespace LearnEase_Api.Controllers
                 return BadRequest("Invalid user data.");
             }
 
-            var result = await _userService.createNewUser(request);
+            var result = await _userService.CreateNewUser(request);
             if (result == null)
             {
                 return BadRequest("Failed to create user. Email might already exist.");
@@ -74,7 +78,7 @@ namespace LearnEase_Api.Controllers
                 return BadRequest("Invalid update data.");
             }
 
-            var result = await _userService.updateUserReponse(request, id);
+            var result = await _userService.UpdateUserReponse(request, id);
             if (result == null)
             {
                 return BadRequest("Failed to update user. Email might already exist.");
@@ -85,7 +89,7 @@ namespace LearnEase_Api.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var result = await _userService.deleteUserReponseById(id);
+            var result = await _userService.DeleteUserReponseById(id);
             if (result==null)
             {
                 return NotFound($"User with ID {id} not found.");

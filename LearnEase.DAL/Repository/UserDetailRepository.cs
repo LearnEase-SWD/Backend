@@ -1,12 +1,13 @@
-﻿using LearnEase_Api.Entity;
+﻿using LearnEase.Repository.Repository;
+using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 
 namespace LearnEase_Api.LearnEase.Infrastructure.Repository
 {
-    public class UserDetailRepository : IUserDetailRepository
+    public class UserDetailRepository : GenericRepository<UserDetail>, IUserDetailRepository
     {
         private readonly ApplicationDbContext _context;
-        public UserDetailRepository(ApplicationDbContext context)
+        public UserDetailRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }
@@ -25,12 +26,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repository
             return userDetail;
         }
 
-        public async Task<UserDetail> getUserDetailById(string id)
-        {
-            return _context.UserDetails.FirstOrDefault(x => x.Id.Equals(id));
-        }
-
-        public async Task<UserDetail> getUserDetailByUserId(string userId)
+        public async Task<UserDetail> GetUserDetailByUserId(string userId)
         {
             return _context.UserDetails.FirstOrDefault(x => x.User.UserId.Equals(userId));
         }

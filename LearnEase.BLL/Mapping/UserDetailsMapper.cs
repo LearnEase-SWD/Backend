@@ -38,8 +38,8 @@ namespace LearnEase_Api.Mapper
                 ImageUrl = userDetailRequest.imageUrl,
                 DateOfBirth = userDetailRequest.dbo,
                 Address = userDetailRequest.address,
-                CreatedAt = userDetailRequest.CreatedUser,
-                UpdatedAt = userDetailRequest.UpdatedUser,
+                CreatedAt = userDetailRequest.CreatedAt,
+                UpdatedAt = userDetailRequest.UpdatedAt,
                 UserId = userDetailRequest.UserId,
             };
         }

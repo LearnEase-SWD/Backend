@@ -11,16 +11,10 @@ namespace LearnEase_Api.LearnEase.Infrastructure
         public DbSet<Role> Roles { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Exercise> Exercises { get; set; }
-        public DbSet<Forum> Forums { get; set; }
         public DbSet<Flashcard> Flashcards { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<Leaderboard> Leaderboards { get; set; }
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<TheoryLesson> TheoryLessons { get; set; }
         public DbSet<VideoLesson> VideoLessons { get; set; }
-        public DbSet<Topic> Topics { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
@@ -47,11 +41,9 @@ namespace LearnEase_Api.LearnEase.Infrastructure
                 .HasForeignKey(uf => uf.FlashcardID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserID)
-                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Course>()
+                .Property(c => c.Price)
+                .HasPrecision(18, 2);
         }
     }
 }

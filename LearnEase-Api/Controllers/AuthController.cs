@@ -50,10 +50,10 @@ public class AuthController : ControllerBase
 
         if (userEmail != null)
         {
-            var findUserEmail = await _userService.findUserByEmail(userEmail);
+            var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.createNewUser(new userCreationRequest(userName, userEmail));
+                await _userService.CreateNewUser(new userCreationRequest(userName, userEmail));
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using LearnEase_Api.Dtos.reponse;
+﻿using LearnEase.Repository.UOW;
+using LearnEase_Api.Dtos.reponse;
 using LearnEase_Api.Dtos.request;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
@@ -8,38 +9,32 @@ namespace LearnEase_Api.LearnEase.Core.Services
 {
     public class RoleService : IRoleService
     {
-        private readonly IRoles _roleRepository;
-        public RoleService(IRoles roleRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public RoleService(IUnitOfWork unitOfWork)
         {
-            _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<RoleReponse> createRole(RoleRequest request)
+        public async Task<RoleReponse> CreateRole(RoleRequest request)
         {
             Role role = new Role();
             role.RoleName = request.name;
 
-            var result = await _roleRepository.createRole(role);
-            return new RoleReponse(null, result.RoleName);
+            await _unitOfWork.GetRepository<IRoleRepository>().CreateAsync(role);
+            return new RoleReponse(null, role.RoleName);
         }
 
-        public async Task<RoleReponse> deleteRole(RoleRequest request)
+        public async Task<RoleReponse> DeleteRole(RoleRequest request)
         {
-            var findRoleByName = await _roleRepository.findByName(request.name);
+            var findRoleByName = await _unitOfWork.GetRepository<IRoleRepository>().FindByName(request.name);
 
-            var result = await _roleRepository.deleteRole(findRoleByName);
-            return new RoleReponse(null, result.RoleName);
+            await _unitOfWork.GetRepository<IRoleRepository>().DeleteAsync(findRoleByName);
+            return new RoleReponse(null, findRoleByName.RoleName);
         }
 
-        public async Task<List<RoleReponse>> getAllRoles()
+        public async Task<RoleReponse> GetRole(string request)
         {
-            var result = await _roleRepository.getAllRoles();
-            return result.ConvertAll(role => new RoleReponse(role.RoleId, role.RoleName));
-        }
-
-        public async Task<RoleReponse> getRole(string request)
-        {
-            var result = await _roleRepository.findByName(request);
+            var result = await _unitOfWork.GetRepository<IRoleRepository>().FindByName(request);
             return new RoleReponse(result.RoleId, result.RoleName);
         }
     }

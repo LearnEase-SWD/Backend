@@ -1,8 +1,10 @@
-﻿using LearnEase_Api.Dtos.reponse;
+﻿using LearnEase.Repository.UOW;
+using LearnEase_Api.Dtos.reponse;
 using LearnEase_Api.Dtos.request;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
+using LearnEase_Api.LearnEase.Infrastructure.Repository;
 using LearnEase_Api.Mapper;
 using System.Threading.Tasks;
 
@@ -10,12 +12,12 @@ namespace LearnEase_Api.LearnEase.Core.Services
 {
     public class UserDetailService : IUserDetailService
     {
-        private readonly IUserDetailRepository _userDetailRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserDetailsMapper _userDetailsMapper = new UserDetailsMapper();
 
-        public UserDetailService(IUserDetailRepository userDetailRepository)
+        public UserDetailService(IUnitOfWork unitOfWork)
         {
-            _userDetailRepository = userDetailRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UserDetailResponse> CreateUserDetail(UserDetailRequest userDetailRequest)
@@ -24,12 +26,12 @@ namespace LearnEase_Api.LearnEase.Core.Services
 
             var userDetailEntity = _userDetailsMapper.ToUserDetailEntity(userDetailRequest);
 
-            var createdUserDetail = await _userDetailRepository.CreateUserDetail(userDetailEntity);
-
-            if (createdUserDetail == null)
+            if (userDetailEntity == null)
                 return null;
 
-            return _userDetailsMapper.ToUserDetailResponse(createdUserDetail);
+            await _unitOfWork.GetRepository<IUserDetailRepository>().CreateAsync(userDetailEntity);
+
+            return _userDetailsMapper.ToUserDetailResponse(userDetailEntity);
         }
 
 
@@ -37,7 +39,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         {
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
-            var userDetail = await _userDetailRepository.getUserDetailById(id);
+            var userDetail = await _unitOfWork.GetRepository<IUserDetailRepository>().GetByIdAsync(id);
 
             if (userDetail == null)
                 return null;
@@ -49,7 +51,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         {
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            var userDetail = await _userDetailRepository.getUserDetailByUserId(userId);
+            var userDetail = await _unitOfWork.GetRepository<IUserDetailRepository>().GetUserDetailByUserId(userId);
 
             if (userDetail == null)
                 return null;
@@ -66,12 +68,12 @@ namespace LearnEase_Api.LearnEase.Core.Services
 
             var userDetailEntity = _userDetailsMapper.ToUserDetailEntity(userDetailRequest);
 
-
-            var updatedUserDetail = await _userDetailRepository.UpdateUserDetail(userDetailEntity);
-
-            if (updatedUserDetail == null)
+            if (userDetailEntity == null)
                 return null;
-            return _userDetailsMapper.ToUserDetailResponse(updatedUserDetail);
+
+            await _unitOfWork.GetRepository<IUserDetailRepository>().UpdateAsync(userDetailEntity);
+            
+            return _userDetailsMapper.ToUserDetailResponse(userDetailEntity);
         }
     }
 }

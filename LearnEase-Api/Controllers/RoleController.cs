@@ -23,7 +23,7 @@ namespace LearnEase_Api.Controllers
                 return BadRequest("Role request cannot be null");
             }
 
-            var result = await _roleService.createRole(request);
+            var result = await _roleService.CreateRole(request);
             if (result == null)
             {
                 return NotFound("Role creation failed");
@@ -40,7 +40,7 @@ namespace LearnEase_Api.Controllers
                 return BadRequest("Role request cannot be null");
             }
 
-            var result = await _roleService.deleteRole(request);
+            var result = await _roleService.DeleteRole(request);
             if (result == null)
             {
                 return NotFound($"Role with name {request.name} not found");
@@ -49,16 +49,5 @@ namespace LearnEase_Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllRoles()
-        {
-            var result = await _roleService.getAllRoles();
-            if (result == null || result.Count == 0)
-            {
-                return NotFound("No roles found");
-            }
-
-            return Ok(result);
-        }
     }
 }

@@ -9,6 +9,10 @@ namespace LearnEase_Api.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid FlashcardID { get; set; }
 
+        [ForeignKey("Lesson")]
+        public Guid LessonID { get; set; }
+        public Lesson Lesson { get; set; }
+
         [Required]
         public string Front { get; set; }
 
@@ -18,7 +22,7 @@ namespace LearnEase_Api.Entity
         public string? PronunciationAudioURL { get; set; }
 
         [MaxLength(100)]
-        public string? Category { get; set; } 
+        public string? Topic { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>();

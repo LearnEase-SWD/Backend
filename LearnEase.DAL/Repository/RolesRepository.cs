@@ -1,13 +1,14 @@
-﻿using LearnEase_Api.Entity;
+﻿using LearnEase.Repository.Repository;
+using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnEase_Api.LearnEase.Infrastructure.Repository
 {
-    public class RolesRepository : IRoles
+    public class RolesRepository : GenericRepository<Role>, IRoleRepository
     {
         private readonly ApplicationDbContext _context;
-        public RolesRepository(ApplicationDbContext context)
+        public RolesRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }
@@ -47,7 +48,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repository
             return role;
         }
 
-        public async Task<Role> findByName(string name)
+        public async Task<Role> FindByName(string name)
         {
             var result = await _context.Roles.FirstOrDefaultAsync(x => x.RoleName == name);
             if (result == null) throw new ArgumentNullException(nameof(name));
