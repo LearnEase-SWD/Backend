@@ -6,6 +6,7 @@ using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repository;
 using LearnEase_Api.Mapper;
+using Microsoft.Extensions.Logging;
 
 namespace LearnEase_Api.LearnEase.Core.Services
 {
@@ -13,11 +14,13 @@ namespace LearnEase_Api.LearnEase.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRoleService _roleService;
+        private readonly ILogger<UserRepository> _logger;
         private readonly MapperUser _mapper = new MapperUser();
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, ILogger<UserRepository> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<UserReponse> CreateNewUser(userCreationRequest request)
@@ -25,7 +28,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var findUser = await _unitOfWork.GetRepository<UserRepository>().FindByEmail(request.email);
+            var findUser = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(request.email);
             if (findUser != null) return null;
 
             var user = new User

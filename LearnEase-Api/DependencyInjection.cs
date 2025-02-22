@@ -45,12 +45,21 @@ namespace LearnEase_Api
 
         }
 
-        // Redis
+        // Redis Cloud
         public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
         {
-            // Redis configuration
-            var redisConnectionString = configuration.GetConnectionString("Redis");
-            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+            var redisConfig = configuration.GetSection("RedisString");
+
+            var options = new ConfigurationOptions
+            {
+                EndPoints = { { redisConfig["Redis"], redisConfig.GetValue<int>("Port") } },
+                User = redisConfig["Username"],
+                Password = redisConfig["Password"]
+            };
+
+            var muxer = ConnectionMultiplexer.Connect(options);
+
+            services.AddSingleton<IConnectionMultiplexer>(muxer);
         }
 
         // CORS policy

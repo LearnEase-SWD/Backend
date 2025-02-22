@@ -25,12 +25,5 @@
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             Items = items;
         }
-
-        // Phương thức để kiểm tra nếu có trang trước đó
-        public bool HasPreviousPage => CurrentPage > 1;
-
-        // Phương thức để kiểm tra nếu có trang kế tiếp
-        public bool HasNextPage => CurrentPage < TotalPages;
-
     }
 }
