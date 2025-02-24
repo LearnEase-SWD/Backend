@@ -23,17 +23,20 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restore dependencies
+        run: dotnet restore learnEase-api.sln
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Build with dotnet
+        run: dotnet build learnEase-api.sln --configuration Release --no-restore
+
+      - name: Publish API
+        run: dotnet publish learnEase-api.sln -c Release -o "${{github.workspace}}/publish"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{github.workspace}}/publish
 
   deploy:
     runs-on: windows-latest
@@ -50,7 +53,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+          path: ${{github.workspace}}/publish
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -64,5 +68,4 @@ jobs:
         with:
           app-name: 'learnease'
           slot-name: 'Production'
-          package: .
-          
+          package: ${{github.workspace}}/publish
