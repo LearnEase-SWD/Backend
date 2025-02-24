@@ -70,8 +70,13 @@ namespace LearnEase_Api
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder =>
-                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
             });
+
         }
 
         // Logging configuration

@@ -16,9 +16,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "User Information Service",
+        Title = "LearnEase API",
         Version = "1.0.0",
-        Description = "User Information Service API",
+        Description = "API Documentation",
         License = new OpenApiLicense
         {
             Name = "Apache 2.0"
@@ -29,7 +29,8 @@ builder.Services.AddSwaggerGen(options =>
     {
         In = ParameterLocation.Header,
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT",
         Description = "Enter 'Bearer' [space] and then your JWT token"
     });
@@ -50,6 +51,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//Add config from DI
 builder.Services.AddConfig(builder.Configuration);
 
 // Authentication setup
@@ -83,7 +85,6 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// Middleware setup
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
