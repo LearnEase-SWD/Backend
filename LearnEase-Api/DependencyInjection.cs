@@ -30,6 +30,7 @@ namespace LearnEase_Api
         // Services
         public static void AddServices(this IServiceCollection services)
         {
+            //Service
             services
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IAuthService, AuthService>()
@@ -37,6 +38,7 @@ namespace LearnEase_Api
                 .AddScoped<IRoleService, RoleService>()
                 .AddScoped<IUserDetailService, UserDetailService>();
 
+            //Repo
             services
                 .AddScoped<IUnitOfWork, UnitOfWork>()
                 .AddScoped<IUserRepository, UserRepository>()
