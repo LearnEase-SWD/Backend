@@ -14,10 +14,9 @@ public class TokenValidationMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
 
-        if (context.Request.Path.StartsWithSegments("/swagger") ||
-            /*context.Request.Path.StartsWithSegments("/api/auth/login") ||
+        if (context.Request.Path.StartsWithSegments("/api/auth/login") ||
             context.Request.Path.StartsWithSegments("/api/auth/callback") ||
-            context.Request.Path.StartsWithSegments("/api/auth") ||*/
+            context.Request.Path.StartsWithSegments("/api/auth") ||
             context.Request.Path.StartsWithSegments("/api/users") ||
             context.Request.Path.StartsWithSegments("/api/redis") ||
             context.Request.Path.StartsWithSegments("/api/"))
@@ -30,7 +29,6 @@ public class TokenValidationMiddleware
         {
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-
             var cachedToken = await _redisCacheService.GetAsync<string>(token);
             if (string.IsNullOrEmpty(cachedToken))
             {
@@ -38,7 +36,6 @@ public class TokenValidationMiddleware
                 await context.Response.WriteAsync("Unauthorized: Invalid or expired token");
                 return;
             }
-
 
             var tokenExpiration = await _redisCacheService.GetAsync<DateTime?>($"expiration_{token}");
             if (tokenExpiration == null || tokenExpiration <= DateTime.UtcNow)
@@ -48,14 +45,12 @@ public class TokenValidationMiddleware
                 return;
             }
 
-
             if (tokenExpiration.Value.Subtract(DateTime.UtcNow).TotalMinutes < 10)
             {
 
                 var newExpirationTime = DateTime.UtcNow.AddMinutes(60);
                 await _redisCacheService.SetAsync($"expiration_{token}", newExpirationTime, TimeSpan.FromMinutes(60));
             }
-
 
             await _next(context);
         }

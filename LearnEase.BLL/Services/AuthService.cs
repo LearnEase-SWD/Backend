@@ -1,189 +1,109 @@
 ﻿using LearnEase_Api.Dtos.reponse;
-using LearnEase_Api.Dtos.request;
 using LearnEase_Api.LearnEase.Core.IServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LearnEase_Api.LearnEase.Core.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IRedisCacheService _redisCacherService;
         private readonly IConfiguration _configuration;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IRedisCacheService redisCacheService)
+
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
-            _redisCacherService = redisCacheService;
             _configuration = configuration;
         }
 
-        public async Task<ApiResponse<DecodeTokenReponse>> GetTokenInfo(RequestToken request)
+        public Task<ApiResponse<string>> GetGoogleLoginUrl()
         {
-            if (string.IsNullOrEmpty(request.IdToken))
+            var clientId = _configuration["Authentication:Google:ClientId"];
+            var redirectUri = _configuration["Authentication:Google:RedirectUri"];
+            var scope = "openid email profile";
+            var state = "random-state-value"; 
+
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(redirectUri))
             {
-                return new ApiResponse<DecodeTokenReponse>
+                return Task.FromResult(new ApiResponse<string>
                 {
                     Success = false,
-                    Message = "Token is required"
-                };
+                    Message = "Google OAuth configuration is missing."
+                });
             }
 
-            using (var client = _httpClientFactory.CreateClient())
+            var url = $"https://accounts.google.com/o/oauth2/auth" +
+                      $"?client_id={clientId}" +
+                      $"&redirect_uri={redirectUri}" +
+                      $"&response_type=code" +
+                      $"&scope={scope}" +
+                      $"&state={state}" +
+                      $"&access_type=offline";
+
+            return Task.FromResult(new ApiResponse<string>
             {
-                var response = await client.GetAsync($"https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={request.IdToken}");
-                var content = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return new ApiResponse<DecodeTokenReponse>
-                    {
-                        Success = true,
-                        Data = new DecodeTokenReponse(json["email"]?.ToString(), json["exp"]?.ToString(), json["issued_to"]?.ToString())
-                        {
-                        }
-                    };
-                }
-                else
-                {
-                    return new ApiResponse<DecodeTokenReponse>
-                    {
-                        Success = false,
-                        Message = "Invalid token",
-                        Error = json.ToString()
-                    };
-                }
-            }
+                Success = true,
+                Data = url
+            });
         }
 
-        public async Task<ApiResponse<string>> RefreshToken(RequestRefreshToken request)
+        public async Task<ApiResponse<string>> ExchangeCodeForToken(string code)
         {
-            if (string.IsNullOrEmpty(request.RefreshToken))
+            var tokenUrl = "https://oauth2.googleapis.com/token";
+            var clientId = _configuration["Authentication:Google:ClientId"];
+            var clientSecret = _configuration["Authentication:Google:ClientSecret"];
+            var redirectUri = _configuration["Authentication:Google:RedirectUri"];
+
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(redirectUri))
             {
                 return new ApiResponse<string>
                 {
                     Success = false,
-                    Message = "Refresh Token is required"
+                    Message = "Google OAuth configuration is missing."
                 };
             }
 
             var values = new Dictionary<string, string>
             {
-                { "client_id", _configuration["Authentication:Google:ClientId"] },
-                { "client_secret",_configuration["Authentication:Google:ClientSecret"] },
-                { "refresh_token", request.RefreshToken },
-                { "grant_type", "refresh_token" }
+                { "code", code },
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
             };
 
             var content = new FormUrlEncodedContent(values);
-            using (var client = _httpClientFactory.CreateClient())
+            var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.PostAsync(tokenUrl, content);
+
+            if (!response.IsSuccessStatusCode)
             {
-                var response = await client.PostAsync("https://oauth2.googleapis.com/token", content);
-
-                if (!response.IsSuccessStatusCode)
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                return new ApiResponse<string>
                 {
-                    return new ApiResponse<string>
-                    {
-                        Success = false,
-                        Message = "Failed to refresh token"
-                    };
-                }
+                    Success = false,
+                    Message = "Failed to exchange code for token.",
+                    Error = errorResponse
+                };
+            }
 
-                var responseString = await response.Content.ReadAsStringAsync();
-                var responseData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
 
+            if (json != null && json.TryGetValue("id_token", out var idToken))
+            {
                 return new ApiResponse<string>
                 {
                     Success = true,
-                    Data = responseData["access_token"]
+                    Data = idToken
                 };
             }
 
-        }
-
-        public async Task<ApiResponse<bool>> VerifyAccessToken(RequestToken request)
-        {
-            if (string.IsNullOrEmpty(request.IdToken))
+            return new ApiResponse<string>
             {
-                return new ApiResponse<bool>
-                {
-                    Success = false,
-                    Message = "Token is required"
-                };
-            }
-
-            using (var client = _httpClientFactory.CreateClient())
-            {
-                var response = await client.GetAsync($"https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={request.IdToken}");
-                var content = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return new ApiResponse<bool>
-                    {
-                        Success = true,
-                        Data = true
-                    };
-                }
-                else
-                {
-                    return new ApiResponse<bool>
-                    {
-                        Success = false,
-                        Message = "Invalid token",
-                        Error = json.ToString()
-                    };
-                }
-            }
-
-
-        }
-
-        public async Task<ApiResponse<bool>> RevokeTokenAsync(RequestToken request)
-        {
-            using (var client = _httpClientFactory.CreateClient())
-            {
-                var requestUri = $"https://accounts.google.com/o/oauth2/revoke?token={request.IdToken}";
-                var response = await client.PostAsync(requestUri, null);
-
-                return new ApiResponse<bool>
-                {
-                    Success = response.IsSuccessStatusCode,
-                    Data = response.IsSuccessStatusCode,
-                    Message = response.IsSuccessStatusCode ? "Token revoked successfully" : "Failed to revoke token"
-                };
-            }
-        }
-
-        public async Task<ApiResponse<bool>> Logout(RequestToken request)
-        {
-            var resultRevoke = await RevokeTokenAsync(request);
-
-            if (!resultRevoke.Success)
-            {
-                return new ApiResponse<bool>
-                {
-                    Success = false,
-                    Data = false,
-                    Message = "Failed to revoke token from Google"
-                };
-            }
-
-            await _redisCacherService.RemoveAsync(request.IdToken);
-
-            return new ApiResponse<bool>
-            {
-                Success = true,
-                Data = true,
-                Message = "Logout successful"
+                Success = false,
+                Message = "Failed to retrieve ID token."
             };
         }
-
     }
 }

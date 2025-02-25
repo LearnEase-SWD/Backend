@@ -5,10 +5,8 @@ namespace LearnEase_Api.LearnEase.Core.IServices
 {
     public interface IAuthService
     {
-        Task<ApiResponse<DecodeTokenReponse>> GetTokenInfo(RequestToken request);
-        Task<ApiResponse<bool>> VerifyAccessToken(RequestToken request);
-        Task<ApiResponse<string>> RefreshToken(RequestRefreshToken request);
-        Task<ApiResponse<bool>> RevokeTokenAsync(RequestToken request);
-        Task<ApiResponse<bool>> Logout(RequestToken request);
+        Task<ApiResponse<string>> GetGoogleLoginUrl();
+        Task<ApiResponse<string>> ExchangeCodeForToken(string code);
+        
     }
 }
