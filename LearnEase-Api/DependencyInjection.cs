@@ -109,7 +109,6 @@ namespace LearnEase_Api
                            .AllowAnyHeader();
                 });
             });
-
         }
 
         // Logging configuration
