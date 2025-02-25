@@ -14,7 +14,8 @@ public class TokenValidationMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
 
-        if (context.Request.Path.StartsWithSegments("/api/auth/login") ||
+        if (context.Request.Path.StartsWithSegments("/swagger") ||
+            context.Request.Path.StartsWithSegments("/api/auth/login") ||
             context.Request.Path.StartsWithSegments("/api/auth/callback") ||
             context.Request.Path.StartsWithSegments("/api/auth") ||
             context.Request.Path.StartsWithSegments("/api/users") ||
@@ -24,7 +25,7 @@ public class TokenValidationMiddleware
             await _next(context);
             return;
         }
-
+/*
         if (context.Request.Headers.ContainsKey("Authorization"))
         {
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -58,6 +59,6 @@ public class TokenValidationMiddleware
         {
             context.Response.StatusCode = 400;
             await context.Response.WriteAsync("Authorization header is missing");
-        }
+        }*/
     }
 }
