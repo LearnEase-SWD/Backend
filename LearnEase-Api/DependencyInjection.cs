@@ -4,7 +4,9 @@ using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 
@@ -20,6 +22,7 @@ namespace LearnEase_Api
             services.AddCors();
             services.AddLogging();
             services.AddSwagger();
+            services.AddAuthen(configuration);
         }
 
         // Swagger
@@ -119,6 +122,33 @@ namespace LearnEase_Api
                 config.AddConsole();
                 config.AddDebug();
             });
+        }
+
+        // JWT Authentication
+        public static void AddAuthen(this IServiceCollection services, IConfiguration configuration)
+        {
+            var googleClientId = configuration["Authentication:Google:ClientId"];
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.Authority = "https://accounts.google.com";
+                options.Audience = googleClientId;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = "https://accounts.google.com",
+                    ValidateAudience = true,
+                    ValidAudience = googleClientId,
+                    ValidateLifetime = true
+                };
+            });
+
+            services.AddAuthorization();
         }
 
     }

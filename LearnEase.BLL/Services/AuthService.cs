@@ -1,7 +1,10 @@
 ﻿using LearnEase_Api.Dtos.reponse;
+using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LearnEase_Api.LearnEase.Core.Services
 {
@@ -10,12 +13,64 @@ namespace LearnEase_Api.LearnEase.Core.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
 
+
         public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
         }
 
+        /*public async Task<ApiResponse<UserResponse>> SignupWithGoogle(string idToken)
+        {
+            if (string.IsNullOrEmpty(idToken))
+            {
+                return new ApiResponse<UserResponse> { Success = false, Message = "ID Token is required." };
+            }
+
+            // Xác thực ID Token với Google
+            using var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync($"https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={idToken}");
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+
+            if (!response.IsSuccessStatusCode || json["email"] == null)
+            {
+                return new ApiResponse<UserResponse> { Success = false, Message = "Invalid ID Token." };
+            }
+
+            string email = json["email"]?.ToString();
+            string name = json["name"]?.ToString();
+            string picture = json["picture"]?.ToString();
+
+            // Kiểm tra xem user đã tồn tại chưa
+            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                // Tạo mới user
+                user = new User
+                {
+                    Email = email,
+                    Name = name,
+                    ProfilePicture = picture,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return new ApiResponse<UserResponse>
+            {
+                Success = true,
+                Data = new UserResponse
+                {
+                    Email = user.Email,
+                    Name = user.Name,
+                    ProfilePicture = user.ProfilePicture
+                }
+            };
+        }
+*/
         public Task<ApiResponse<string>> GetGoogleLoginUrl()
         {
             var clientId = _configuration["Authentication:Google:ClientId"];
