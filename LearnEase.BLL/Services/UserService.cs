@@ -6,6 +6,7 @@ using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repository;
 using LearnEase_Api.Mapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 
 namespace LearnEase_Api.LearnEase.Core.Services
@@ -17,8 +18,9 @@ namespace LearnEase_Api.LearnEase.Core.Services
         private readonly ILogger<UserRepository> _logger;
         private readonly MapperUser _mapper = new MapperUser();
 
-        public UserService(IUnitOfWork unitOfWork, ILogger<UserRepository> logger)
+        public UserService(IUnitOfWork unitOfWork, ILogger<UserRepository> logger,IRoleService roleService)
         {
+            _roleService = roleService ?? throw new ArgumentNullException(nameof(roleService));
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
@@ -51,7 +53,12 @@ namespace LearnEase_Api.LearnEase.Core.Services
             }
 
             await _unitOfWork.GetRepository<IUserRepository>().CreateAsync(user);
+            await _unitOfWork.SaveAsync();
+
             var getUserEmail = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(user.Email);
+
+            Console.WriteLine("hello");
+
 
             //save detail
             var userDetail = new UserDetail
@@ -68,6 +75,8 @@ namespace LearnEase_Api.LearnEase.Core.Services
             };
 
             await _unitOfWork.GetRepository<IUserDetailRepository>().CreateAsync(userDetail);
+            await _unitOfWork.SaveAsync();
+
             return _mapper.mapperUserReponse(user);
         }
 

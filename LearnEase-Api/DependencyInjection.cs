@@ -4,6 +4,8 @@ using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repository;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -125,7 +127,7 @@ namespace LearnEase_Api
         }
 
         // JWT Authentication
-        public static void AddAuthen(this IServiceCollection services, IConfiguration configuration)
+        /*public static void AddAuthen(this IServiceCollection services, IConfiguration configuration)
         {
             var googleClientId = configuration["Authentication:Google:ClientId"];
 
@@ -149,7 +151,38 @@ namespace LearnEase_Api
             });
 
             services.AddAuthorization();
+        }*/
+
+        public static void AddAuthen(this IServiceCollection services, IConfiguration configuration)
+        {
+            var googleClientId = configuration["Authentication:Google:ClientId"];
+            var googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; 
+            })
+            .AddCookie() 
+            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+            {
+                options.ClientId = googleClientId;
+                options.ClientSecret = googleClientSecret;
+                options.CallbackPath = "/callback"; 
+
+                options.SaveTokens = true;
+
+                options.Scope.Add("email");
+                options.Scope.Add("profile");
+                options.Scope.Add("openid");
+            });
+
+            services.AddAuthorization();
         }
+
+
+
 
     }
 }

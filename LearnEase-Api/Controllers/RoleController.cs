@@ -49,5 +49,24 @@ namespace LearnEase_Api.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("getRole/{roleName}")]
+        public async Task<IActionResult> GetRole(string roleName)
+        {
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return BadRequest("Role name cannot be null or empty");
+            }
+
+            var result = await _roleService.GetRole(roleName); // Gọi đúng phương thức
+            if (result == null)
+            {
+                return NotFound($"Role with name '{roleName}' not found");
+            }
+
+            return Ok(result);
+        }
+
+
     }
 }
