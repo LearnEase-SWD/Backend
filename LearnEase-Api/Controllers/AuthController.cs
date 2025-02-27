@@ -60,8 +60,6 @@ public class AuthController : ControllerBase
         return Ok(new { id_token = result.Data });
     }*/
 
-
-
     [HttpGet("login")]
     public IActionResult Login()
     {
