@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.Dtos.request;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("api/role")]
     [ApiController]
+    [AllowAnonymous]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;

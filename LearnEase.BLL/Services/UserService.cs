@@ -42,6 +42,15 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 UserName = request.userName
             };
             string[] userNames = request.userName.Split(' ');
+            string lastname = "";
+
+            if (userNames.Length > 1)
+            {
+                for (var i = 1; i < userNames.Length; i++)
+                {
+                    lastname += userNames[i]+" ";
+                }
+            }
 
             var defaultRole = await _roleService.GetRole("User");
             if (defaultRole != null)
@@ -58,16 +67,21 @@ namespace LearnEase_Api.LearnEase.Core.Services
             var getUserEmail = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(user.Email);
 
             Console.WriteLine("hello");
+            string urlImage = null;
+            if (request.urlImage != null)
+            {
+                urlImage = request.urlImage;
+            }
 
 
             //save detail
             var userDetail = new UserDetail
             {
                 FirstName = userNames[0],
-                LastName = userNames.Length > 1 ? userNames[1] : "",
+                LastName =lastname,
                 Address = null,
                 Phone = null,
-                ImageUrl = null,
+                ImageUrl = urlImage,
                 DateOfBirth = null,
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt,

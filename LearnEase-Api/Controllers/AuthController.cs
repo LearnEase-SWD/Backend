@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [Route("api/auth")]
 [ApiController]
+[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -88,7 +89,7 @@ public class AuthController : ControllerBase
             var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.CreateNewUser(new userCreationRequest(userName, userEmail));
+                await _userService.CreateNewUser(new userCreationRequest(userName, userEmail,null));
             }
         }
 

@@ -1,11 +1,13 @@
 ﻿using LearnEase_Api.Dtos.request;
 using LearnEase_Api.LearnEase.Core.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("/api/userDetails")]
     [ApiController]
+    [AllowAnonymous]
     public class UserDetailController : ControllerBase
     {
         private readonly IUserDetailService _userDetailService;
