@@ -12,6 +12,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         {
             _cacheDb = redis.GetDatabase();
         }
+
         public async Task<T?> GetAsync<T>(string key)
         {
             var jsonData = await _cacheDb.StringGetAsync(key);

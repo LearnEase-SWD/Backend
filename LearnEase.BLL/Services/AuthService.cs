@@ -15,7 +15,6 @@ namespace LearnEase_Api.LearnEase.Core.Services
         private readonly IConfiguration _configuration;
         private readonly IRedisCacheService _redisCacherService;
 
-
         public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration,IRedisCacheService redis)
         {
             _httpClientFactory = httpClientFactory;
@@ -74,7 +73,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             };
         }
 */
-        public Task<ApiResponse<string>> GetGoogleLoginUrl()
+        /*public Task<ApiResponse<string>> GetGoogleLoginUrl()
         {
             var clientId = _configuration["Authentication:Google:ClientId"];
             var redirectUri = _configuration["Authentication:Google:RedirectUri"];
@@ -103,7 +102,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 Success = true,
                 Data = url
             });
-        }
+        }*/
 
         public async Task<ApiResponse<string>> ExchangeCodeForToken(string code)
         {
@@ -225,10 +224,11 @@ namespace LearnEase_Api.LearnEase.Core.Services
             };
 
             var content = new FormUrlEncodedContent(values);
+
             using (var client = _httpClientFactory.CreateClient())
             {
                 var response = await client.PostAsync("https://oauth2.googleapis.com/token", content);
-
+            
                 if (!response.IsSuccessStatusCode)
                 {
                     return new ApiResponse<string>
@@ -237,17 +237,16 @@ namespace LearnEase_Api.LearnEase.Core.Services
                         Message = "Failed to refresh token"
                     };
                 }
-
+                
                 var responseString = await response.Content.ReadAsStringAsync();
                 var responseData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
-
+                
                 return new ApiResponse<string>
                 {
                     Success = true,
                     Data = responseData["access_token"]
                 };
             }
-
         }
 
         public async Task<ApiResponse<bool>> VerifyAccessToken(RequestToken request)
@@ -285,8 +284,6 @@ namespace LearnEase_Api.LearnEase.Core.Services
                     };
                 }
             }
-
-
         }
 
         public async Task<ApiResponse<bool>> RevokeTokenAsync(RequestToken request)
@@ -328,6 +325,5 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 Message = "Logout successful"
             };
         }
-
     }
 }

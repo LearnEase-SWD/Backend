@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
-using Google.Apis.Auth.OAuth2.Requests;
 using LearnEase_Api.Dtos.request;
 using LearnEase_Api.LearnEase.Core.IServices;
-using LearnEase_Api.LearnEase.Core.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -96,7 +94,6 @@ public class AuthController : ControllerBase
 
         return Ok(new { AccessToken = accessToken, UserEmail = userEmail, UserName = userName });
     }
-
 
     [HttpPost("verify-access-token")]
     public async Task<IActionResult> VerifyAccessToken([FromBody] RequestToken request)

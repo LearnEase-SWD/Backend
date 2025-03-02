@@ -18,11 +18,10 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// ✅ Đảm bảo Authentication chạy trước Middleware tùy chỉnh
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ❌ Tạm thời comment Middleware tùy chỉnh để kiểm tra lỗi
+// Tạm thời comment Middleware tùy chỉnh để kiểm tra lỗi
 // app.UseMiddleware<TokenValidationMiddleware>();
 
 app.MapControllers();
