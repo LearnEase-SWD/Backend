@@ -1,4 +1,6 @@
-﻿using LearnEase_Api;
+﻿using LearnEase.Repository.IRepository;
+using LearnEase.Repository.Repository;
+using LearnEase_Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+
 
 // Load Configurations
 builder.Services.AddConfig(builder.Configuration);

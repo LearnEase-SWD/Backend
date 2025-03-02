@@ -1,4 +1,6 @@
-﻿using LearnEase.Repository.UOW;
+﻿using LearnEase.Repository.IRepository;
+using LearnEase.Repository.Repository;
+using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure;
@@ -72,13 +74,20 @@ namespace LearnEase_Api
 			services.AddSingleton<IRedisCacheService, RedisCacheService>();
 			services.AddScoped<IRoleService, RoleService>();
 			services.AddScoped<IUserDetailService, UserDetailService>();
+			services.AddScoped<ICourseService, CourseService>();
+			services.AddScoped<IExerciseService, ExerciseService>();
+			services.AddScoped<IFlashcardService, FlashcardService>();
 
-			//Repo
-			services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            //Repo
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<IRoleRepository, RolesRepository>();
 			services.AddScoped<IUserDetailRepository, UserDetailRepository>();
-		}
+			services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IExerciseRepository, ExerciseRepository>();
+            services.AddScoped<IFlashcardRepository, FlashcardRepository>();
+        }
 
 		// Redis Cloud
 		public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
