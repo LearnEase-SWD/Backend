@@ -17,7 +17,7 @@ using LearnEase_Api.Dtos.request;
 
 namespace LearnEase_Api.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [Route("api/users")]
     [ApiController] 
     public class UserController : ControllerBase    {
@@ -97,10 +97,16 @@ namespace LearnEase_Api.Controllers
             return Ok("User deleted successfully.");
         }
 
-        
+        [HttpGet("getUserByEmail/{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var result = await _userService.FindUserByEmail(email);
+            if (result == null)
+            {
+                return NotFound($"User with email {email} not found.");
+            }
+            return Ok(result);
+        }
 
-
-
-       
     }
 }

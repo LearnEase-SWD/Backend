@@ -5,7 +5,7 @@ namespace LearnEase_Api.Entity
     public class User
     {
         [Key]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
         public string UserName { get; set; }

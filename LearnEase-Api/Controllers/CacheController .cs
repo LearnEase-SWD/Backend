@@ -1,11 +1,13 @@
 ﻿using LearnEase_Api.Dtos.request;
 using LearnEase_Api.LearnEase.Core.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("api/redis")]
     [ApiController]
+    [AllowAnonymous]
     public class CacheController : ControllerBase
     {
         private readonly IRedisCacheService _redisCacheService;
