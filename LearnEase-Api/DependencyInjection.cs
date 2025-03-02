@@ -1,4 +1,6 @@
-﻿using LearnEase.Repository.UOW;
+﻿using LearnEase.Repository.IRepository;
+using LearnEase.Repository.Repository;
+using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure;
@@ -72,14 +74,16 @@ namespace LearnEase_Api
                 .AddScoped<IAuthService, AuthService>()
                 .AddSingleton<IRedisCacheService, RedisCacheService>()
                 .AddScoped<IRoleService, RoleService>()
-                .AddScoped<IUserDetailService, UserDetailService>();
+                .AddScoped<IUserDetailService, UserDetailService>()
+                .AddScoped<ICourseService, CourseService>();
 
             //Repo
             services
                 .AddScoped<IUnitOfWork, UnitOfWork>()
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<IRoleRepository, RolesRepository>()
-                .AddScoped<IUserDetailRepository, UserDetailRepository>();
+                .AddScoped<IUserDetailRepository, UserDetailRepository>()
+                .AddScoped<ICourseRepository, CourseRepository>();
 
         }
 
