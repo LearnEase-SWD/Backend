@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LearnEase.Core.Entities;
 using LearnEase.Repository.IRepository;
 using LearnEase_Api.Entity;
-using LearnEase_Api.LearnEase.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnEase.Repository.Repository

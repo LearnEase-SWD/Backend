@@ -30,7 +30,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var findUser = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(request.email);
+            var findUser = await _unitOfWork.GetCustomRepository<IUserRepository>().FindByEmail(request.email);
             if (findUser != null) return null;
 
             var user = new User
@@ -52,7 +52,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 }
             }
 
-            var defaultRole = await _roleService.GetRole("User");
+            var defaultRole = await _roleService.GetByName("User");
             if (defaultRole != null)
             {
                 user.UserRoles = new List<UserRole>
@@ -61,10 +61,10 @@ namespace LearnEase_Api.LearnEase.Core.Services
             };
             }
 
-            await _unitOfWork.GetRepository<IUserRepository>().CreateAsync(user);
+            await _unitOfWork.GetRepository<User>().CreateAsync(user);
             await _unitOfWork.SaveAsync();
 
-            var getUserEmail = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(user.Email);
+            var getUserEmail = await _unitOfWork.GetCustomRepository<IUserRepository>().FindByEmail(user.Email);
 
             Console.WriteLine("hello");
             string urlImage = null;
@@ -88,7 +88,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 UserId = getUserEmail.UserId
             };
 
-            await _unitOfWork.GetRepository<IUserDetailRepository>().CreateAsync(userDetail);
+            await _unitOfWork.GetCustomRepository<IUserDetailRepository>().CreateAsync(userDetail);
             await _unitOfWork.SaveAsync();
 
             return _mapper.mapperUserReponse(user);
@@ -96,8 +96,8 @@ namespace LearnEase_Api.LearnEase.Core.Services
 
         public async Task<UserReponse> DeleteUserReponseById(string id)
         {
-            var userRepo = _unitOfWork.GetRepository<IUserRepository>();
-            var userDetailRepo = _unitOfWork.GetRepository<IUserDetailRepository>();
+            var userRepo = _unitOfWork.GetRepository<User>();
+            var userDetailRepo = _unitOfWork.GetRepository<UserDetail>();
 
             // Lấy User trước khi xóa
             var findUserById = await userRepo.GetByIdAsync(id);
@@ -119,7 +119,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
 
         public async Task<UserReponse> FindUserByEmail(string email)
         {
-            var result = await _unitOfWork.GetRepository<IUserRepository>().FindByEmail(email);
+            var result = await _unitOfWork.GetCustomRepository<IUserRepository>().FindByEmail(email);
             if (result != null)
             {
                 return _mapper.mapperUserReponse(result);
@@ -130,7 +130,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         
         public async Task<UserReponse> GetUserReponseById(string id)
         {
-            var result = await _unitOfWork.GetRepository<IUserRepository>().GetByIdAsync(id);
+            var result = await _unitOfWork.GetRepository<User>().GetByIdAsync(id);
             return result != null ? _mapper.mapperUserReponse(result) : null;
         }
 
@@ -139,7 +139,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var findUser = await _unitOfWork.GetRepository<IUserRepository>().GetByIdAsync(id);
+            var findUser = await _unitOfWork.GetRepository<User>().GetByIdAsync(id);
             if (findUser == null) return null;
 
             findUser.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
@@ -147,7 +147,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             findUser.Email = request.email;
             findUser.UserName = request.userName;
 
-            await _unitOfWork.GetRepository<IUserRepository>().UpdateAsync(findUser);
+            await _unitOfWork.GetRepository<User>().UpdateAsync(findUser);
             return _mapper.mapperUserReponse(findUser);
         }
     }

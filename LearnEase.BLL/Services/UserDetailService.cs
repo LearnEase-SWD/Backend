@@ -29,7 +29,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             if (userDetailEntity == null)
                 return null;
 
-            await _unitOfWork.GetRepository<IUserDetailRepository>().CreateAsync(userDetailEntity);
+            await _unitOfWork.GetRepository<UserDetail>().CreateAsync(userDetailEntity);
 
             return _userDetailsMapper.ToUserDetailResponse(userDetailEntity);
         }
@@ -39,7 +39,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         {
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
-            var userDetail = await _unitOfWork.GetRepository<IUserDetailRepository>().GetByIdAsync(id);
+            var userDetail = await _unitOfWork.GetRepository<UserDetail>().GetByIdAsync(id);
 
             if (userDetail == null)
                 return null;
@@ -51,7 +51,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         {
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            var userDetail = await _unitOfWork.GetRepository<IUserDetailRepository>().GetUserDetailByUserId(userId);
+            var userDetail = await _unitOfWork.GetCustomRepository<IUserDetailRepository>().GetUserDetailByUserId(userId);
 
             if (userDetail == null)
                 return null;
@@ -71,7 +71,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             if (userDetailEntity == null)
                 return null;
 
-            await _unitOfWork.GetRepository<IUserDetailRepository>().UpdateAsync(userDetailEntity);
+            await _unitOfWork.GetRepository<UserDetail>().UpdateAsync(userDetailEntity);
             
             return _userDetailsMapper.ToUserDetailResponse(userDetailEntity);
         }

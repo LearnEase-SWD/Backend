@@ -4,11 +4,12 @@ namespace LearnEase.Repository.UOW
 {
     public interface IUnitOfWork : IDisposable
     {
-        TRepo GetRepository<TRepo>() where TRepo : class;
+        IGenericRepository<T> GetRepository<T>() where T : class;
+        T GetCustomRepository<T>() where T : class;
         Task SaveAsync();
-        void BeginTransaction();
-        void CommitTransaction();
-        void Rollback();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackAsync();
     }
 
 }

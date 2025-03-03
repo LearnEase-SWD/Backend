@@ -1,7 +1,5 @@
-﻿using Google.Apis.Auth.OAuth2.Requests;
-using LearnEase.Repository.IRepository;
+﻿using LearnEase.Repository.IRepository;
 using LearnEase_Api.Entity;
-using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -17,9 +15,9 @@ public class FlashcardController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllFlashcards()
+    public async Task<IActionResult> GetFlashcardsAsync(int pageIndex, int pageSize)
     {
-        var flashcards = await _flashcardService.GetAllFlashcardsAsync();
+        var flashcards = await _flashcardService.GetFlashcardsAsync(pageIndex, pageSize);
         return Ok(flashcards);
     }
 

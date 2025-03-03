@@ -1,9 +1,9 @@
-﻿using LearnEase.Repository.IRepository;
+﻿using LearnEase.Core.Entities;
+using LearnEase.Repository.IRepository;
 using LearnEase.Repository.Repository;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Core.Services;
-using LearnEase_Api.LearnEase.Infrastructure;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,7 +14,7 @@ using StackExchange.Redis;
 
 namespace LearnEase_Api
 {
-	public static class DependencyInjection
+    public static class DependencyInjection
 	{
 		public static void AddConfig(this IServiceCollection services, IConfiguration configuration)
 		{
@@ -78,7 +78,6 @@ namespace LearnEase_Api
 			services.AddScoped<IExerciseService, ExerciseService>();
 			services.AddScoped<IFlashcardService, FlashcardService>();
 
-
             //Repo
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<IUserRepository, UserRepository>();
@@ -86,7 +85,6 @@ namespace LearnEase_Api
 			services.AddScoped<IUserDetailRepository, UserDetailRepository>();
 			services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<IExerciseRepository, ExerciseRepository>();
-            services.AddScoped<IFlashcardRepository, FlashcardRepository>();
         }
 
 		// Redis Cloud
