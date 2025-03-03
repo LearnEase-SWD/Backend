@@ -1,7 +1,7 @@
 ﻿using LearnEase_Api.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace LearnEase_Api.LearnEase.Infrastructure
+namespace LearnEase.Core.Entities
 {
     public class ApplicationDbContext : DbContext
     {

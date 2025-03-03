@@ -60,7 +60,7 @@ namespace LearnEase_Api.Controllers
                 return BadRequest("Role name cannot be null or empty");
             }
 
-            var result = await _roleService.GetRole(roleName); // Gọi đúng phương thức
+            var result = await _roleService.GetByName(roleName);
             if (result == null)
             {
                 return NotFound($"Role with name '{roleName}' not found");
