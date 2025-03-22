@@ -1,26 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
-using Google.Apis.Auth.OAuth2.Requests;
-using System.IdentityModel.Tokens.Jwt;
-using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.Dtos.request;
 
 namespace LearnEase_Api.Controllers
 {
-    [AllowAnonymous]
     [Route("api/users")]
-    [ApiController] 
-    public class UserController : ControllerBase    {
+    [ApiController]
+    [Authorize]
+    public class UserController : ControllerBase
+    {
         private readonly IUserService _userService;
         private readonly HttpClient _httpClient;
 
@@ -30,83 +19,81 @@ namespace LearnEase_Api.Controllers
             _httpClient = httpClient;
         }
 
-        //Thầy Không cho lấy hết toàn bộ, muốn lấy phải phân trang
-        //(dùng BasePaginatedList trong folder Base để phân trang)
-
-        /*[HttpGet]      
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var result = await _userService.getAllUser();
-            if (result == null || result.Count == 0)
-            {
-                return NotFound("No users found.");
-            }
-            return Ok(result);
-        }*/
-
+        /// <summary>
+        /// Get a user by ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var result = await _userService.GetUserReponseById(id);
             if (result == null)
             {
-                return NotFound($"User with ID {id} not found.");
+                return NotFound(new { message = $"User with ID {id} not found." });
             }
             return Ok(result);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateNewUser([FromBody] userCreationRequest request)
+        [HttpPost]
+        public async Task<IActionResult> CreateNewUser([FromBody] UserCreationRequest request)
         {
             if (request == null)
             {
-                return BadRequest("Invalid user data.");
+                return BadRequest(new { message = "Invalid user data." });
             }
 
             var result = await _userService.CreateNewUser(request);
             if (result == null)
             {
-                return BadRequest("Failed to create user. Email might already exist.");
+                return BadRequest(new { message = "Failed to create user. Email might already exist." });
             }
+
             return CreatedAtAction(nameof(GetUserById), new { id = result.id }, result);
         }
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request, string id)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateRequest request)
         {
             if (request == null)
             {
-                return BadRequest("Invalid update data.");
+                return BadRequest(new { message = "Invalid update data." });
             }
 
             var result = await _userService.UpdateUserReponse(request, id);
             if (result == null)
             {
-                return BadRequest("Failed to update user. Email might already exist.");
+                return BadRequest(new { message = "Failed to update user. Email might already exist." });
             }
+
             return Ok(result);
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var result = await _userService.DeleteUserReponseById(id);
-            if (result==null)
+            if (result == null)
             {
-                return NotFound($"User with ID {id} not found.");
+                return NotFound(new { message = $"User with ID {id} not found." });
             }
-            return Ok("User deleted successfully.");
+
+            return NoContent(); // 204 No Content response for successful deletion
         }
 
-        [HttpGet("getUserByEmail/{email}")]
-        public async Task<IActionResult> GetUserByEmail(string email)
+        [HttpGet]
+        public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email cannot be null or empty." });
+            }
+
             var result = await _userService.FindUserByEmail(email);
             if (result == null)
             {
-                return NotFound($"User with email {email} not found.");
+                return NotFound(new { message = $"User with email '{email}' not found." });
             }
+
             return Ok(result);
         }
-
     }
 }

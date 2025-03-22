@@ -1,20 +1,15 @@
 ﻿using LearnEase.Core.Entities;
 using LearnEase.Repository.IRepository;
-using LearnEase.Repository.Repository;
+using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly IServiceProvider _serviceProvider; 
-    private readonly Dictionary<Type, object> _repositoryCache = new();
+    private readonly Dictionary<Type, object> _repository = new();
     private bool _disposed = false;
 
     public UnitOfWork(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
@@ -23,30 +18,27 @@ public class UnitOfWork : IUnitOfWork
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
+    // Lấy generic repository có CRUD
     public IGenericRepository<T> GetRepository<T>() where T : class
     {
-        if (!_repositoryCache.ContainsKey(typeof(T)))
+        if (!_repository.ContainsKey(typeof(T)))
         {
-            _repositoryCache[typeof(T)] = new GenericRepository<T>(_dbContext);
+            _repository[typeof(T)] = new GenericRepository<T>(_dbContext);
         }
-        return (IGenericRepository<T>)_repositoryCache[typeof(T)];
+        return (IGenericRepository<T>)_repository[typeof(T)];
     }
 
+    // Lấy repository có hàm riêng 
     public T GetCustomRepository<T>() where T : class
     {
-        if (!_repositoryCache.TryGetValue(typeof(T), out var repository))
+        if (!_repository.TryGetValue(typeof(T), out var repository))
         {
             var implementationType = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .FirstOrDefault(t => typeof(T).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
 
-            if (implementationType == null)
-            {
-                throw new InvalidOperationException($"Không tìm thấy repository phù hợp cho {typeof(T).Name}");
-            }
-
             repository = ActivatorUtilities.CreateInstance(_serviceProvider, implementationType);
-            _repositoryCache[typeof(T)] = repository;
+            _repository[typeof(T)] = repository;
         }
         return (T)repository;
     }

@@ -4,7 +4,7 @@ using LearnEase_Api.Dtos.request;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
-using LearnEase_Api.LearnEase.Infrastructure.Repository;
+using LearnEase_Api.LearnEase.Infrastructure.Repositories;
 using LearnEase_Api.Mapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             _logger = logger;
         }
 
-        public async Task<UserReponse> CreateNewUser(userCreationRequest request)
+        public async Task<UserReponse> CreateNewUser(UserCreationRequest request)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -52,7 +52,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 }
             }
 
-            var defaultRole = await _roleService.GetByName("User");
+            var defaultRole = await _roleService.GetByName("Learner");
             if (defaultRole != null)
             {
                 user.UserRoles = new List<UserRole>
@@ -91,7 +91,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             await _unitOfWork.GetCustomRepository<IUserDetailRepository>().CreateAsync(userDetail);
             await _unitOfWork.SaveAsync();
 
-            return _mapper.mapperUserReponse(user);
+            return _mapper.MapperUserReponse(user);
         }
 
         public async Task<UserReponse> DeleteUserReponseById(string id)
@@ -103,7 +103,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             var findUserById = await userRepo.GetByIdAsync(id);
             if (findUserById == null) return null;
 
-            var userResponse = _mapper.mapperUserReponse(findUserById); 
+            var userResponse = _mapper.MapperUserReponse(findUserById); 
 
             var userDetail = await userDetailRepo.GetByIdAsync(id);
             if (userDetail != null)
@@ -122,7 +122,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             var result = await _unitOfWork.GetCustomRepository<IUserRepository>().FindByEmail(email);
             if (result != null)
             {
-                return _mapper.mapperUserReponse(result);
+                return _mapper.MapperUserReponse(result);
             }
             return null;
 
@@ -131,7 +131,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
         public async Task<UserReponse> GetUserReponseById(string id)
         {
             var result = await _unitOfWork.GetRepository<User>().GetByIdAsync(id);
-            return result != null ? _mapper.mapperUserReponse(result) : null;
+            return result != null ? _mapper.MapperUserReponse(result) : null;
         }
 
         public async Task<UserReponse> UpdateUserReponse(UserUpdateRequest request, string id)
@@ -148,7 +148,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
             findUser.UserName = request.userName;
 
             await _unitOfWork.GetRepository<User>().UpdateAsync(findUser);
-            return _mapper.mapperUserReponse(findUser);
+            return _mapper.MapperUserReponse(findUser);
         }
     }
 }

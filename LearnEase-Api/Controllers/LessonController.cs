@@ -1,11 +1,11 @@
-﻿using Google.Apis.Auth.OAuth2.Requests;
-using LearnEase.Repository.IRepository;
-using LearnEase_Api.Entity;
-using LearnEase_Api.LearnEase.Core.IServices;
+﻿using LearnEase.Core.Models.Request;
+using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/lessons")]
+[Authorize]
 public class LessonController : ControllerBase
 {
     private readonly ILessonService _lessonService;
@@ -16,44 +16,43 @@ public class LessonController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllLessons()
+    public async Task<IActionResult> GetLessons(int pageIndex = 1, int pageSize = 10)
     {
-        var lessons = await _lessonService.GetAllLessonsAsync();
-        return Ok(lessons);
+        var response = await _lessonService.GetLessonsAsync(pageIndex, pageSize);
+        return StatusCode((int)response.StatusCode, response);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetLessonById(Guid id)
     {
-        var lesson = await _lessonService.GetLessonByIdAsync(id);
-        if (lesson == null) return NotFound();
-        return Ok(lesson);
+        var response = await _lessonService.GetLessonByIdAsync(id);
+        return StatusCode((int)response.StatusCode, response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLesson([FromBody] Lesson lesson)
+    public async Task<IActionResult> CreateLesson([FromBody] LessonCreationRequest request)
     {
-        if (lesson == null) return BadRequest("Invalid data.");
-        await _lessonService.CreateLessonAsync(lesson);
-        return CreatedAtAction(nameof(GetLessonById), new { id = lesson.LessonID }, lesson);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var response = await _lessonService.CreateLessonAsync(request);
+        return StatusCode((int)response.StatusCode, response);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] Lesson lesson)
+    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] LessonCreationRequest request)
     {
-        var result = await _lessonService.UpdateLessonAsync(id, lesson);
-        if (!result) return NotFound();
-        return NoContent();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var response = await _lessonService.UpdateLessonAsync(id, request);
+        return StatusCode((int)response.StatusCode, response);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLesson(Guid id)
     {
-        var result = await _lessonService.DeleteLessonAsync(id);
-        if (!result) return NotFound();
-        return NoContent();
+        var response = await _lessonService.DeleteLessonAsync(id);
+        return StatusCode((int)response.StatusCode, response);
     }
 }
-
-
-

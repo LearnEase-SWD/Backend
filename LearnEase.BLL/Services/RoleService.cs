@@ -21,15 +21,21 @@ namespace LearnEase_Api.LearnEase.Core.Services
             role.RoleName = request.name;
 
             await _unitOfWork.GetRepository<Role>().CreateAsync(role);
+            await _unitOfWork.SaveAsync();
             return new RoleReponse(null, role.RoleName);
         }
 
         public async Task<RoleReponse> DeleteRole(RoleRequest request)
         {
-            var findRoleByName = await _unitOfWork.GetCustomRepository<IRoleRepository>().FindByName(request.name);
+            var existedRole = await _unitOfWork.GetCustomRepository<IRoleRepository>().FindByName(request.name);
+            if (existedRole == null)
+            {
+                return new RoleReponse(null, null);
+            }
 
-            await _unitOfWork.GetRepository<Role>().DeleteAsync(findRoleByName);
-            return new RoleReponse(null, findRoleByName.RoleName);
+            await _unitOfWork.GetRepository<Role>().DeleteAsync(existedRole);
+            await _unitOfWork.SaveAsync();
+            return new RoleReponse(null, existedRole.RoleName);
         }
 
         public async Task<RoleReponse> GetByName(string name)

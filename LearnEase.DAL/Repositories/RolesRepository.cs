@@ -1,16 +1,17 @@
 ﻿using LearnEase.Core.Entities;
-using LearnEase.Repository.Repository;
+using LearnEase.Repository.Repositories;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using Microsoft.EntityFrameworkCore;
 
-namespace LearnEase_Api.LearnEase.Infrastructure.Repository
+namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
 {
     public class RolesRepository : GenericRepository<Role>, IRoleRepository
     {
         public RolesRepository(ApplicationDbContext context) : base(context)
         {
         }
+
         /*public async Task<Role> createRole(Role role)
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
@@ -53,9 +54,5 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repository
             return result;
         }
 
-        /*public async Task<List<Role>> getAllRoles()
-        {
-            return await _context.Roles.ToListAsync();
-        }*/
     }
 }

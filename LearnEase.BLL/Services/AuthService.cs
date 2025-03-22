@@ -1,8 +1,6 @@
 ﻿using LearnEase_Api.Dtos.reponse;
 using LearnEase_Api.Dtos.request;
-using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

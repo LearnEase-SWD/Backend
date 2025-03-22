@@ -5,7 +5,7 @@ namespace LearnEase_Api.Mapper
 {
     public class MapperUser
     {
-        public UserReponse mapperUserReponse(User user)
+        public UserReponse MapperUserReponse(User user)
         {
             UserReponse userReponse =
                 new (user.UserId, user.UserName, user.Email, user.IsActive,

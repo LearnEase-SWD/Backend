@@ -4,7 +4,7 @@ using LearnEase_Api.Dtos.request;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
-using LearnEase_Api.LearnEase.Infrastructure.Repository;
+using LearnEase_Api.LearnEase.Infrastructure.Repositories;
 using LearnEase_Api.Mapper;
 using System.Threading.Tasks;
 

@@ -1,6 +1,6 @@
-﻿using LearnEase.Repository.IRepository;
-using LearnEase.Repository.Repository;
-using LearnEase_Api;
+﻿using LearnEase_Api;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,13 +8,12 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-
 
 // Load Configurations
 builder.Services.AddConfig(builder.Configuration);
 
 var app = builder.Build();
+app.UseRouting();
 
 app.UseSwagger();
 app.UseSwaggerUI();

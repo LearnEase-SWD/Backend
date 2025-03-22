@@ -1,79 +1,153 @@
-﻿using LearnEase.Repository.IRepository;
-using LearnEase_Api.Dtos.reponse;
+﻿using AutoMapper;
+using LearnEase.Core.Base;
+using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
+using LearnEase.Repository.UOW;
+using LearnEase.Service.IServices;
 using LearnEase_Api.Entity;
-using LearnEase_Api.LearnEase.Core.IServices;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace LearnEase_Api.LearnEase.Core.Services
+namespace LearnEase.Service.Services
 {
-
-        public class LessonService : ILessonService
+    public class LessonService : ILessonService
     {
-        private readonly ILessonRepository _lessonRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public LessonService(ILessonRepository lessonRepository)
+        public LessonService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _lessonRepository = lessonRepository;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Lesson>> GetAllLessonsAsync()
+        public async Task<BaseResponse<IEnumerable<Lesson>>> GetLessonsAsync(int pageIndex, int pageSize)
         {
-            return await _lessonRepository.Entities
-                .Include(l => l.Course)
-                .Include(l => l.VideoLesson)
-                .Include(l => l.TheoryLesson)
-                .Include(l => l.Exercises)
-                .Include(l => l.Flashcards)
-                .ToListAsync();
+            try
+            {
+                var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+                var paginatedLessons = await lessonRepository.GetPagging(lessonRepository.Entities, pageIndex, pageSize);
+
+                return new BaseResponse<IEnumerable<Lesson>>(
+                    StatusCodeHelper.OK,
+                    "SUCCESS",
+                    paginatedLessons.Items,
+                    "Lấy danh sách bài học thành công."
+                );
+            }
+            catch (Exception)
+            {
+                return new BaseResponse<IEnumerable<Lesson>>(
+                    StatusCodeHelper.ServerError,
+                    "ERROR",
+                    "Lỗi hệ thống khi lấy danh sách bài học."
+                );
+            }
         }
 
-        public async Task<Lesson?> GetLessonByIdAsync(Guid id)
+        public async Task<BaseResponse<Lesson>> GetLessonByIdAsync(Guid id)
         {
-            return await _lessonRepository.Entities
-                .Include(l => l.Course)
-                .Include(l => l.VideoLesson)
-                .Include(l => l.TheoryLesson)
-                .Include(l => l.Exercises)
-                .Include(l => l.Flashcards)
-                .FirstOrDefaultAsync(l => l.LessonID == id);
+            if (id == Guid.Empty)
+                return new BaseResponse<Lesson>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");
+
+            try
+            {
+                var lesson = await _unitOfWork.GetRepository<Lesson>().GetByIdAsync(id);
+                if (lesson == null)
+                    return new BaseResponse<Lesson>(StatusCodeHelper.BadRequest, "NOT_FOUND", "Bài học không tồn tại.");
+
+                return new BaseResponse<Lesson>(StatusCodeHelper.OK, "SUCCESS", lesson, "Lấy bài học thành công.");
+            }
+            catch (Exception)
+            {
+                return new BaseResponse<Lesson>(StatusCodeHelper.ServerError, "ERROR", "Lỗi hệ thống khi lấy bài học.");
+            }
         }
 
-        public async Task CreateLessonAsync(Lesson lesson)
+        public async Task<BaseResponse<bool>> CreateLessonAsync(LessonCreationRequest lessonRequest)
         {
-            await _lessonRepository.CreateAsync(lesson);
-            await _lessonRepository.SaveAsync();
+            // Kiểm tra null
+            if (lessonRequest == null)
+                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", "Dữ liệu bài học không hợp lệ.");
+
+            // Kiểm tra Course có tồn tại không
+            
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var lesson = _mapper.Map<Lesson>(lessonRequest);
+                lesson.CreatedAt = DateTime.UtcNow;
+
+                await _unitOfWork.GetRepository<Lesson>().CreateAsync(lesson);
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học được tạo thành công.");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học.");
+            }
         }
 
-        public async Task<bool> UpdateLessonAsync(Guid id, Lesson lesson)
+        public async Task<BaseResponse<bool>> UpdateLessonAsync(Guid id, LessonCreationRequest lessonRequest)
         {
-            var existingLesson = await _lessonRepository.GetByIdAsync(id);
-            if (existingLesson == null) return false;
+            if (id == Guid.Empty || lessonRequest == null)
+                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", "ID hoặc dữ liệu cập nhật không hợp lệ.");
 
-            existingLesson.Title = lesson.Title;
-            existingLesson.LessonType = lesson.LessonType;
-            existingLesson.Index = lesson.Index;
-            existingLesson.CourseID = lesson.CourseID;
-            existingLesson.CreatedAt = DateTime.UtcNow;
+            await _unitOfWork.BeginTransactionAsync();
 
-            await _lessonRepository.UpdateAsync(existingLesson);
-            await _lessonRepository.SaveAsync();
-            return true;
+            try
+            {
+                var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+                var existingLesson = await lessonRepository.GetByIdAsync(id);
+
+                if (existingLesson == null)
+                    return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", "Không tìm thấy bài học.");
+
+                _mapper.Map(lessonRequest, existingLesson);
+
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được cập nhật.");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài học.");
+            }
         }
 
-        public async Task<bool> DeleteLessonAsync(Guid id)
+        public async Task<BaseResponse<bool>> DeleteLessonAsync(Guid id)
         {
-            var existingLesson = await _lessonRepository.GetByIdAsync(id);
-            if (existingLesson == null) return false;
+            if (id == Guid.Empty)
+                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");
 
-            await _lessonRepository.DeleteAsync(id);
-            await _lessonRepository.SaveAsync();
-            return true;
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+                var existingLesson = await lessonRepository.GetByIdAsync(id);
+
+                if (existingLesson == null)
+                    return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", "Không tìm thấy bài học.");
+
+                await lessonRepository.DeleteAsync(existingLesson);
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được xóa.");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
+            }
         }
 
 
-
-        }
+    }
 }

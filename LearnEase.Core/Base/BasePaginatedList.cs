@@ -2,7 +2,7 @@
 {
     public class BasePaginatedList<T>
     {
-        public IReadOnlyCollection<T> Items { get; private set; }
+        public IEnumerable<T> Items { get; private set; }
 
         // Thuộc tính để lưu trữ tổng số phần tử
         public int TotalItems { get; private set; }

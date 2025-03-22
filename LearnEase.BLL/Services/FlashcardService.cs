@@ -1,9 +1,8 @@
 ﻿using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.Entity;
-using LearnEase_Api.LearnEase.Core.IServices;
 
-namespace LearnEase_Api.LearnEase.Core.Services
+namespace LearnEase_Api.LearnEase.Services
 {
     public class FlashcardService : IFlashcardService
     {

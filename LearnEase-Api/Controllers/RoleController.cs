@@ -7,7 +7,7 @@ namespace LearnEase_Api.Controllers
 {
     [Route("api/role")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -17,7 +17,7 @@ namespace LearnEase_Api.Controllers
             _roleService = roleService;
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] RoleRequest request)
         {
             if (request == null)
@@ -34,7 +34,7 @@ namespace LearnEase_Api.Controllers
             return Ok(result); 
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole([FromBody] RoleRequest request)
         {
             if (request == null)
@@ -51,8 +51,7 @@ namespace LearnEase_Api.Controllers
             return Ok(result);
         }
 
-
-        [HttpGet("getRole/{roleName}")]
+        [HttpGet]
         public async Task<IActionResult> GetRole(string roleName)
         {
             if (string.IsNullOrEmpty(roleName))
@@ -68,7 +67,5 @@ namespace LearnEase_Api.Controllers
 
             return Ok(result);
         }
-
-
     }
 }

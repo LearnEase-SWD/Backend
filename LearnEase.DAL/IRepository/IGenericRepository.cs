@@ -7,7 +7,8 @@ namespace LearnEase.Repository.IRepository
         // Query
         IQueryable<T> Entities { get; }
 
-        Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize);
+        Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize,
+                                              Func<IQueryable<T>, IQueryable<T>>? filterFunc = null);
         Task<T?> GetByIdAsync(object id);
         Task CreateAsync(T obj);
         Task UpdateAsync(T obj);

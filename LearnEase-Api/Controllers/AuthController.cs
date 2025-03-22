@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 [Route("api/auth")]
 [ApiController]
-[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -85,14 +84,15 @@ public class AuthController : ControllerBase
             var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.CreateNewUser(new userCreationRequest(userName, userEmail,null));
+                await _userService.CreateNewUser(new UserCreationRequest(userName, userEmail, null));
             }
         }
 
         CacheRequest cacheRequest = new CacheRequest(accessToken, userEmail, 60);
         await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
 
-        return Ok(new { AccessToken = accessToken, UserEmail = userEmail, UserName = userName });
+        // Chuyển hướng về frontend với token
+        return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName}); /*Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");*/
     }
 
     [HttpPost("verify-access-token")]
