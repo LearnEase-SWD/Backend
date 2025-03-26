@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LearnEase_Api.Entity
 {
@@ -10,7 +9,7 @@ namespace LearnEase_Api.Entity
 
         [Required]
         [MaxLength(255)]
-        public string CourseName { get; set; }
+        public string Title { get; set; }
 
         [MaxLength(1000)]
         public string CourseDescription { get; set; }

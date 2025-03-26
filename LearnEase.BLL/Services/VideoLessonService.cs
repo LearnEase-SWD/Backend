@@ -26,8 +26,6 @@ namespace LearnEase.Service.Services
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", "Dữ liệu bài học không hợp lệ.");
 
             // Kiểm tra Course có tồn tại không
-
-
             await _unitOfWork.BeginTransactionAsync();
 
             try

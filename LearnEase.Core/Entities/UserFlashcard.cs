@@ -16,14 +16,7 @@ namespace LearnEase_Api.Entity
         [Required]
         public Guid FlashcardID { get; set; }
         public Flashcard Flashcard { get; set; }
-
-        [Required]
-        [MaxLength(20)]
-        public string ProficiencyLevel { get; set; } // Beginner, Intermediate, Advanced
-
-        public int ReviewCount { get; set; } = 0; 
-
-        public DateTime? LastReviewedAt { get; set; } = DateTime.UtcNow; 
+        public string? Progress { get; set; }
     }
 
 }

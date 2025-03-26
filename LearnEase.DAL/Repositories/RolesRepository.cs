@@ -1,4 +1,4 @@
-﻿using LearnEase.Core.Entities;
+﻿/*using LearnEase.Core.Entities;
 using LearnEase.Repository.Repositories;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
@@ -12,7 +12,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
         {
         }
 
-        /*public async Task<Role> createRole(Role role)
+        *//*public async Task<Role> createRole(Role role)
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
             var countRole = await _context.Roles.CountAsync();
@@ -46,7 +46,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
             }
 
             return role;
-        }*/
+        }*//*
 
         public async Task<Role> FindByName(string name)
         {
@@ -56,3 +56,4 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
 
     }
 }
+*/

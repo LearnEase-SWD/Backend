@@ -1,4 +1,4 @@
-﻿namespace LearnEase_Api.Entity
+﻿/*namespace LearnEase_Api.Entity
 {
     public class UserRole
     {
@@ -9,3 +9,4 @@
         public Role Role { get; set; }
     }
 }
+*/

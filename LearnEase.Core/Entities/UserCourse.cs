@@ -16,14 +16,14 @@ namespace LearnEase_Api.Entity
         public Guid CourseID { get; set; }
         public Course Course { get; set; } 
 
-        public DateTime EnrollmentDate { get; set; } = DateTime.UtcNow;
-
         [Required]
         [MaxLength(50)]
         public string ProgressStatus { get; set; }
 
         public int ProgressPercentage { get; set; } = 0;
 
-        public DateTime? CompletionDate { get; set; }
-    }
+        public DateTime? CompletedAt { get; set; }
+		public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
+
+	}
 }

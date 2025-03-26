@@ -13,14 +13,11 @@ namespace LearnEase_Api.Entity
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-
+        public string Role {  get; set; }
         public bool IsActive { get; set; } = true;
-
-        public string? CreatedAt { get; set; }
-        public string? UpdatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         public UserDetail UserDetail { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<UserProgress> UserProgresses { get; set; } = new List<UserProgress>();
         public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
         public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();

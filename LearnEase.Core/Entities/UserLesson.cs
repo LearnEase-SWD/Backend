@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase_Api.Entity
 {
-    public class UserProgress
-    {
+    public class UserLesson
+	{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ProgressID { get; set; }
@@ -18,11 +18,9 @@ namespace LearnEase_Api.Entity
         public Lesson Lesson { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        public string CompletionStatus { get; set; } // In Progress, Completed
+		[Range(0, 100)]
+		public int Progress { get; set; }  // 0% , 20%, 50%, ...
 
-        public int Score { get; set; }
-
-        public DateTime LastAccessed { get; set; } = DateTime.UtcNow;
+        public DateTime LastAccessedAt { get; set; } = DateTime.UtcNow;
     }
 }
