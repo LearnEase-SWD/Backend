@@ -40,7 +40,7 @@ namespace LearnEase_Api.LearnEase.Services
             existingFlashcard.Front = flashcard.Front;
             existingFlashcard.Back = flashcard.Back;
             existingFlashcard.PronunciationAudioURL = flashcard.PronunciationAudioURL;
-            existingFlashcard.Topic = flashcard.Topic;
+            
             existingFlashcard.LessonID = flashcard.LessonID;
             existingFlashcard.CreatedAt = DateTime.UtcNow;
 

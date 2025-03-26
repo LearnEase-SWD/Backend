@@ -27,7 +27,7 @@ namespace LearnEase_Api.Entity
 
         public VideoLesson VideoLesson { get; set; }
         public TheoryLesson TheoryLesson { get; set; }
-        public UserProgress UserProgress { get; set; }
+        public UserLesson UserProgress { get; set; }
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
         public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
 

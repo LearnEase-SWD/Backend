@@ -1,5 +1,4 @@
-﻿using LearnEase.Core.Entities;
-using LearnEase.Repository.IRepository;
+﻿using LearnEase.Repository.IRepository;
 using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
 using Microsoft.Extensions.DependencyInjection;

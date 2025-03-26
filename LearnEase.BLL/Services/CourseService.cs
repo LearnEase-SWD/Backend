@@ -47,10 +47,10 @@ namespace LearnEase_Api.LearnEase.Core.Services
             var existingCourse = await _unitOfWork.GetRepository<Course>().GetByIdAsync(id);
             if (existingCourse == null) return false;
 
-            existingCourse.CourseName = course.CourseName;
-            existingCourse.CourseDescription = course.CourseDescription;
+            existingCourse.Title = course.Title;
+          
             existingCourse.Price = course.Price;
-            existingCourse.Language = course.Language;
+           
             existingCourse.DifficultyLevel = course.DifficultyLevel;
             existingCourse.UpdatedAt = DateTime.UtcNow;
 

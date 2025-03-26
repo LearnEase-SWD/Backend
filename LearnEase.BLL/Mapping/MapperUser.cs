@@ -9,7 +9,7 @@ namespace LearnEase_Api.Mapper
         {
             UserReponse userReponse =
                 new (user.UserId, user.UserName, user.Email, user.IsActive,
-                user.CreatedAt, user.UpdatedAt);
+                user.CreatedAt);
             return userReponse;
         }
     }

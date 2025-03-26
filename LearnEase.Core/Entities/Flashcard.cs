@@ -21,8 +21,7 @@ namespace LearnEase_Api.Entity
 
         public string? PronunciationAudioURL { get; set; }
 
-        [MaxLength(100)]
-        public string? Topic { get; set; }
+      
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>();

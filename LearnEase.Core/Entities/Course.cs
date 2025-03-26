@@ -11,15 +11,13 @@ namespace LearnEase_Api.Entity
         [MaxLength(255)]
         public string Title { get; set; }
 
-        [MaxLength(1000)]
-        public string CourseDescription { get; set; }
 
         [Required]
         public decimal Price { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string Language { get; set; }
+        public int TotalLessons { get; set; } = 0;
 
         [Required]
         [MaxLength(50)]
