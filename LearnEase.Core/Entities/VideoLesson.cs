@@ -15,8 +15,6 @@ namespace LearnEase_Api.Entity
         [Required]
         public string VideoURL { get; set; }
 
-        public string Transcript { get; set; }
-
         [Required]
         public TimeSpan Duration { get; set; }
 

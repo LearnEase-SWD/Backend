@@ -16,20 +16,19 @@ namespace LearnEase_Api.LearnEase.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UserService> _logger;
         private readonly MapperUser _mapper = new MapperUser();
-
+       
         public UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<UserReponse> CreateNewUser(UserCreationRequest request)
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
+        
 
-            var findUser = await _unitOfWork.GetCustomRepository<IUserRepository>().FindByEmail(request.email);
-            if (findUser != null) return null;
+		public async Task<UserReponse> CreateNewUser(UserCreationRequest request)
+		{
+			if (request == null)
+				throw new ArgumentNullException(nameof(request));
 
             var user = new User
             {
@@ -40,9 +39,9 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 UserName = request.userName,
                 Role = (UserRole)2
             };
-
-            await _unitOfWork.GetRepository<User>().CreateAsync(user);
-            await _unitOfWork.SaveAsync();
+              
+            
+            
 
             var userDetail = new UserDetail
             {
@@ -52,12 +51,14 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 CreatedAt = user.CreatedAt,
                 UserId = user.UserId
             };
+               
+           
 
-            await _unitOfWork.GetCustomRepository<IUserDetailRepository>().CreateAsync(userDetail);
-            await _unitOfWork.SaveAsync();
+			await _unitOfWork.GetCustomRepository<IUserDetailRepository>().CreateAsync(userDetail);
+			await _unitOfWork.SaveAsync();
 
-            return _mapper.MapperUserReponse(user);
-        }
+			return _mapper.MapperUserReponse(user);
+		}
 
         public async Task<UserReponse> DeleteUserReponseById(string id)
         {
@@ -66,18 +67,21 @@ namespace LearnEase_Api.LearnEase.Core.Services
 
             var findUserById = await userRepo.GetByIdAsync(id);
             if (findUserById == null) return null;
-
+            // Lấy User trước khi xóa
             var userResponse = _mapper.MapperUserReponse(findUserById);
+            if (findUserById == null) return null;
+
+           
 
             var userDetail = await userDetailRepo.GetByIdAsync(id);
             if (userDetail != null)
             {
-                await userDetailRepo.DeleteAsync(userDetail);
+                await userRepo.DeleteAsync(findUserById);
+                await _unitOfWork.SaveAsync();
+
+                // Xóa User
+                await userRepo.DeleteAsync(findUserById);
             }
-
-            await userRepo.DeleteAsync(findUserById);
-            await _unitOfWork.SaveAsync();
-
             return userResponse;
         }
 
@@ -98,15 +102,17 @@ namespace LearnEase_Api.LearnEase.Core.Services
                 throw new ArgumentNullException(nameof(request));
 
             var findUser = await _unitOfWork.GetRepository<User>().GetByIdAsync(id);
-            if (findUser == null) return null;
+
 
             findUser.Email = request.email;
             findUser.UserName = request.userName;
-
+            findUser.IsActive = true;
             await _unitOfWork.GetRepository<User>().UpdateAsync(findUser);
             await _unitOfWork.SaveAsync();
 
             return _mapper.MapperUserReponse(findUser);
-        }
+        
     }
+}        
+    
 }

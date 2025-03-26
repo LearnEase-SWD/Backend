@@ -6,7 +6,7 @@ public class UserExercise
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid UserExerciseID { get; set; }
+    public Guid AttemptID { get; set; }
 
     [ForeignKey("User")]
     public string UserID { get; set; }
@@ -18,11 +18,10 @@ public class UserExercise
 
     [Required]
     [MaxLength(20)]
-    public string CompletionStatus { get; set; } // Completed, In Progress, Failed
+    public string UserAnswer { get; set; }
 
-    public int Score { get; set; }
+	[Required]
+	public string Progress { get; set; }
 
-    public DateTime SubmissionDate { get; set; } = DateTime.UtcNow;
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+	public DateTime AttemptAt { get; set; } = DateTime.UtcNow;
 }
