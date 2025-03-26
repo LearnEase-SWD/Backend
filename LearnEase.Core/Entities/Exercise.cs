@@ -19,6 +19,7 @@ namespace LearnEase_Api.Entity
 
         [Required]
         public string Question { get; set; }
+        public string AnswerOptions { get; set; }
 
         [Required]
         public string CorrectAnswer { get; set; }
@@ -26,5 +27,6 @@ namespace LearnEase_Api.Entity
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
+
     }
 }

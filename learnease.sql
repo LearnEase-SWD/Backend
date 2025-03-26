@@ -33,9 +33,7 @@ VALUES ('user-10', 'henryanderson', 'henryanderson@example.com', 1, '2023-12-31'
 
 /* 2. Roles */
 INSERT INTO Roles (RoleId, RoleName) VALUES ('role-1', N'Admin');
-INSERT INTO Roles (RoleId, RoleName) VALUES ('role-2', N'Language Expert');
-INSERT INTO Roles (RoleId, RoleName) VALUES ('role-3', N'Basic Learner');
-INSERT INTO Roles (RoleId, RoleName) VALUES ('role-4', N'VIP Learner');
+INSERT INTO Roles (RoleId, RoleName) VALUES ('role-2', N'User');
 
 /* 3. UserDetails */
 INSERT INTO UserDetails (Id, FirstName, LastName, Phone, ImageUrl, DateOfBirth, Address, CreatedAt, UpdatedAt, UserId) 
@@ -69,34 +67,34 @@ INSERT INTO UserDetails (Id, FirstName, LastName, Phone, ImageUrl, DateOfBirth, 
 VALUES ('udetail-10', 'Henry', 'Anderson', '333444555', NULL, '1994-02-17', '707 Redwood St', '2024-01-10 18:20:00', NULL, 'user-10');
 
 /* 4. Flashcards */
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000001', N'Hello', N'Xin chào', NULL, N'Chào hỏi', '2024-01-01 08:30:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000002', N'Goodbye', N'Tạm biệt', NULL, N'Chào hỏi', '2024-01-02 09:15:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000003', N'Thank you', N'Cảm ơn', NULL, N'Lịch sự', '2024-01-03 10:45:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000004', N'Sorry', N'Xin lỗi', NULL, N'Lịch sự', '2024-01-04 11:20:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000005', N'Apple', N'Táo', NULL, N'Thực phẩm', '2024-01-05 13:10:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000006', N'Car', N'Xe hơi', NULL, N'Phương tiện', '2024-01-06 14:25:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000007', N'Dog', N'Chó', NULL, N'Động vật', '2024-01-07 15:00:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000008', N'Computer', N'Máy tính', NULL, N'Công nghệ', '2024-01-08 16:45:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000009', N'Book', N'Sách', NULL, N'Giáo dục', '2024-01-09 17:30:00');
 
-INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Category, CreatedAt) 
+INSERT INTO Flashcards (FlashcardID, Front, Back, PronunciationAudioURL, Topic, CreatedAt) 
 VALUES ('00000000-0000-0000-0000-000000000010', N'Music', N'Âm nhạc', NULL, N'Giải trí', '2024-01-10 18:20:00');
 
 /* 7. Courses */

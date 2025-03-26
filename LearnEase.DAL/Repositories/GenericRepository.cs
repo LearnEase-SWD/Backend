@@ -1,5 +1,4 @@
 ﻿using LearnEase.Core;
-using LearnEase.Core.Entities;
 using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
