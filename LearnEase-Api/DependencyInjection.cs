@@ -76,8 +76,6 @@ namespace LearnEase_Api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddSingleton<IRedisCacheService, RedisCacheService>();
-          
-            services.AddScoped<IUserDetailService, UserDetailService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IExerciseService, ExerciseService>();
             services.AddScoped<IFlashcardService, FlashcardService>();
@@ -87,8 +85,6 @@ namespace LearnEase_Api
             //Repo
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
-          
-            services.AddScoped<IUserDetailRepository, UserDetailRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
         }
 

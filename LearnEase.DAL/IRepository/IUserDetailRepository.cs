@@ -1,4 +1,4 @@
-﻿using LearnEase.Repository.IRepository;
+﻿/*using LearnEase.Repository.IRepository;
 using LearnEase_Api.Entity;
 
 namespace LearnEase_Api.LearnEase.Infrastructure.IRepository
@@ -8,3 +8,4 @@ namespace LearnEase_Api.LearnEase.Infrastructure.IRepository
         Task<UserDetail> GetUserDetailByUserId(string userId);
     }
 }
+*/

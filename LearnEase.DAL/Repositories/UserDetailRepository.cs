@@ -1,4 +1,4 @@
-﻿using LearnEase.Repository.Repositories;
+﻿/*using LearnEase.Repository.Repositories;
 using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 
@@ -10,7 +10,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
         {
         }
 
-        /*public async Task<UserDetail> CreateUserDetail(UserDetail userDetail)
+        *//*public async Task<UserDetail> CreateUserDetail(UserDetail userDetail)
         {
             if (userDetail == null) throw new ArgumentNullException(nameof(userDetail));
 
@@ -23,14 +23,14 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
             }
 
             return userDetail;
-        }*/
+        }*//*
 
         public async Task<UserDetail> GetUserDetailByUserId(string userId)
         {
             return _context.UserDetails.FirstOrDefault(x => x.User.UserId.Equals(userId));
         }
 
-        /*public async Task<UserDetail> UpdateUserDetail(UserDetail userDetail)
+        *//*public async Task<UserDetail> UpdateUserDetail(UserDetail userDetail)
         {
             if (userDetail == null) throw new ArgumentNullException(nameof(userDetail));
             _context.UserDetails.Update(userDetail);
@@ -42,6 +42,7 @@ namespace LearnEase_Api.LearnEase.Infrastructure.Repositories
             }
 
             return userDetail;
-        }*/
+        }*//*
     }
 }
+*/

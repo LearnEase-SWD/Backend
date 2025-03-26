@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LearnEase.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class DB : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,10 +16,9 @@ namespace LearnEase.Repository.Migrations
                 columns: table => new
                 {
                     CourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CourseDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TotalLessons = table.Column<int>(type: "int", maxLength: 100, nullable: false),
                     DifficultyLevel = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -30,27 +29,15 @@ namespace LearnEase.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Roles",
-                columns: table => new
-                {
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Roles", x => x.RoleId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,10 +73,10 @@ namespace LearnEase.Repository.Migrations
                     UserCourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EnrollmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProgressStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ProgressPercentage = table.Column<int>(type: "int", nullable: false),
-                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EnrolledAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,30 +122,6 @@ namespace LearnEase.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Exercises",
                 columns: table => new
                 {
@@ -166,6 +129,7 @@ namespace LearnEase.Repository.Migrations
                     LessonID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AnswerOptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CorrectAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -189,7 +153,6 @@ namespace LearnEase.Repository.Migrations
                     Front = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Back = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PronunciationAudioURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Topic = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -231,9 +194,8 @@ namespace LearnEase.Repository.Migrations
                     ProgressID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LessonID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CompletionStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Score = table.Column<int>(type: "int", nullable: false),
-                    LastAccessed = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Progress = table.Column<int>(type: "int", nullable: false),
+                    LastAccessedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,7 +221,6 @@ namespace LearnEase.Repository.Migrations
                     VideoID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LessonID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VideoURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Transcript = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Duration = table.Column<TimeSpan>(type: "time", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -278,17 +239,16 @@ namespace LearnEase.Repository.Migrations
                 name: "UserExercises",
                 columns: table => new
                 {
-                    UserExerciseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttemptID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ExerciseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CompletionStatus = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Score = table.Column<int>(type: "int", nullable: false),
-                    SubmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UserAnswer = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Progress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AttemptAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExercises", x => x.UserExerciseID);
+                    table.PrimaryKey("PK_UserExercises", x => x.AttemptID);
                     table.ForeignKey(
                         name: "FK_UserExercises_Exercises_ExerciseID",
                         column: x => x.ExerciseID,
@@ -310,9 +270,7 @@ namespace LearnEase.Repository.Migrations
                     UserFlashcardID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FlashcardID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProficiencyLevel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    ReviewCount = table.Column<int>(type: "int", nullable: false),
-                    LastReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Progress = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -398,11 +356,6 @@ namespace LearnEase.Repository.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
-                table: "UserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VideoLessons_LessonID",
                 table: "VideoLessons",
                 column: "LessonID",
@@ -431,9 +384,6 @@ namespace LearnEase.Repository.Migrations
                 name: "UserProgress");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
-
-            migrationBuilder.DropTable(
                 name: "VideoLessons");
 
             migrationBuilder.DropTable(
@@ -441,9 +391,6 @@ namespace LearnEase.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Flashcards");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");

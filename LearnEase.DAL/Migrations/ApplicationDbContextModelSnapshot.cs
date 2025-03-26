@@ -28,16 +28,6 @@ namespace LearnEase.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CourseDescription")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("CourseName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -46,14 +36,18 @@ namespace LearnEase.Repository.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("TotalLessons")
+                        .HasMaxLength(100)
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -68,6 +62,10 @@ namespace LearnEase.Repository.Migrations
                     b.Property<Guid>("ExerciseID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AnswerOptions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CorrectAnswer")
                         .IsRequired()
@@ -118,10 +116,6 @@ namespace LearnEase.Repository.Migrations
                     b.Property<string>("PronunciationAudioURL")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Topic")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("FlashcardID");
 
                     b.HasIndex("LessonID");
@@ -161,20 +155,6 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Role", b =>
-                {
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.TheoryLesson", b =>
                 {
                     b.Property<Guid>("TheoryID")
@@ -209,6 +189,7 @@ namespace LearnEase.Repository.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedAt")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -218,8 +199,8 @@ namespace LearnEase.Repository.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("UpdatedAt")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -236,13 +217,13 @@ namespace LearnEase.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CompletionDate")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("CourseID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EnrollmentDate")
+                    b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ProgressPercentage")
@@ -324,16 +305,8 @@ namespace LearnEase.Repository.Migrations
                     b.Property<Guid>("FlashcardID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastReviewedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProficiencyLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("ReviewCount")
-                        .HasColumnType("int");
+                    b.Property<string>("Progress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserID")
                         .IsRequired()
@@ -348,24 +321,19 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("UserFlashcards");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserProgress", b =>
+            modelBuilder.Entity("LearnEase_Api.Entity.UserLesson", b =>
                 {
                     b.Property<Guid>("ProgressID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CompletionStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("LastAccessed")
+                    b.Property<DateTime>("LastAccessedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("LessonID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Score")
+                    b.Property<int>("Progress")
                         .HasColumnType("int");
 
                     b.Property<string>("UserID")
@@ -380,21 +348,6 @@ namespace LearnEase.Repository.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("UserProgress");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.UserRole", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("LearnEase_Api.Entity.VideoLesson", b =>
@@ -412,10 +365,6 @@ namespace LearnEase.Repository.Migrations
                     b.Property<Guid>("LessonID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Transcript")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("VideoURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -430,32 +379,30 @@ namespace LearnEase.Repository.Migrations
 
             modelBuilder.Entity("UserExercise", b =>
                 {
-                    b.Property<Guid>("UserExerciseID")
+                    b.Property<Guid>("AttemptID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CompletionStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("AttemptAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ExerciseID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
+                    b.Property<string>("Progress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SubmissionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("UserAnswer")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserExerciseID");
+                    b.HasKey("AttemptID");
 
                     b.HasIndex("ExerciseID");
 
@@ -557,11 +504,11 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserProgress", b =>
+            modelBuilder.Entity("LearnEase_Api.Entity.UserLesson", b =>
                 {
                     b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
                         .WithOne("UserProgress")
-                        .HasForeignKey("LearnEase_Api.Entity.UserProgress", "LessonID")
+                        .HasForeignKey("LearnEase_Api.Entity.UserLesson", "LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -572,25 +519,6 @@ namespace LearnEase.Repository.Migrations
                         .IsRequired();
 
                     b.Navigation("Lesson");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.UserRole", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -658,11 +586,6 @@ namespace LearnEase.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
             modelBuilder.Entity("LearnEase_Api.Entity.User", b =>
                 {
                     b.Navigation("UserCourses");
@@ -675,8 +598,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("UserFlashcards");
 
                     b.Navigation("UserProgresses");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
