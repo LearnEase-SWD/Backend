@@ -20,7 +20,14 @@ namespace LearnEase_Api.Controllers
             _httpClient = httpClient;
         }
 
-        [HttpGet("{id}")]
+		[HttpGet]
+		public async Task<IActionResult> GetUserAsync(int pageIndex = 1, int pageSize = 10)
+		{
+			var response = await _userService.GetUserAsync(pageIndex, pageSize);
+			return StatusCode((int)response.StatusCode, response);
+		}
+
+		[HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var result = await _userService.GetUserReponseById(id);
@@ -77,7 +84,7 @@ namespace LearnEase_Api.Controllers
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("email")]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
             if (string.IsNullOrEmpty(email))

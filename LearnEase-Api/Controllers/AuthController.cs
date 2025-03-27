@@ -92,7 +92,7 @@ public class AuthController : ControllerBase
         CacheRequest cacheRequest = new CacheRequest(accessToken, userEmail, 60);
         await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
 
-        // Chuyển hướng về frontend với token
+        // Chuyển hướng về frontend
         return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
         //Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
     }
