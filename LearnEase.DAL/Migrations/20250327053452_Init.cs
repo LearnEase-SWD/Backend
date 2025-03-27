@@ -18,7 +18,7 @@ namespace LearnEase.Repository.Migrations
                     CourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    TotalLessons = table.Column<int>(type: "int", maxLength: 100, nullable: false),
+                    TotalLessons = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     DifficultyLevel = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -165,7 +165,7 @@ namespace LearnEase.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProgress",
+                name: "UserLesson",
                 columns: table => new
                 {
                     ProgressID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -176,15 +176,15 @@ namespace LearnEase.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProgress", x => x.ProgressID);
+                    table.PrimaryKey("PK_UserLesson", x => x.ProgressID);
                     table.ForeignKey(
-                        name: "FK_UserProgress_Lessons_LessonID",
+                        name: "FK_UserLesson_Lessons_LessonID",
                         column: x => x.LessonID,
                         principalTable: "Lessons",
                         principalColumn: "LessonID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProgress_Users_UserID",
+                        name: "FK_UserLesson_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -316,14 +316,14 @@ namespace LearnEase.Repository.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProgress_LessonID",
-                table: "UserProgress",
+                name: "IX_UserLesson_LessonID",
+                table: "UserLesson",
                 column: "LessonID",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProgress_UserID",
-                table: "UserProgress",
+                name: "IX_UserLesson_UserID",
+                table: "UserLesson",
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
@@ -349,7 +349,7 @@ namespace LearnEase.Repository.Migrations
                 name: "UserFlashcards");
 
             migrationBuilder.DropTable(
-                name: "UserProgress");
+                name: "UserLesson");
 
             migrationBuilder.DropTable(
                 name: "VideoLessons");

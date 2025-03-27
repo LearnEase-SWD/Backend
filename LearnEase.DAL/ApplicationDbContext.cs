@@ -16,13 +16,12 @@ namespace LearnEase.Repository
         public DbSet<VideoLesson> VideoLessons { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserExercise> UserExercises { get; set; }
-        public DbSet<UserLesson> UserProgress { get; set; }
+        public DbSet<UserLesson> UserLesson { get; set; }
         public DbSet<UserFlashcard> UserFlashcards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
 
             modelBuilder.Entity<UserFlashcard>()
                .HasOne(uf => uf.User)
