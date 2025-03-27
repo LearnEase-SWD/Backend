@@ -8,8 +8,8 @@ namespace LearnEase.Service.IServices
     {
         Task<BaseResponse<IEnumerable<Lesson>>> GetLessonsAsync(int index, int pageSize);
         Task<BaseResponse<Lesson>> GetLessonByIdAsync(Guid id);
-        Task<BaseResponse<bool>> CreateLessonAsync(LessonCreationRequest lesson);
-        Task<BaseResponse<bool>> UpdateLessonAsync(Guid id, LessonCreationRequest lesson);
+        Task<BaseResponse<bool>> CreateLessonAsync(LessonCreateRequest lesson);
+        Task<BaseResponse<bool>> UpdateLessonAsync(Guid id, LessonCreateRequest lesson);
         Task<BaseResponse<bool>> DeleteLessonAsync(Guid id);
     }
 }

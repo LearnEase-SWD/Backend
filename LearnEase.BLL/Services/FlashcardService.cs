@@ -2,7 +2,7 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
-using LearnEase.Repository.IRepository;
+using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
 using Microsoft.Extensions.Logging;
@@ -69,17 +69,17 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> CreateFlashcardAsync(Flashcard flashcard)
+		public async Task<BaseResponse<bool>> CreateFlashcardAsync(FlashcardRequest flashcardRequest)
 		{
-			if (flashcard == null || string.IsNullOrWhiteSpace(flashcard.Front) || string.IsNullOrWhiteSpace(flashcard.Back))
+			if (flashcardRequest == null || string.IsNullOrWhiteSpace(flashcardRequest.Front) || string.IsNullOrWhiteSpace(flashcardRequest.Back))
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu flashcard không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
-				flashcard.FlashcardID = Guid.NewGuid();
+				var flashcard = _mapper.Map<Flashcard>(flashcardRequest);
 				flashcard.CreatedAt = DateTime.UtcNow;
-
+				
 				await _unitOfWork.GetRepository<Flashcard>().CreateAsync(flashcard);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
@@ -94,9 +94,9 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateFlashcardAsync(Guid id, Flashcard flashcard)
+		public async Task<BaseResponse<bool>> UpdateFlashcardAsync(Guid id, FlashcardRequest flashcardRequest)
 		{
-			if (flashcard == null || string.IsNullOrWhiteSpace(flashcard.Front) || string.IsNullOrWhiteSpace(flashcard.Back))
+			if (flashcardRequest == null || string.IsNullOrWhiteSpace(flashcardRequest.Front) || string.IsNullOrWhiteSpace(flashcardRequest.Back))
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu flashcard không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
@@ -108,10 +108,10 @@ namespace LearnEase.Service.Services
 				if (existingFlashcard == null)
 					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy flashcard.");
 
-				existingFlashcard.Front = flashcard.Front;
-				existingFlashcard.Back = flashcard.Back;
-				existingFlashcard.PronunciationAudioURL = flashcard.PronunciationAudioURL;
-				existingFlashcard.LessonID = flashcard.LessonID;
+				existingFlashcard.Front = flashcardRequest.Front;
+				existingFlashcard.Back = flashcardRequest.Back;
+				existingFlashcard.PronunciationAudioURL = flashcardRequest.PronunciationAudioURL;
+				existingFlashcard.LessonID = flashcardRequest.LessonID;
 				existingFlashcard.CreatedAt = DateTime.UtcNow;
 
 				await flashcardRepository.UpdateAsync(existingFlashcard);

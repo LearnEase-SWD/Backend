@@ -2,6 +2,7 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
 using LearnEase_Api.LearnEase.Core.IServices;
@@ -69,15 +70,16 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> CreateExerciseAsync(Exercise exercise)
+		public async Task<BaseResponse<bool>> CreateExerciseAsync(ExerciseRequest exerciseRequest)
 		{
-			if (exercise == null)
+			if (exerciseRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
-				exercise.ExerciseID = Guid.NewGuid();
+				var exercise = _mapper.Map<Exercise>(exerciseRequest);
+				exercise.CreatedAt = DateTime.Now;
 				await _unitOfWork.GetRepository<Exercise>().CreateAsync(exercise);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
@@ -92,7 +94,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateExerciseAsync(Guid id, Exercise exercise)
+		public async Task<BaseResponse<bool>> UpdateExerciseAsync(Guid id, ExerciseRequest exercise)
 		{
 			if (exercise == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");

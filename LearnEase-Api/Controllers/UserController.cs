@@ -35,7 +35,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewUser([FromBody] UserCreationRequest request)
+        public async Task<IActionResult> CreateNewUser([FromBody] UserCreateRequest request)
         {
             if (request == null)
             {

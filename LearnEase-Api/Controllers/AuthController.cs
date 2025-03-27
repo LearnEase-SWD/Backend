@@ -84,7 +84,7 @@ public class AuthController : ControllerBase
             var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.CreateNewUser(new UserCreationRequest(userName, userEmail, null));
+                await _userService.CreateNewUser(new UserCreateRequest(userName, userEmail, null));
             }
         }
 

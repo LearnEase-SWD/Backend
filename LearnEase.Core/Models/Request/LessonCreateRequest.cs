@@ -2,7 +2,7 @@
 
 namespace LearnEase.Core.Models.Request
 {
-    public class LessonCreationRequest
+    public class LessonCreateRequest
     {
         [Required(ErrorMessage = "CourseID không được để trống.")]
         public Guid CourseID { get; set; }

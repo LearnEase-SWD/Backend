@@ -2,6 +2,7 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.Extensions.Logging;
@@ -12,13 +13,11 @@ namespace LearnEase.Service.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly ILogger<CourseService> _logger;
 
 		public CourseService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CourseService> logger)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-			_logger = logger;
 		}
 
 		public async Task<BaseResponse<IEnumerable<Course>>> GetCoursesAsync(int pageIndex, int pageSize)
@@ -41,7 +40,6 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy danh sách khóa học: {ex.Message}");
 				return new BaseResponse<IEnumerable<Course>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -63,20 +61,21 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy khóa học với ID {id}: {ex.Message}");
 				return new BaseResponse<Course>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy khóa học.");
 			}
 		}
 
-		public async Task<BaseResponse<bool>> CreateCourseAsync(Course course)
+		public async Task<BaseResponse<bool>> CreateCourseAsync(CourseRequest courseRequest)
 		{
-			if (course == null)
+			if (courseRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu khóa học không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
-				course.CourseID = Guid.NewGuid();
+				var course = _mapper.Map<Course>(courseRequest);
+				course.CreatedAt = DateTime.Now;
+				course.UpdatedAt = DateTime.Now;
 				await _unitOfWork.GetRepository<Course>().CreateAsync(course);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
@@ -86,12 +85,11 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi tạo khóa học: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo khóa học.");
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateCourseAsync(Guid id, Course course)
+		public async Task<BaseResponse<bool>> UpdateCourseAsync(Guid id, CourseRequest course)
 		{
 			if (course == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu khóa học không hợp lệ.");
@@ -114,10 +112,9 @@ namespace LearnEase.Service.Services
 				await _unitOfWork.CommitTransactionAsync();
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học đã được cập nhật.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi cập nhật khóa học {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật khóa học.");
 			}
 		}
@@ -139,10 +136,9 @@ namespace LearnEase.Service.Services
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học đã được xóa.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi xóa khóa học {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa khóa học.");
 			}
 		}

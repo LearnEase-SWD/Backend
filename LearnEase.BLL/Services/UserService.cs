@@ -22,7 +22,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		public async Task<UserReponse> CreateNewUser(UserCreationRequest request)
+		public async Task<UserReponse> CreateNewUser(UserCreateRequest request)
 		{
 			if (request == null)
 				throw new ArgumentNullException(nameof(request));

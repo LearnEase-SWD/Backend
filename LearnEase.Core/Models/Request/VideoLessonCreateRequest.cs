@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase.Core.Models.Request
 {
-    public class VideoLessonCreationRequest
+    public class VideoLessonCreateRequest
     {
         public Guid LessonID { get; set; }
         public Lesson Lesson { get; set; }

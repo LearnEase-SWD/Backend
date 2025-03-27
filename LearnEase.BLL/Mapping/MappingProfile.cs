@@ -8,10 +8,11 @@ namespace LearnEase.Service.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<TheoryLessonCreationRequest, TheoryLesson>();
-            CreateMap<LessonCreationRequest, Lesson>();
-
-        }
+            CreateMap<TheoryLessonCreateRequest, TheoryLesson>();
+            CreateMap<LessonCreateRequest, Lesson>();
+			CreateMap<CourseRequest, Course>();
+			CreateMap<FlashcardRequest, Flashcard>();
+		}
 
     }
 }

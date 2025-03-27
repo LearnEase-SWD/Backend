@@ -23,7 +23,7 @@ namespace LearnEase.Service.Services
             _logger = logger;
         }
 
-        public async Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreationRequest theoryLessonRequest)
+        public async Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreateRequest theoryLessonRequest)
         {
             if (theoryLessonRequest == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
@@ -108,7 +108,7 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreationRequest request)
+        public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreateRequest request)
         {
             if (request == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");

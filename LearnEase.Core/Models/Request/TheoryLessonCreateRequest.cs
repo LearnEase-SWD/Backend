@@ -2,7 +2,7 @@
 
 namespace LearnEase.Core.Models.Request
 {
-    public class TheoryLessonCreationRequest
+    public class TheoryLessonCreateRequest
     {
         [Required]
         public Guid LessonID { get; set; }

@@ -62,7 +62,7 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<bool>> CreateLessonAsync(LessonCreationRequest lessonRequest)
+        public async Task<BaseResponse<bool>> CreateLessonAsync(LessonCreateRequest lessonRequest)
         {
             // Kiểm tra null
             if (lessonRequest == null)
@@ -91,7 +91,7 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<bool>> UpdateLessonAsync(Guid id, LessonCreationRequest lessonRequest)
+        public async Task<BaseResponse<bool>> UpdateLessonAsync(Guid id, LessonCreateRequest lessonRequest)
         {
             if (id == Guid.Empty || lessonRequest == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", "ID hoặc dữ liệu cập nhật không hợp lệ.");

@@ -30,7 +30,7 @@ public class LessonController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLesson([FromBody] LessonCreationRequest request)
+    public async Task<IActionResult> CreateLesson([FromBody] LessonCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -40,7 +40,7 @@ public class LessonController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] LessonCreationRequest request)
+    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] LessonCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
