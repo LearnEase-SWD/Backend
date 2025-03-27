@@ -81,6 +81,7 @@ namespace LearnEase_Api
             services.AddScoped<IFlashcardService, FlashcardService>();
             services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<ITheoryLessonService, TheoryLessonService>();
+            services.AddScoped<IVnPayService, VnPayService>();
 
             //Repo
             services.AddScoped<IUnitOfWork, UnitOfWork>();
