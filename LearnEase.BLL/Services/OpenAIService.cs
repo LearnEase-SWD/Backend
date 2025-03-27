@@ -37,17 +37,22 @@ namespace LearnEase.Service.Services
             // Nếu user hỏi về khóa học -> Truy vấn database
             if (userInput.ToLower().Contains("mua khóa học") || userInput.ToLower().Contains("khóa học"))
             {
-                if (useDatabase)
+                // Nếu không đủ thông tin, yêu cầu AI đặt câu hỏi
+                if (!useDatabase)
                 {
-                    string courseSuggestions = await GenerateCourseSuggestionsFromDatabase(userInput);
-                    if (!string.IsNullOrEmpty(courseSuggestions))
-                    {
-                        _logger.LogInformation("Returning course suggestions from database.");
-                        return courseSuggestions;
-                    }
-                    return $"Hiện tại chúng tôi chưa có khóa học nào phù hợp với '{userInput}'.";
+                    return await AskForCourseTopic(userInput);
                 }
-                return await AskUserForMoreInfo(userInput);
+
+                // Nếu đã có thông tin, tìm khóa học trong database
+                string courseSuggestions = await GenerateCourseSuggestionsFromDatabase(userInput);
+                if (!string.IsNullOrEmpty(courseSuggestions))
+                {
+                    _logger.LogInformation("Returning course suggestions from database.");
+                    return courseSuggestions;
+                }
+
+                // Nếu không có khóa học, gợi ý các chủ đề khác
+                return await AskForCourseTopic(userInput);
             }
 
             // Nếu user hỏi về ngữ pháp -> Không gọi DB, chỉ gọi AI
@@ -96,13 +101,13 @@ namespace LearnEase.Service.Services
         }
 
 
-        private async Task<string> AskUserForMoreInfo(string userInput)
-            {
-                string prompt = $"Người dùng nói '{userInput}'. Hãy đặt 3 câu hỏi ngắn gọn để hiểu rõ hơn về sở thích, mục tiêu và trình độ của họ trước khi đề xuất khóa học. Trả về danh sách câu hỏi, không trả lời luôn.";
-                return await CallOpenAI(prompt);
-            }
+        private async Task<string> AskForCourseTopic(string userInput)
+        {
+            string prompt = $"Người dùng muốn mua khóa học nhưng chưa nói rõ chủ đề. Hãy hỏi họ về lĩnh vực hoặc kỹ năng mà họ muốn học, rồi tiếp tục đặt thêm câu hỏi để làm rõ nhu cầu của họ.";
+            return await CallOpenAI(prompt);
+        }
 
-            private async Task<string> GenerateGrammarCorrection(string userInput)
+        private async Task<string> GenerateGrammarCorrection(string userInput)
             {
                 string prompt = $"Sửa lỗi ngữ pháp trong đoạn văn sau: {userInput}";
                 return await CallOpenAI(prompt);
