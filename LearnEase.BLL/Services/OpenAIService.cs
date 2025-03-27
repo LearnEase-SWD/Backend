@@ -1,10 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using LearnEase.Repository;
-using LearnEase.Repository.Repositories;
 using LearnEase.Service.IServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

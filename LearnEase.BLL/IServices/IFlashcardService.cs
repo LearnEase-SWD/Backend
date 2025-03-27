@@ -1,13 +1,14 @@
-﻿using LearnEase.Core.Entities;
+﻿using LearnEase.Core.Base;
+using LearnEase.Core.Entities;
 
-namespace LearnEase.Repository.IRepository
+namespace LearnEase.Service.IServices
 {
-    public interface IFlashcardService 
-    {
-        Task<IEnumerable<Flashcard>> GetFlashcardsAsync(int pageIndex, int pageSize);
-        Task<Flashcard?> GetFlashcardByIdAsync(Guid id);
-        Task CreateFlashcardAsync(Flashcard flashcard);
-        Task<bool> UpdateFlashcardAsync(Guid id, Flashcard flashcard);
-        Task<bool> DeleteFlashcardAsync(Guid id);
-    }
+	public interface IFlashcardService
+	{
+		Task<BaseResponse<IEnumerable<Flashcard>>> GetFlashcardsAsync(int pageIndex, int pageSize);
+		Task<BaseResponse<Flashcard>> GetFlashcardByIdAsync(Guid id);
+		Task<BaseResponse<bool>> CreateFlashcardAsync(Flashcard flashcard);
+		Task<BaseResponse<bool>> UpdateFlashcardAsync(Guid id, Flashcard flashcard);
+		Task<BaseResponse<bool>> DeleteFlashcardAsync(Guid id);
+	}
 }
