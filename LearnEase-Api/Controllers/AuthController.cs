@@ -78,13 +78,14 @@ public class AuthController : ControllerBase
         var accessToken = info.Properties.GetTokenValue("access_token");
         var userEmail = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
         var userName = info.Principal.Identity?.Name;
+		var imageUrl = info.Principal.FindFirst("urn:google:picture")?.Value;
 
-        if (userEmail != null)
+		if (userEmail != null)
         {
             var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.CreateNewUser(new UserCreateRequest(userName, userEmail, null));
+                await _userService.CreateNewUser(new UserCreateRequest(userName, userEmail, imageUrl));
             }
         }
 
@@ -92,7 +93,8 @@ public class AuthController : ControllerBase
         await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
 
         // Chuyển hướng về frontend với token
-        return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName}); /*Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");*/
+        return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
+        //Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
     }
 
     [HttpPost("verify-access-token")]
