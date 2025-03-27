@@ -18,5 +18,4 @@ namespace LearnEase_Api.Entity
         public Flashcard Flashcard { get; set; }
         public string? Progress { get; set; }
     }
-
 }

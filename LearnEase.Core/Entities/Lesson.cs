@@ -19,12 +19,10 @@ namespace LearnEase_Api.Entity
         [MaxLength(255)]
         public string Title { get; set; }
 
-        
         public enum LessonTypeEnum { Video, Theory, Exercise, Conversation }
         [Required]
         [MaxLength(50)]
         public LessonTypeEnum LessonType { get; set; }
-
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

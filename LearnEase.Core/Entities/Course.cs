@@ -16,7 +16,7 @@ namespace LearnEase_Api.Entity
         public decimal Price { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(50)]
         public int TotalLessons { get; set; } = 0;
 
         [Required]

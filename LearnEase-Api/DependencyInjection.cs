@@ -1,4 +1,5 @@
-﻿using LearnEase.Repository.IRepository;
+﻿using LearnEase.Repository;
+using LearnEase.Repository.IRepository;
 using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
