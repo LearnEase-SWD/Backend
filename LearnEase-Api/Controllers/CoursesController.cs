@@ -1,6 +1,7 @@
 ﻿using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
 using LearnEase.Core.Entities;
+using LearnEase.Core.Models.Request;
 
 [Route("api/courses")]
 [ApiController]
@@ -32,7 +33,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Course course)
+    public async Task<IActionResult> Create([FromBody] CourseRequest course)
     {
         if (course == null)
         {
@@ -43,9 +44,9 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Course course)
+    public async Task<IActionResult> Update(Guid id, [FromBody] CourseRequest course)
     {
-        if (course == null || id != course.CourseID)
+        if (course == null)
         {
             return BadRequest(new { message = "Invalid course data or mismatched ID." });
         }

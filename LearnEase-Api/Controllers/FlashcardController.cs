@@ -1,71 +1,58 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using LearnEase.Repository.IRepository;
-using LearnEase.Core.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using LearnEase.Service.IServices;
+using LearnEase.Core.Models.Request;
 
-[Route("api/flashcards")]
 [ApiController]
+[Route("api/flashcards")]
+[Authorize]
 public class FlashcardsController : ControllerBase
 {
-    private readonly IFlashcardService _flashcardService;
+	private readonly IFlashcardService _flashcardService;
 
-    public FlashcardsController(IFlashcardService flashcardService)
-    {
-        _flashcardService = flashcardService;
-    }
+	public FlashcardsController(IFlashcardService flashcardService)
+	{
+		_flashcardService = flashcardService;
+	}
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
-    {
-        var flashcards = await _flashcardService.GetFlashcardsAsync(pageIndex, pageSize);
-        return Ok(flashcards);
-    }
+	[HttpGet]
+	public async Task<IActionResult> GetFlashcards(int pageIndex = 1, int pageSize = 10)
+	{
+		var response = await _flashcardService.GetFlashcardsAsync(pageIndex, pageSize);
+		return StatusCode((int)response.StatusCode, response);
+	}
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var flashcard = await _flashcardService.GetFlashcardByIdAsync(id);
-        if (flashcard == null)
-        {
-            return NotFound(new { message = "Flashcard not found." });
-        }
-        return Ok(flashcard);
-    }
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetFlashcardById(Guid id)
+	{
+		var response = await _flashcardService.GetFlashcardByIdAsync(id);
+		return StatusCode((int)response.StatusCode, response);
+	}
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Flashcard flashcard)
-    {
-        if (flashcard == null)
-        {
-            return BadRequest(new { message = "Invalid flashcard data." });
-        }
-        await _flashcardService.CreateFlashcardAsync(flashcard);
-        return CreatedAtAction(nameof(GetById), new { id = flashcard.FlashcardID }, flashcard);
-    }
+	[HttpPost]
+	public async Task<IActionResult> CreateFlashcard([FromBody] FlashcardRequest request)
+	{
+		if (!ModelState.IsValid)
+			return BadRequest(ModelState);
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Flashcard flashcard)
-    {
-        if (flashcard == null || id != flashcard.FlashcardID)
-        {
-            return BadRequest(new { message = "Invalid flashcard data or mismatched ID." });
-        }
-        var result = await _flashcardService.UpdateFlashcardAsync(id, flashcard);
-        if (!result.Data)
-        {
-            return NotFound(new { message = "Flashcard not found." });
-        }
-        return NoContent();
-    }
+		var response = await _flashcardService.CreateFlashcardAsync(request);
+		return StatusCode((int)response.StatusCode, response);
+	}
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var result = await _flashcardService.DeleteFlashcardAsync(id);
-        if (!result.Data)
-        {
-            return NotFound(new { message = "Flashcard not found." });
-        }
-        return NoContent();
-    }
+	[HttpPut("{id}")]
+	public async Task<IActionResult> UpdateFlashcard(Guid id, [FromBody] FlashcardRequest request)
+	{
+		if (!ModelState.IsValid)
+			return BadRequest(ModelState);
+
+		var response = await _flashcardService.UpdateFlashcardAsync(id, request);
+		return StatusCode((int)response.StatusCode, response);
+	}
+
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteFlashcard(Guid id)
+	{
+		var response = await _flashcardService.DeleteFlashcardAsync(id);
+		return StatusCode((int)response.StatusCode, response);
+	}
 }
