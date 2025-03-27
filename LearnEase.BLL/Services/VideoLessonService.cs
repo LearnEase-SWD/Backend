@@ -8,62 +8,138 @@ using LearnEase.Service.IServices;
 
 namespace LearnEase.Service.Services
 {
-    public class VideoLessonService : IVideoLessonService
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+	public class VideoLessonService : IVideoLessonService
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IMapper _mapper;
 
-        public VideoLessonService(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+		public VideoLessonService(IUnitOfWork unitOfWork, IMapper mapper)
+		{
+			_unitOfWork = unitOfWork;
+			_mapper = mapper;
+		}
 
-        public async Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreationRequest videoRequest)
-        {
-            // Kiểm tra null
-            if (videoRequest == null)
-                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", "Dữ liệu bài học không hợp lệ.");
+		public async Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreationRequest videoRequest)
+		{
+			if (videoRequest == null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
 
-            // Kiểm tra Course có tồn tại không
-            await _unitOfWork.BeginTransactionAsync();
+			await _unitOfWork.BeginTransactionAsync();
 
-            try
-            {
-                var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
-                videoLesson.CreatedAt = DateTime.UtcNow;
+			try
+			{
+				var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
+				videoLesson.CreatedAt = DateTime.UtcNow;
 
-                await _unitOfWork.GetRepository<VideoLesson>().CreateAsync(videoLesson);
-                await _unitOfWork.SaveAsync();
-                await _unitOfWork.CommitTransactionAsync();
+				await _unitOfWork.GetRepository<VideoLesson>().CreateAsync(videoLesson);
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
 
-                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học được tạo thành công.");
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học.");
-            }
-        }
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học video đã được tạo thành công.");
+			}
+			catch (Exception)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học video.");
+			}
+		}
 
-        public Task<BaseResponse<bool>> DeleteVideoLessonAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+		public async Task<BaseResponse<IEnumerable<VideoLesson>>> GetVideoLessonsAsync(int pageIndex, int pageSize)
+		{
+			if (pageIndex < 1) pageIndex = 1;
+			if (pageSize < 1) pageSize = 10;
 
-        public Task<BaseResponse<VideoLesson>> GetVideoLessonByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+			try
+			{
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var query = videoLessonRepository.Entities;
+				var videoLessons = await videoLessonRepository.GetPagging(query, pageIndex, pageSize);
 
-        public Task<BaseResponse<IEnumerable<VideoLesson>>> GetVideoLessonsAsync(int pageIndex, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
+				return new BaseResponse<IEnumerable<VideoLesson>>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					videoLessons.Items,
+					"Lấy danh sách bài học video thành công."
+				);
+			}
+			catch (Exception)
+			{
+				return new BaseResponse<IEnumerable<VideoLesson>>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					new List<VideoLesson>(),
+					"Lỗi hệ thống khi lấy danh sách bài học video."
+				);
+			}
+		}
 
-        public Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreationRequest request)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public async Task<BaseResponse<VideoLesson>> GetVideoLessonByIdAsync(Guid id)
+		{
+			try
+			{
+				var videoLesson = await _unitOfWork.GetRepository<VideoLesson>().GetByIdAsync(id);
+				if (videoLesson == null)
+					return new BaseResponse<VideoLesson>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài học video không tồn tại.");
+
+				return new BaseResponse<VideoLesson>(StatusCodeHelper.OK, "SUCCESS", videoLesson, "Lấy bài học video thành công.");
+			}
+			catch (Exception)
+			{
+				return new BaseResponse<VideoLesson>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học video.");
+			}
+		}
+
+		public async Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreationRequest request)
+		{
+			if (request == null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
+
+			await _unitOfWork.BeginTransactionAsync();
+
+			try
+			{
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var existingLesson = await videoLessonRepository.GetByIdAsync(id);
+
+				if (existingLesson == null)
+					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài học video.");
+
+				_mapper.Map(request, existingLesson);
+
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học video đã được cập nhật.");
+			}
+			catch (Exception)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài học video.");
+			}
+		}
+
+		public async Task<BaseResponse<bool>> DeleteVideoLessonAsync(Guid id)
+		{
+			await _unitOfWork.BeginTransactionAsync();
+
+			try
+			{
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var existingLesson = await videoLessonRepository.GetByIdAsync(id);
+
+				if (existingLesson == null)
+					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài học video.");
+
+				await videoLessonRepository.DeleteAsync(existingLesson);
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
+
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học video đã được xóa.");
+			}
+			catch (Exception)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học video.");
+			}
+		}
+	}
 }

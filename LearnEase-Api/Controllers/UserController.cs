@@ -8,7 +8,8 @@ namespace LearnEase_Api.Controllers
     [Route("api/users")]
     [ApiController]
     [Authorize]
-    public class UserController : ControllerBase
+	[AllowAnonymous]
+	public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly HttpClient _httpClient;
