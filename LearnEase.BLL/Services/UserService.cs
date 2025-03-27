@@ -1,15 +1,12 @@
-﻿using LearnEase.Core.Enum;
+﻿using LearnEase.Core.Entities;
+using LearnEase.Core.Enum;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.Dtos.reponse;
 using LearnEase_Api.Dtos.request;
-using LearnEase_Api.Entity;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.Mapper;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LearnEase_Api.LearnEase.Core.Services
 {
@@ -41,7 +38,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
 				IsActive = true,
 				Email = request.email,
 				UserName = request.userName,
-				Role = UserRole.User,
+				Role = UserRoleEnum.User,
 				FirstName = firstName,
 				LastName = lastName,
 				ImageUrl = request.urlImage,

@@ -1,6 +1,6 @@
 ﻿using LearnEase_Api.LearnEase.Core.IServices;
-using LearnEase_Api.Entity;
 using Microsoft.AspNetCore.Mvc;
+using LearnEase.Core.Entities;
 
 [Route("api/courses")]
 [ApiController]

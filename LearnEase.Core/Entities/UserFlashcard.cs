@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearnEase_Api.Entity
+namespace LearnEase.Core.Entities
 {
     public class UserFlashcard
     {

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
+using LearnEase.Core.Entities;
 using LearnEase.Core.Models.Request;
-using LearnEase_Api.Dtos.request;
-using LearnEase_Api.Entity;
 
 namespace LearnEase.Service.Mapping
 {

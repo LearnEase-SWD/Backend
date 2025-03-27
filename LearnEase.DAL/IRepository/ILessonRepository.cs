@@ -1,4 +1,5 @@
-﻿using LearnEase_Api.Entity;
+﻿
+using LearnEase.Core.Entities;
 
 namespace LearnEase.Repository.IRepository
 {

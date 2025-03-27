@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using LearnEase.Core.Base;
+using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
-using LearnEase_Api.Entity;
 using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LearnEase.Core.Enum
 {
-	public enum UserRole
+	public enum UserRoleEnum
 	{
 		Admin = 1,
 

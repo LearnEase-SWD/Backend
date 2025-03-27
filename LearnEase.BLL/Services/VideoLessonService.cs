@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using LearnEase.Core.Base;
+using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
-using LearnEase_Api.Entity;
 
 namespace LearnEase.Service.Services
 {

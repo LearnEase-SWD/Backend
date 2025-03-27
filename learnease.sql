@@ -29,23 +29,39 @@ INSERT INTO Users (UserId, UserName, Email, FirstName, LastName, ImageUrl, Role,
 VALUES ('user-9', 'doanthi', 'doanthi@example.com', N'Đoàn Thị', N'I', NULL, 1, 1, '2023-12-31');
 
 INSERT INTO Users (UserId, UserName, Email, FirstName, LastName, ImageUrl, Role, IsActive, CreatedAt)
-VALUES ('user-10', 'ngocanhj', 'ngocanhj@example.com', N'Ngọc Ánh', N'J', NULL, 1, 1, '2023-12-31');
+VALUES ('user-10', 'ngocanh', 'ngocanhj@example.com', N'Ngọc Ánh', N'J', NULL, 1, 1, '2023-12-31');
 
-/* 2. Courses */
-INSERT INTO Courses (CourseID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
-VALUES ('a1b2c3d4-e5f6-7890-abcd-1234567890ab', N'Giao tiếp tiếng Anh cơ bản', 500000, 0, N'Beginner', '2024-01-01', NULL);
+/* 2. Topic */
+INSERT INTO Topic (TopicID, Name) 
+VALUES ('a1b2c3d4-e5f6-7890-abcd-1234567890ab', N'Giao tiếp hàng ngày');
 
-INSERT INTO Courses (CourseID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
-VALUES ('b2c3d4e5-f678-9012-abcd-2345678901bc', N'Tiếng Anh trung cấp', 800000, 0, N'Intermediate', '2024-02-11', NULL);
+INSERT INTO Topic (TopicID, Name) 
+VALUES ('b2c3d4e5-f678-9012-abcd-2345678901bc', N'Thành ngữ tiếng Anh');
 
-INSERT INTO Courses (CourseID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
-VALUES ('c3d4e5f6-7890-1234-abcd-3456789012cd', N'Tiếng Anh nâng cao', 1200000, 0, N'Advanced', '2024-02-11', NULL);
+INSERT INTO Topic (TopicID, Name) 
+VALUES ('c3d4e5f6-7890-1234-abcd-3456789012cd', N'Ngữ pháp cơ bản');
 
-INSERT INTO Courses (CourseID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
-VALUES ('d4e5f678-9012-3456-abcd-4567890123de', N'Tiếng Nhật sơ cấp', 600000, 0, N'Beginner', '2024-02-11', NULL);
+INSERT INTO Topic (TopicID, Name) 
+VALUES ('d4e5f678-9012-3456-abcd-4567890123de', N'Luyện nghe');
 
-INSERT INTO Courses (CourseID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
-VALUES ('e5f67890-1234-5678-abcd-5678901234ef', N'Tiếng Nhật trung cấp', 900000, 0, N'Intermediate', '2024-02-11', NULL);
+INSERT INTO Topic (TopicID, Name) 
+VALUES ('e5f67890-1234-5678-abcd-5678901234ef', N'Luyện nói');
+
+/* 3. Courses */
+INSERT INTO Courses (CourseID, TopicID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+VALUES ('a1b2c3d4-e5f6-7890-abcd-1234567890ab', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', N'Giao tiếp tiếng Anh cơ bản', 500000, 0, N'Beginner', '2024-01-01', NULL);
+
+INSERT INTO Courses (CourseID, TopicID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+VALUES ('e5f67890-1234-5678-abcd-5678901234ef', 'b2c3d4e5-f678-9012-abcd-2345678901bc', N'Tiếng Anh trung cấp', 800000, 0, N'Intermediate', '2024-02-11', NULL);
+
+INSERT INTO Courses (CourseID, TopicID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+VALUES ('d4e5f678-9012-3456-abcd-4567890123de', 'c3d4e5f6-7890-1234-abcd-3456789012cd', N'Tiếng Anh nâng cao', 1200000, 0, N'Advanced', '2024-02-11', NULL);
+
+INSERT INTO Courses (CourseID, TopicID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+VALUES ('c3d4e5f6-7890-1234-abcd-3456789012cd', 'd4e5f678-9012-3456-abcd-4567890123de', N'Tiếng Nhật sơ cấp', 600000, 0, N'Beginner', '2024-02-11', NULL);
+
+INSERT INTO Courses (CourseID, TopicID, Title, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+VALUES ('b2c3d4e5-f678-9012-abcd-2345678901bc', 'e5f67890-1234-5678-abcd-5678901234ef', N'Tiếng Nhật trung cấp', 900000, 0, N'Intermediate', '2024-02-11', NULL);
 
 /* 3. UserCourses */
 INSERT INTO UserCourses (UserCourseID, UserID, CourseID, EnrolledAt, ProgressStatus, ProgressPercentage, CompletedAt) 
@@ -66,54 +82,54 @@ VALUES ('e5f67890-1234-4567-bcde-5678901234e5', 'user-5', 'e5f67890-1234-5678-ab
 INSERT INTO UserCourses (UserCourseID, UserID, CourseID, EnrolledAt, ProgressStatus, ProgressPercentage, CompletedAt) 
 VALUES ('f6f78901-2345-4789-bcde-6789012345f6', 'user-6', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', '2024-02-09', N'Completed', 100, '2024-02-15');
 
-/* 4. Lessons */
+/* 5. Lessons */
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('1a2b3c4d-d5e6-4789-bcde-1234567890ab', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', 1, N'Chào hỏi cơ bản', N'Video', '2024-02-01');
+VALUES ('1a2b3c4d-d5e6-4789-bcde-1234567890ab', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', 1, N'Chào hỏi cơ bản', 0, '2024-02-01');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('2b3c4d5e-f6e7-4901-bcde-2345678901ac', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', 2, N'Mẫu câu giao tiếp hàng ngày', N'Theory', '2024-02-02');
+VALUES ('2b3c4d5e-f6e7-4901-bcde-2345678901ac', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', 2, N'Mẫu câu giao tiếp hàng ngày', 1, '2024-02-02');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('3c4d5e6f-f789-4123-bcde-3456789012ad', 'b2c3d4e5-f678-9012-abcd-2345678901bc', 1, N'Ngữ pháp cơ bản', N'Theory', '2024-02-03');
+VALUES ('3c4d5e6f-f789-4123-bcde-3456789012ad', 'b2c3d4e5-f678-9012-abcd-2345678901bc', 1, N'Ngữ pháp cơ bản', 1, '2024-02-03');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('4d5e6f70-8901-4345-bcde-4567890123ae', 'b2c3d4e5-f678-9012-abcd-2345678901bc', 2, N'Luyện nói: Mô tả bản thân', N'Conversation', '2024-02-04');
+VALUES ('4d5e6f70-8901-4345-bcde-4567890123ae', 'b2c3d4e5-f678-9012-abcd-2345678901bc', 2, N'Luyện nói: Mô tả bản thân', 3, '2024-02-04');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('5e6f7890-0123-4567-bcde-5678901234af', 'c3d4e5f6-7890-1234-abcd-3456789012cd', 1, N'Thảo luận nâng cao', N'Conversation', '2024-02-05');
+VALUES ('5e6f7890-0123-4567-bcde-5678901234af', 'c3d4e5f6-7890-1234-abcd-3456789012cd', 1, N'Thảo luận nâng cao', 3, '2024-02-05');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('6f789012-2345-4789-bcde-6789012345b0', 'c3d4e5f6-7890-1234-abcd-3456789012cd', 2, N'Viết luận chuyên sâu', N'Exercise', '2024-02-06');
+VALUES ('6f789012-2345-4789-bcde-6789012345b0', 'c3d4e5f6-7890-1234-abcd-3456789012cd', 2, N'Viết luận chuyên sâu', 2, '2024-02-06');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('7a890123-3456-4901-bcde-7890123456b1', 'd4e5f678-9012-3456-abcd-4567890123de', 1, N'Giới thiệu bảng chữ cái tiếng Nhật', N'Video', '2024-02-07');
+VALUES ('7a890123-3456-4901-bcde-7890123456b1', 'd4e5f678-9012-3456-abcd-4567890123de', 1, N'Giới thiệu bảng chữ cái tiếng Nhật', 0, '2024-02-07');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('8b901234-4567-4123-bcde-8901234567b2', 'd4e5f678-9012-3456-abcd-4567890123de', 2, N'Phát âm Hiragana và Katakana', N'Theory', '2024-02-08');
+VALUES ('8b901234-4567-4123-bcde-8901234567b2', 'd4e5f678-9012-3456-abcd-4567890123de', 2, N'Phát âm Hiragana và Katakana', 1, '2024-02-08');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('9c012345-5678-4345-bcde-9012345678b3', 'e5f67890-1234-5678-abcd-5678901234ef', 1, N'Đọc hiểu đoạn văn', N'Exercise', '2024-02-09');
+VALUES ('9c012345-5678-4345-bcde-9012345678b3', 'e5f67890-1234-5678-abcd-5678901234ef', 1, N'Đọc hiểu đoạn văn', 2, '2024-02-09');
 
 INSERT INTO Lessons (LessonID, CourseID, [Index], Title, LessonType, CreatedAt) 
-VALUES ('0d123456-6789-4567-bcde-0123456789b4', 'e5f67890-1234-5678-abcd-5678901234ef', 2, N'Luyện nghe hội thoại', N'Conversation', '2024-02-10');
+VALUES ('0d123456-6789-4567-bcde-0123456789b4', 'e5f67890-1234-5678-abcd-5678901234ef', 2, N'Luyện nghe hội thoại', 3, '2024-02-10');
 
-/* 5. Flashcards */
+/* 6. Flashcards */
 INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
-VALUES ('00000000-0000-0000-0000-000000000006', '11111111-1111-1111-1111-111111111111', N'Car', N'Xe hơi', NULL, '2024-01-06 14:25:00');
-
-INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
-VALUES ('00000000-0000-0000-0000-000000000007', '22222222-2222-2222-2222-222222222222', N'Dog', N'Chó', NULL, '2024-01-07 15:00:00');
+VALUES ('00000000-0000-0000-0000-000000000006', '1a2b3c4d-d5e6-4789-bcde-1234567890ab', N'Car', N'Xe hơi', NULL, '2024-02-01 14:25:00');
 
 INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
-VALUES ('00000000-0000-0000-0000-000000000008', '33333333-3333-3333-3333-333333333333', N'Computer', N'Máy tính', NULL, '2024-01-08 16:45:00');
+VALUES ('00000000-0000-0000-0000-000000000007', '2b3c4d5e-f6e7-4901-bcde-2345678901ac', N'Dog', N'Chó', NULL, '2024-02-02 15:00:00');
 
 INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
-VALUES ('00000000-0000-0000-0000-000000000009', '44444444-4444-4444-4444-444444444444', N'Book', N'Sách', NULL, '2024-01-09 17:30:00');
+VALUES ('00000000-0000-0000-0000-000000000008', '3c4d5e6f-f789-4123-bcde-3456789012ad', N'Computer', N'Máy tính', NULL, '2024-02-03 16:45:00');
 
 INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
-VALUES ('00000000-0000-0000-0000-000000000010', '55555555-5555-5555-5555-555555555555', N'Music', N'Âm nhạc', NULL, '2024-01-10 18:20:00');
+VALUES ('00000000-0000-0000-0000-000000000009', '4d5e6f70-8901-4345-bcde-4567890123ae', N'Book', N'Sách', NULL, '2024-02-04 17:30:00');
 
-/* 6. TheoryLesson */
+INSERT INTO Flashcards (FlashcardID, LessonID, Front, Back, PronunciationAudioURL, CreatedAt) 
+VALUES ('00000000-0000-0000-0000-000000000010', '5e6f7890-0123-4567-bcde-5678901234af', N'Music', N'Âm nhạc', NULL, '2024-02-05 18:20:00');
+
+/* 7. TheoryLesson */
 INSERT INTO TheoryLessons (TheoryID, LessonID, Content, Examples, CreatedAt) 
 VALUES ('7a2b3c4d-d5e6-4789-bcde-1234567890ab', '1a2b3c4d-d5e6-4789-bcde-1234567890ab', N'Giới thiệu về ngữ pháp cơ bản', N'Ví dụ: Tôi là học sinh.', '2024-02-01');
 
@@ -129,7 +145,7 @@ VALUES ('10d5e6f7-8901-4345-bcde-4567890123ae', '4d5e6f70-8901-4345-bcde-4567890
 INSERT INTO TheoryLessons (TheoryID, LessonID, Content, Examples, CreatedAt) 
 VALUES ('13e6f789-0123-4567-bcde-5678901234af', '5e6f7890-0123-4567-bcde-5678901234af', N'Giới thiệu về cách sử dụng giới từ', N'Ví dụ: I am in the room. He is on the table.', '2024-02-05');
 
-/* 7. VideoLessons */
+/* 8. VideoLessons */
 INSERT INTO VideoLessons (VideoID, LessonID, VideoURL, Duration, CreatedAt) 
 VALUES ('f1a2b3c4-d5e6-4789-bcde-1234567890fa', '1a2b3c4d-d5e6-4789-bcde-1234567890ab', 
         'https://example.com/video1', '00:10:00', '2024-02-01');
@@ -150,7 +166,7 @@ INSERT INTO VideoLessons (VideoID, LessonID, VideoURL, Duration, CreatedAt)
 VALUES ('f5e6f789-0123-4567-bcde-5678901234fe', '5e6f7890-0123-4567-bcde-5678901234af', 
         'https://example.com/video5', '00:25:00', '2024-02-05');
 
-/* 8. Exercises */
+/* 9. Exercises */
 INSERT INTO Exercises (ExerciseID, LessonID, Type, Question, AnswerOptions, CorrectAnswer, CreatedAt) 
 VALUES ('f3a7b8c5-10a1-4c35-91b3-d2ab87a48f39', '1a2b3c4d-d5e6-4789-bcde-1234567890ab', 
         N'Trắc nghiệm', N'Câu hỏi 1: Chào hỏi như thế nào?', 
@@ -176,7 +192,7 @@ VALUES ('d4a99c5d-850d-41a2-9868-0bb567e4a745', '5e6f7890-0123-4567-bcde-5678901
         N'Điền từ', N'Học tiếng ___ là quan trọng.', 
         N'Anh; Pháp; Đức', N'Anh', '2024-02-05');
 
-/* 9. UserExercises */
+/* 10. UserExercises */
 INSERT INTO UserExercises (AttemptID, UserID, ExerciseID, UserAnswer, Progress, AttemptAt) 
 VALUES ('f1a2d3e4-8b5c-47d8-9a7f-0b6c1a3b4f56', 'user-1', 'f3a7b8c5-10a1-4c35-91b3-d2ab87a48f39', N'Xin chào', N'Completed', '2024-02-01');
 
@@ -192,8 +208,8 @@ VALUES ('d4b8f3a0-9e2b-462f-a02b-1a8c8a3d9e62', 'user-4', 'a8e6b4f7-9f10-47e5-b7
 INSERT INTO UserExercises (AttemptID, UserID, ExerciseID, UserAnswer, Progress, AttemptAt) 
 VALUES ('e5f8b6a2-1b8f-4e0b-bf90-3c9a6f9d3b75', 'user-5', 'd4a99c5d-850d-41a2-9868-0bb567e4a745', N'Anh', N'In Progress', '2024-02-05');
 
-/* 10. UserLesson */
-/*INSERT INTO UserLesson (ProgressID, UserID, LessonID, Progress, LastAccessedAt)
+/* 11. UserLesson */
+INSERT INTO UserLesson (ProgressID, UserID, LessonID, Progress, LastAccessedAt)
 VALUES ('A1B2C3D4-E5F6-4789-BCDE-1234567890A1', 'user-1', '1A2B3C4D-D5E6-4789-BCDE-1234567890AB', 85, '2024-02-11T00:00:00Z');
 
 INSERT INTO UserLesson (ProgressID, UserID, LessonID, Progress, LastAccessedAt)
@@ -222,34 +238,20 @@ VALUES ('C0123456-5678-4345-BCDE-9012345678C9', 'user-9', '9C012345-5678-4345-BC
 
 INSERT INTO UserLesson (ProgressID, UserID, LessonID, Progress, LastAccessedAt)
 VALUES ('D1234567-6789-4567-BCDE-0123456789D0', 'user-10', '0D123456-6789-4567-BCDE-0123456789B4', 90, '2024-02-02T00:00:00Z');
-*/
-/* 11. UserFlashcard */
+
+/* 12. UserFlashcards */
 INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('1a2b3c4d-5e6f-4789-bcde-1234567890a1', 'user-1', '00000000-0000-0000-0000-000000000001', 'Beginner');
+VALUES ('1a2b3c4d-5e6f-4789-bcde-1234567890a1', 'user-1', '00000000-0000-0000-0000-000000000006', 'Beginner');
 
 INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('2b3c4d5e-6f78-4901-bcde-2345678901b2', 'user-2', '00000000-0000-0000-0000-000000000002', 'Intermediate');
+VALUES ('2b3c4d5e-6f78-4901-bcde-2345678901b2', 'user-2', '00000000-0000-0000-0000-000000000007', 'Intermediate');
 
 INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('3c4d5e6f-7890-4123-bcde-3456789012c3', 'user-3', '00000000-0000-0000-0000-000000000003', 'Advanced');
+VALUES ('3c4d5e6f-7890-4123-bcde-3456789012c3', 'user-3', '00000000-0000-0000-0000-000000000008', 'Advanced');
 
 INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('4d5e6f70-8901-4345-bcde-4567890123d4', 'user-4', '00000000-0000-0000-0000-000000000004', 'Beginner');
+VALUES ('4d5e6f70-8901-4345-bcde-4567890123d4', 'user-4', '00000000-0000-0000-0000-000000000009', 'Beginner');
 
 INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('5e6f7890-1234-4567-bcde-5678901234e5', 'user-5', '00000000-0000-0000-0000-000000000005', 'Intermediate');
+VALUES ('5e6f7890-1234-4567-bcde-5678901234e5', 'user-5', '00000000-0000-0000-0000-000000000010', 'Intermediate');
 
-INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('6f789012-3456-4789-bcde-6789012345f6', 'user-6', '00000000-0000-0000-0000-000000000006', 'Advanced');
-
-INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('7a890123-4567-4901-bcde-7890123456e7', 'user-7', '00000000-0000-0000-0000-000000000007', 'Beginner');
-
-INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('8b901234-5678-4123-bcde-8901234567e8', 'user-8', '00000000-0000-0000-0000-000000000008', 'Intermediate');
-
-INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('9c012345-6789-4345-bcde-9012345678e9', 'user-9', '00000000-0000-0000-0000-000000000009', 'Advanced');
-
-INSERT INTO UserFlashcards (UserFlashcardID, UserID, FlashcardID, Progress)
-VALUES ('0d123456-7890-4567-bcde-0123456789e0', 'user-10', '00000000-0000-0000-0000-000000000010', 'Beginner');

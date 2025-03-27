@@ -22,7 +22,7 @@ namespace LearnEase.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Course", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Course", b =>
                 {
                     b.Property<Guid>("CourseID")
                         .ValueGeneratedOnAdd()
@@ -45,8 +45,10 @@ namespace LearnEase.Repository.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid>("TopicID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("TotalLessons")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -54,10 +56,12 @@ namespace LearnEase.Repository.Migrations
 
                     b.HasKey("CourseID");
 
+                    b.HasIndex("TopicID");
+
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Exercise", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Exercise", b =>
                 {
                     b.Property<Guid>("ExerciseID")
                         .ValueGeneratedOnAdd()
@@ -93,7 +97,7 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("Exercises");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Flashcard", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Flashcard", b =>
                 {
                     b.Property<Guid>("FlashcardID")
                         .ValueGeneratedOnAdd()
@@ -123,7 +127,7 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("Flashcards");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Lesson", b =>
                 {
                     b.Property<Guid>("LessonID")
                         .ValueGeneratedOnAdd()
@@ -154,7 +158,7 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.TheoryLesson", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.TheoryLesson", b =>
                 {
                     b.Property<Guid>("TheoryID")
                         .ValueGeneratedOnAdd()
@@ -182,7 +186,23 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("TheoryLessons");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.User", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Topic", b =>
+                {
+                    b.Property<Guid>("TopicID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("TopicID");
+
+                    b.ToTable("Topic");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.User", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -223,7 +243,7 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserCourse", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserCourse", b =>
                 {
                     b.Property<Guid>("UserCourseID")
                         .ValueGeneratedOnAdd()
@@ -259,88 +279,7 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("UserCourses");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserFlashcard", b =>
-                {
-                    b.Property<Guid>("UserFlashcardID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FlashcardID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Progress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserFlashcardID");
-
-                    b.HasIndex("FlashcardID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("UserFlashcards");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.UserLesson", b =>
-                {
-                    b.Property<Guid>("ProgressID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastAccessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("LessonID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Progress")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ProgressID");
-
-                    b.HasIndex("LessonID")
-                        .IsUnique();
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("UserLesson");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.VideoLesson", b =>
-                {
-                    b.Property<Guid>("VideoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("time");
-
-                    b.Property<Guid>("LessonID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("VideoURL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("VideoID");
-
-                    b.HasIndex("LessonID")
-                        .IsUnique();
-
-                    b.ToTable("VideoLessons");
-                });
-
-            modelBuilder.Entity("UserExercise", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserExercise", b =>
                 {
                     b.Property<Guid>("AttemptID")
                         .ValueGeneratedOnAdd()
@@ -374,9 +313,101 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Exercise", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
+                    b.Property<Guid>("UserFlashcardID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FlashcardID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Progress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserFlashcardID");
+
+                    b.HasIndex("FlashcardID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserFlashcards");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
+                {
+                    b.Property<Guid>("ProgressID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastAccessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("LessonID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Progress")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProgressID");
+
+                    b.HasIndex("LessonID")
+                        .IsUnique();
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserLesson");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.VideoLesson", b =>
+                {
+                    b.Property<Guid>("VideoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<Guid>("LessonID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VideoURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("VideoID");
+
+                    b.HasIndex("LessonID")
+                        .IsUnique();
+
+                    b.ToTable("VideoLessons");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.Course", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Topic", "Topic")
+                        .WithMany("Courses")
+                        .HasForeignKey("TopicID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.Exercise", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
                         .WithMany("Exercises")
                         .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -385,9 +416,9 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Flashcard", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Flashcard", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
+                    b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
                         .WithMany("Flashcards")
                         .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,9 +427,9 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Lesson", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Course", "Course")
+                    b.HasOne("LearnEase.Core.Entities.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -407,26 +438,26 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.TheoryLesson", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.TheoryLesson", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
+                    b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
                         .WithOne("TheoryLesson")
-                        .HasForeignKey("LearnEase_Api.Entity.TheoryLesson", "LessonID")
+                        .HasForeignKey("LearnEase.Core.Entities.TheoryLesson", "LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserCourse", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserCourse", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Course", "Course")
+                    b.HasOne("LearnEase.Core.Entities.Course", "Course")
                         .WithMany("UserCourses")
                         .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
+                    b.HasOne("LearnEase.Core.Entities.User", "User")
                         .WithMany("UserCourses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -437,64 +468,15 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.UserFlashcard", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserExercise", b =>
                 {
-                    b.HasOne("LearnEase_Api.Entity.Flashcard", "Flashcard")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("FlashcardID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Flashcard");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.UserLesson", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
-                        .WithOne("UserProgress")
-                        .HasForeignKey("LearnEase_Api.Entity.UserLesson", "LessonID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
-                        .WithMany("UserProgresses")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearnEase_Api.Entity.VideoLesson", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Lesson", "Lesson")
-                        .WithOne("VideoLesson")
-                        .HasForeignKey("LearnEase_Api.Entity.VideoLesson", "LessonID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-                });
-
-            modelBuilder.Entity("UserExercise", b =>
-                {
-                    b.HasOne("LearnEase_Api.Entity.Exercise", "Exercise")
+                    b.HasOne("LearnEase.Core.Entities.Exercise", "Exercise")
                         .WithMany("UserExercises")
                         .HasForeignKey("ExerciseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearnEase_Api.Entity.User", "User")
+                    b.HasOne("LearnEase.Core.Entities.User", "User")
                         .WithMany("UserExercises")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -505,24 +487,73 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Course", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Flashcard", "Flashcard")
+                        .WithMany("UserFlashcards")
+                        .HasForeignKey("FlashcardID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LearnEase.Core.Entities.User", "User")
+                        .WithMany("UserFlashcards")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Flashcard");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
+                        .WithOne("UserProgress")
+                        .HasForeignKey("LearnEase.Core.Entities.UserLesson", "LessonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearnEase.Core.Entities.User", "User")
+                        .WithMany("UserProgresses")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.VideoLesson", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
+                        .WithOne("VideoLesson")
+                        .HasForeignKey("LearnEase.Core.Entities.VideoLesson", "LessonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.Course", b =>
                 {
                     b.Navigation("Lessons");
 
                     b.Navigation("UserCourses");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Exercise", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Exercise", b =>
                 {
                     b.Navigation("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Flashcard", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Flashcard", b =>
                 {
                     b.Navigation("UserFlashcards");
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.Lesson", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Lesson", b =>
                 {
                     b.Navigation("Exercises");
 
@@ -538,7 +569,12 @@ namespace LearnEase.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearnEase_Api.Entity.User", b =>
+            modelBuilder.Entity("LearnEase.Core.Entities.Topic", b =>
+                {
+                    b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.User", b =>
                 {
                     b.Navigation("UserCourses");
 

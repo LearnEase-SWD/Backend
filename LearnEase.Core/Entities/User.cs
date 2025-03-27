@@ -1,19 +1,19 @@
 ﻿using LearnEase.Core.Enum;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearnEase_Api.Entity
+namespace LearnEase.Core.Entities
 {
-    public class User
-    {
-        [Key]
-        public string UserId { get; set; } = Guid.NewGuid().ToString();
+	public class User
+	{
+		[Key]
+		public string UserId { get; set; } = Guid.NewGuid().ToString();
 
-        [Required]
-        public string UserName { get; set; }
+		[Required]
+		public string UserName { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+		[Required]
+		[EmailAddress]
+		public string Email { get; set; }
 
 		[Required]
 		[MaxLength(50)]
@@ -27,14 +27,14 @@ namespace LearnEase_Api.Entity
 		public string? ImageUrl { get; set; }
 
 		[Required]
-		public UserRole Role { get; set; } = UserRole.User;
+		public UserRoleEnum Role { get; set; } = UserRoleEnum.User;
 
 		public bool IsActive { get; set; } = true;
-        public string CreatedAt { get; set; }
+		public string CreatedAt { get; set; }
 
-        public ICollection<UserLesson> UserProgresses { get; set; } = new List<UserLesson>();
-        public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
-        public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
-        public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>(); 
-    }
+		public ICollection<UserLesson> UserProgresses { get; set; } = new List<UserLesson>();
+		public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
+		public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
+		public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>();
+	}
 }

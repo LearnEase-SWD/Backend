@@ -1,4 +1,4 @@
-﻿using LearnEase_Api.Entity;
+﻿using LearnEase.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnEase.Repository
@@ -13,6 +13,7 @@ namespace LearnEase.Repository
         public DbSet<Flashcard> Flashcards { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<TheoryLesson> TheoryLessons { get; set; }
+        public DbSet<Topic> Topic { get; set; }
         public DbSet<VideoLesson> VideoLessons { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserExercise> UserExercises { get; set; }

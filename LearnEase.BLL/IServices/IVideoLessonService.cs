@@ -1,6 +1,6 @@
 ﻿using LearnEase.Core.Base;
+using LearnEase.Core.Entities;
 using LearnEase.Core.Models.Request;
-using LearnEase_Api.Entity;
 
 namespace LearnEase.Service.IServices
 {

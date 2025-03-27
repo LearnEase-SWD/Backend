@@ -1,7 +1,4 @@
-﻿using LearnEase_Api.Dtos.reponse;
-using LearnEase_Api.Dtos.request;
-using LearnEase_Api.Entity;
-
+﻿using LearnEase.Core.Entities;
 namespace LearnEase_Api.LearnEase.Core.IServices
 {
     public interface ICourseService

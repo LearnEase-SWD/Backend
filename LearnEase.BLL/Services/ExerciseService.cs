@@ -1,5 +1,5 @@
-﻿using LearnEase.Repository.UOW;
-using LearnEase_Api.Entity;
+﻿using LearnEase.Core.Entities;
+using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 
 namespace LearnEase_Api.LearnEase.Core.Services

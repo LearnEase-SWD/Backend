@@ -1,6 +1,7 @@
-﻿using LearnEase_Api.Entity;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+
+namespace LearnEase.Core.Entities;
 
 public class UserExercise
 {

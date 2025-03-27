@@ -1,5 +1,5 @@
-﻿using LearnEase.Repository.IRepository;
-using LearnEase_Api.Entity;
+﻿using LearnEase.Core.Entities;
+using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnEase.Repository.Repositories

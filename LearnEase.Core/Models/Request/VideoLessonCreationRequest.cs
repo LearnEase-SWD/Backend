@@ -1,4 +1,4 @@
-﻿using LearnEase_Api.Entity;
+﻿using LearnEase.Core.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase.Core.Models.Request

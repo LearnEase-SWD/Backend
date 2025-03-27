@@ -1,6 +1,6 @@
-﻿using LearnEase_Api.Entity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using LearnEase.Repository.IRepository;
+using LearnEase.Core.Entities;
 
 [Route("api/flashcards")]
 [ApiController]

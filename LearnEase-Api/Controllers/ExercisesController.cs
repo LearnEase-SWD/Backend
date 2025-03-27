@@ -1,5 +1,5 @@
-﻿using LearnEase_Api.LearnEase.Core.IServices;
-using LearnEase_Api.Entity;
+﻿using LearnEase.Core.Entities;
+using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/exercises")]

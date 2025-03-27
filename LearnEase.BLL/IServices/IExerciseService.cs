@@ -1,6 +1,6 @@
-﻿using LearnEase_Api.Dtos.reponse;
+﻿using LearnEase.Core.Entities;
+using LearnEase_Api.Dtos.reponse;
 using LearnEase_Api.Dtos.request;
-using LearnEase_Api.Entity;
 
 namespace LearnEase_Api.LearnEase.Core.IServices
 {
