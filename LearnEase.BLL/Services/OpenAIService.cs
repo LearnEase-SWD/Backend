@@ -30,10 +30,13 @@ namespace LearnEase.Service.Services
                 _logger = logger;
             }
 
-            public async Task<string> GetAIResponseAsync(string userInput, bool useDatabase = false)
-            {
-                _logger.LogInformation($"Received input: {userInput}, useDatabase: {useDatabase}");
+        public async Task<string> GetAIResponseAsync(string userInput, bool useDatabase = false)
+        {
+            _logger.LogInformation($"Received input: {userInput}, useDatabase: {useDatabase}");
 
+            // Nếu user hỏi về khóa học -> Truy vấn database
+            if (userInput.ToLower().Contains("mua khóa học") || userInput.ToLower().Contains("khóa học"))
+            {
                 if (useDatabase)
                 {
                     string courseSuggestions = await GenerateCourseSuggestionsFromDatabase(userInput);
@@ -42,25 +45,27 @@ namespace LearnEase.Service.Services
                         _logger.LogInformation("Returning course suggestions from database.");
                         return courseSuggestions;
                     }
-                    return $"Hiện tại chúng tôi chưa có khóa học nào phù hợp với '{userInput}'. Bạn có thể thử tìm kiếm với từ khóa khác!";
+                    return $"Hiện tại chúng tôi chưa có khóa học nào phù hợp với '{userInput}'.";
                 }
-
-                // Xử lý các câu hỏi khác bằng GPT
-                if (userInput.ToLower().Contains("mua khóa học") || userInput.ToLower().Contains("khóa học"))
-                {
-                    return await AskUserForMoreInfo(userInput);
-                }
-                else if (userInput.ToLower().Contains("sửa lỗi") || userInput.ToLower().Contains("ngữ pháp"))
-                {
-                    return await GenerateGrammarCorrection(userInput);
-                }
-                else
-                {
-                    return await GenerateGeneralResponse(userInput);
-                }
+                return await AskUserForMoreInfo(userInput);
             }
 
-            private async Task<string> GenerateCourseSuggestionsFromDatabase(string userPreference)
+            // Nếu user hỏi về ngữ pháp -> Không gọi DB, chỉ gọi AI
+            else if (userInput.ToLower().Contains("sửa lỗi") || userInput.ToLower().Contains("ngữ pháp"))
+            {
+                return await GenerateGrammarCorrection(userInput);
+            }
+
+            // Câu hỏi thông thường -> Không gọi DB
+            else
+            {
+                return await GenerateGeneralResponse(userInput);
+            }
+        }
+
+        private async Task<string> GenerateCourseSuggestionsFromDatabase(string userPreference)
+        {
+            try
             {
                 _logger.LogInformation($"Searching courses for: {userPreference}");
 
@@ -83,8 +88,15 @@ namespace LearnEase.Service.Services
 
                 return courseInfo.ToString();
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi truy vấn database: {ex.Message}");
+                return "Xin lỗi, hệ thống đang gặp sự cố khi lấy dữ liệu khóa học. Vui lòng thử lại sau!";
+            }
+        }
 
-            private async Task<string> AskUserForMoreInfo(string userInput)
+
+        private async Task<string> AskUserForMoreInfo(string userInput)
             {
                 string prompt = $"Người dùng nói '{userInput}'. Hãy đặt 3 câu hỏi ngắn gọn để hiểu rõ hơn về sở thích, mục tiêu và trình độ của họ trước khi đề xuất khóa học. Trả về danh sách câu hỏi, không trả lời luôn.";
                 return await CallOpenAI(prompt);
