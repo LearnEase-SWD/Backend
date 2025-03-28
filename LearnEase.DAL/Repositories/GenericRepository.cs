@@ -1,4 +1,5 @@
-﻿using LearnEase.Core;
+﻿using System.Linq.Expressions;
+using LearnEase.Core;
 using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
@@ -96,6 +97,32 @@ namespace LearnEase.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<T?> FindOneAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null)
+        {
+            IQueryable<T> query = _dbSet.Where(predicate);
+
+            if (includeFunc != null)
+            {
+                query = includeFunc(query);
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+        public async Task<IEnumerable<T>> FindAllAsync(
+    Expression<Func<T, bool>> predicate,
+    Func<IQueryable<T>, IQueryable<T>> include = null)
+        {
+            IQueryable<T> query = _dbSet.Where(predicate);
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.ToListAsync();
+        }
+
     }
 }
 

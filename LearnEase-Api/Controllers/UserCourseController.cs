@@ -35,8 +35,26 @@ namespace LearnEase.Api.Controllers
 
 			return StatusCode((int)result.StatusCode, result);
 		}
+        [HttpGet("getByCourse/{courseId}")]
+        public async Task<IActionResult> GetByCourseId(Guid courseId,string userId)
+        {
+            var result = await _userCourseService.GetUserCourseByIdCourseAsync(courseId, userId);
+            if (result.StatusCode == StatusCodeHelper.OK)
+                return Ok(result);
 
-		[HttpPost]
+            return StatusCode((int)result.StatusCode, result);
+        }
+        [HttpGet("getByListCourse/{userId}")]
+        public async Task<IActionResult> GetListCourseByUserId(string userId)
+        {
+            var result = await _userCourseService.GetUserCourseUserIDAsync(userId);
+            if (result.StatusCode == StatusCodeHelper.OK)
+                return Ok(result);
+
+            return StatusCode((int)result.StatusCode, result);
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> Create([FromBody] UserCourseRequest userCourseRequest)
 		{
 			if (!ModelState.IsValid)

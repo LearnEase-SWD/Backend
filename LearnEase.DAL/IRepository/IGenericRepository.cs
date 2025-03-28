@@ -1,4 +1,5 @@
-﻿using LearnEase.Core;
+﻿using System.Linq.Expressions;
+using LearnEase.Core;
 
 namespace LearnEase.Repository.IRepository
 {
@@ -12,6 +13,11 @@ namespace LearnEase.Repository.IRepository
                                                             List<Func<IQueryable<T>, IQueryable<T>>>? filterFuncs = null,
                                                             Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
 		Task<T?> GetByIdAsync(object id, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
+        Task<T?> FindOneAsync(Expression<Func<T, bool>> predicate,
+                          Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
+        Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> predicate,
+                           Func<IQueryable<T>, IQueryable<T>>? include = null);
+
         Task CreateAsync(T obj);
         Task UpdateAsync(T obj);
         Task DeleteAsync(object id);
