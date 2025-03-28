@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/lessons")]
-[Authorize]
+[AllowAnonymous]
 public class LessonController : ControllerBase
 {
     private readonly ILessonService _lessonService;
@@ -22,7 +22,14 @@ public class LessonController : ControllerBase
         return StatusCode((int)response.StatusCode, response);
     }
 
-    [HttpGet("{id}")]
+	[HttpGet("course/{courseId}")]
+	public async Task<IActionResult> GetLessonsByCourseId(Guid courseId, int pageIndex = 1, int pageSize = 10)
+	{
+		var response = await _lessonService.GetLessonsByCourseIdAsync(courseId, pageIndex, pageSize);
+		return StatusCode((int)response.StatusCode, response);
+	}
+
+	[HttpGet("{id}")]
     public async Task<IActionResult> GetLessonById(Guid id)
     {
         var response = await _lessonService.GetLessonByIdAsync(id);
@@ -30,7 +37,7 @@ public class LessonController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLesson([FromBody] LessonCreationRequest request)
+    public async Task<IActionResult> CreateLesson([FromBody] LessonCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -40,7 +47,7 @@ public class LessonController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] LessonCreationRequest request)
+    public async Task<IActionResult> UpdateLesson(Guid id, [FromBody] LessonCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

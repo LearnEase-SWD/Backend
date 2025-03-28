@@ -1,11 +1,13 @@
 ﻿using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("api/theory-lessons")]
     [ApiController]
+    [AllowAnonymous]
     public class TheoryLessonController : ControllerBase
     {
         private readonly ITheoryLessonService _theoryLessonService;
@@ -30,7 +32,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTheoryLesson([FromBody] TheoryLessonCreationRequest request)
+        public async Task<IActionResult> CreateTheoryLesson([FromBody] TheoryLessonCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -40,7 +42,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTheoryLesson(Guid id, [FromBody] TheoryLessonCreationRequest request)
+        public async Task<IActionResult> UpdateTheoryLesson(Guid id, [FromBody] TheoryLessonCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

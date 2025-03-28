@@ -4,12 +4,14 @@ namespace LearnEase.Repository.IRepository
 {
     public interface IGenericRepository<T> where T : class
     {
-        // Query
         IQueryable<T> Entities { get; }
 
-        Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize,
-                                              Func<IQueryable<T>, IQueryable<T>>? filterFunc = null);
-        Task<T?> GetByIdAsync(object id);
+        Task<BasePaginatedList<T>> GetPaggingAsync(IQueryable<T> query,
+                                                            int index,
+                                                            int pageSize,
+                                                            List<Func<IQueryable<T>, IQueryable<T>>>? filterFuncs = null,
+                                                            Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
+		Task<T?> GetByIdAsync(object id, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
         Task CreateAsync(T obj);
         Task UpdateAsync(T obj);
         Task DeleteAsync(object id);

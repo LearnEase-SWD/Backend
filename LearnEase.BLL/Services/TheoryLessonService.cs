@@ -14,16 +14,14 @@ namespace LearnEase.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<TheoryLessonService> _logger;
 
-        public TheoryLessonService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<TheoryLessonService> logger)
+        public TheoryLessonService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _logger = logger;
         }
 
-        public async Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreationRequest theoryLessonRequest)
+        public async Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreateRequest theoryLessonRequest)
         {
             if (theoryLessonRequest == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
@@ -34,13 +32,15 @@ namespace LearnEase.Service.Services
             if (lesson == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "ID bài học không tồn tại.");
 
-            // Kiểm tra có theory lesson nào đã tồn tại trong 1 lesson chưa 
-            var existedTheory = _unitOfWork.GetCustomRepository<ITheoryLessonRepository>()
-                                           .GetTheoryByLessonId(theoryLessonRequest.LessonID);
-            if (existedTheory == null)
-                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Bài học đã tồn tại.");
+			// Kiểm tra có theory lesson nào đã tồn tại trong 1 lesson chưa 
+			var existedTheory = _unitOfWork.GetCustomRepository<ITheoryLessonRepository>()
+										   .GetTheoryByLessonId(theoryLessonRequest.LessonID);
 
-            await _unitOfWork.BeginTransactionAsync();
+			// Nếu đã tồn tại thì báo lỗi
+			if (existedTheory != null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "DUPLICATE_THEORY_LESSON", false, "Đã tồn tại bài học lý thuyết cho LessonID này.");
+
+			await _unitOfWork.BeginTransactionAsync();
 
             try
             {
@@ -53,10 +53,9 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được tạo thành công.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi tạo bài học: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học.");
             }
         }
@@ -70,7 +69,7 @@ namespace LearnEase.Service.Services
             {
                 var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
                 var query = theoryLessonRepository.Entities;
-                var theoryLessons = await theoryLessonRepository.GetPagging(query, pageIndex, pageSize);
+                var theoryLessons = await theoryLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
                 return new BaseResponse<IEnumerable<TheoryLesson>>(
                     StatusCodeHelper.OK,
@@ -79,9 +78,8 @@ namespace LearnEase.Service.Services
                     "Lấy danh sách bài học thành công."
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Lỗi khi lấy danh sách bài học: {ex.Message}");
                 return new BaseResponse<IEnumerable<TheoryLesson>>(
                     StatusCodeHelper.ServerError,
                     "ERROR",
@@ -101,14 +99,13 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<TheoryLesson>(StatusCodeHelper.OK, "SUCCESS", theoryLesson, "Lấy bài học thành công.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Lỗi khi lấy bài học với ID {id}: {ex.Message}");
                 return new BaseResponse<TheoryLesson>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học.");
             }
         }
 
-        public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreationRequest request)
+        public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreateRequest request)
         {
             if (request == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
@@ -132,7 +129,6 @@ namespace LearnEase.Service.Services
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi cập nhật bài học {id}: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài học.");
             }
         }
@@ -158,7 +154,6 @@ namespace LearnEase.Service.Services
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi xóa bài học {id}: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
             }
         }

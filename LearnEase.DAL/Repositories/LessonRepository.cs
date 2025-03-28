@@ -1,4 +1,5 @@
-﻿using LearnEase.Core.Entities;
+﻿using LearnEase.Core;
+using LearnEase.Core.Entities;
 using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +13,21 @@ namespace LearnEase.Repository.Repositories
             _context = context;
         }
 
-        public async Task<Lesson> GetLessonByCourseId(Guid courseId)
-        {
-            return await _context.Lessons.FirstOrDefaultAsync(lesson => lesson.CourseID == courseId);
-        }
-    }
+		public async Task<BasePaginatedList<Lesson>> GetLessonsByCourseId(Guid courseId, int pageIndex, int pageSize)
+		{
+			if(pageIndex < 1) pageIndex = 1;
+			if (pageSize < 1) pageSize = 1;
+
+			var query = _context.Lessons.Where(lesson => lesson.CourseID == courseId);
+
+			var totalCount = await query.CountAsync();
+
+			var items = await query
+				.Skip((pageIndex - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			return new BasePaginatedList<Lesson>(items, totalCount, pageIndex, pageSize);
+		}
+	}
 }

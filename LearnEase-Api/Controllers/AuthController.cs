@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [Route("api/auth")]
 [ApiController]
+[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -79,21 +80,24 @@ public class AuthController : ControllerBase
         var accessToken = info.Properties.GetTokenValue("access_token");
         var userEmail = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
         var userName = info.Principal.Identity?.Name;
+		var imageUrl = info.Principal.FindFirst("urn:google:picture")?.Value;
 
-        if (userEmail != null)
+		if (userEmail != null)
         {
             var findUserEmail = await _userService.FindUserByEmail(userEmail);
             if (findUserEmail == null)
             {
-                await _userService.CreateNewUser(new UserCreationRequest(userName, userEmail, null));
+                await _userService.CreateNewUser(new UserCreateRequest(userName, userEmail, imageUrl));
             }
         }
 
         CacheRequest cacheRequest = new CacheRequest(accessToken, userEmail, 60);
         await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
 
-        // Chuyển hướng về frontend với token
-     return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}");
+        // Chuyển hướng về frontend
+        //return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
+        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}");
+
     }
 
     [HttpPost("verify-access-token")]

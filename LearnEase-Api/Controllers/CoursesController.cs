@@ -1,9 +1,12 @@
 ﻿using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Mvc;
 using LearnEase.Core.Entities;
+using LearnEase.Core.Models.Request;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/courses")]
 [ApiController]
+[AllowAnonymous]
 public class CoursesController : ControllerBase
 {
     private readonly ICourseService _courseService;
@@ -14,14 +17,14 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAllAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         var course = await _courseService.GetCourseByIdAsync(id);
         if (course == null)
@@ -31,22 +34,23 @@ public class CoursesController : ControllerBase
         return Ok(course);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Course course)
+	[HttpPost]
+	public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
+	{
+		if (course == null)
+			return BadRequest(new { message = "Invalid course data." });
+
+		var newCourse = await _courseService.CreateCourseAsync(course);
+
+		// Phản hồi thành công với dữ liệu vừa tạo
+		return Ok(newCourse);
+	}
+
+
+	[HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] CourseRequest course)
     {
         if (course == null)
-        {
-            return BadRequest(new { message = "Invalid course data." });
-        }
-        var newCourse = await _courseService.CreateCourseAsync(course);
-        return CreatedAtAction(nameof(GetById), new { id = newCourse.Data }, newCourse);
-    }
-
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Course course)
-    {
-        if (course == null || id != course.CourseID)
         {
             return BadRequest(new { message = "Invalid course data or mismatched ID." });
         }
@@ -59,7 +63,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var deleted = await _courseService.DeleteCourseAsync(id);
         if (!deleted.Data)

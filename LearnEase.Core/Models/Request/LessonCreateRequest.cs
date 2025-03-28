@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LearnEase.Core.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace LearnEase.Core.Models.Request
 {
-    public class LessonCreationRequest
+    public class LessonCreateRequest
     {
         [Required(ErrorMessage = "CourseID không được để trống.")]
         public Guid CourseID { get; set; }
@@ -15,7 +16,6 @@ namespace LearnEase.Core.Models.Request
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Loại bài học không được để trống.")]
-        [MaxLength(50, ErrorMessage = "Loại bài học không được vượt quá 50 ký tự.")]
-        public string LessonType { get; set; }
+        public LessonTypeEnum LessonType { get; set; }
     }
 }
