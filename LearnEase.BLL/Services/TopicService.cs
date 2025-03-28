@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LearnEase.Core;
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
@@ -8,7 +7,6 @@ using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearnEase.Service.Services
 {
@@ -16,13 +14,11 @@ namespace LearnEase.Service.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly ILogger<TopicService> _logger;
 
-		public TopicService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<TopicService> logger)
+		public TopicService(IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-			_logger = logger;
 		}
 
 		public async Task<BaseResponse<IEnumerable<TopicResponse>>> GetTopicsAsync(int pageIndex, int pageSize)
@@ -40,13 +36,11 @@ namespace LearnEase.Service.Services
 				var topics = await topicRepository.GetPaggingAsync(query, pageIndex, pageSize);
 				var topicResponses = _mapper.Map<IEnumerable<TopicResponse>>(topics.Items);
 
-				// Lấy danh sách khoá học cho từng chủ đề
+				// Lấy danh sách CourseId cho từng chủ đề
 				foreach (var topic in topicResponses)
 				{
 					var courseResult = await topicCustomRepository.GetCourseByTopicAsync(topic.TopicId, 1, int.MaxValue);
-
-					// Đảm bảo Courses không null trước khi add
-					topic.Courses = _mapper.Map<List<CourseResponse>>(courseResult.Courses);
+					topic.CourseIds = courseResult.CourseIds;
 				}
 
 				return new BaseResponse<IEnumerable<TopicResponse>>(
@@ -58,7 +52,6 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy danh sách chủ đề: {ex.Message}");
 				return new BaseResponse<IEnumerable<TopicResponse>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -97,7 +90,6 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy danh sách khóa học theo chủ đề {topicId}: {ex.Message}");
 				return new BaseResponse<TopicResponse>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -130,9 +122,8 @@ namespace LearnEase.Service.Services
 					"Lấy chủ đề thành công."
 				);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				_logger.LogError($"Lỗi khi lấy chủ đề với ID {id}: {ex.Message}");
 				return new BaseResponse<TopicResponse>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -175,7 +166,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi tạo chủ đề: {ex.Message}");
 				return new BaseResponse<bool>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -224,7 +214,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi cập nhật chủ đề {id}: {ex.Message}");
 				return new BaseResponse<bool>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -264,7 +253,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi xóa chủ đề {id}: {ex.Message}");
 				return new BaseResponse<bool>(
 					StatusCodeHelper.ServerError,
 					"ERROR",

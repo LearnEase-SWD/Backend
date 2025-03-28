@@ -15,6 +15,7 @@ namespace LearnEase.Service.Mapping
 			CreateMap<FlashcardRequest, Flashcard>();
 
 			CreateMap<CourseRequest, Course>();
+			CreateMap<Course, CourseRequest>();
 			CreateMap<CourseResponse, Course>();
 			CreateMap<Course, CourseResponse>();
 
