@@ -11,12 +11,18 @@ namespace LearnEase.Service.Mapping
         {
             CreateMap<TheoryLessonCreateRequest, TheoryLesson>();
             CreateMap<LessonCreateRequest, Lesson>();
-			CreateMap<CourseRequest, Course>();
+			
 			CreateMap<FlashcardRequest, Flashcard>();
+
+			CreateMap<CourseRequest, Course>();
 			CreateMap<CourseResponse, Course>();
 			CreateMap<Course, CourseResponse>();
+
 			CreateMap<Lesson, LessonResponse>();
 			CreateMap<LessonResponse, Lesson>();
+
+			CreateMap<Topic, TopicResponse>();
+			CreateMap<TopicResponse, Topic>();
 		}
 
     }
