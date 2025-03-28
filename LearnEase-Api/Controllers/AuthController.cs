@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LearnEase.Core.Models.Request;
 
 [Route("api/auth")]
 [ApiController]
@@ -65,7 +66,7 @@ public class AuthController : ControllerBase
         var properties = new AuthenticationProperties { RedirectUri = redirectUri };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
-    
+
 
     [HttpGet("callback")]
     public async Task<IActionResult> Callback()

@@ -1,7 +1,7 @@
 ﻿using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
-using LearnEase_Api.Dtos.reponse;
-using LearnEase_Api.Dtos.request;
+using LearnEase.Core.Models.Reponse;
+using LearnEase.Core.Models.Request;
 
 namespace LearnEase_Api.LearnEase.Core.IServices
 {

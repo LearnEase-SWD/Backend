@@ -1,13 +1,12 @@
 ﻿using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
+using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
-using LearnEase_Api.Dtos.reponse;
-using LearnEase_Api.Dtos.request;
 using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.Mapper;
-using Microsoft.Extensions.Logging;
 
 namespace LearnEase_Api.LearnEase.Core.Services
 {
