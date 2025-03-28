@@ -39,8 +39,9 @@ public class CoursesController : ControllerBase
             return BadRequest(new { message = "Invalid course data." });
         }
         var newCourse = await _courseService.CreateCourseAsync(course);
-        return CreatedAtAction(nameof(GetById), new { id = newCourse.CourseID }, newCourse);
+        return CreatedAtAction(nameof(GetById), new { id = newCourse.Data }, newCourse);
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] Course course)
@@ -50,7 +51,7 @@ public class CoursesController : ControllerBase
             return BadRequest(new { message = "Invalid course data or mismatched ID." });
         }
         var updated = await _courseService.UpdateCourseAsync(id, course);
-        if (!updated)
+        if (!updated.Data)
         {
             return NotFound(new { message = "Course not found." });
         }
@@ -61,7 +62,7 @@ public class CoursesController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _courseService.DeleteCourseAsync(id);
-        if (!deleted)
+        if (!deleted.Data)
         {
             return NotFound(new { message = "Course not found." });
         }

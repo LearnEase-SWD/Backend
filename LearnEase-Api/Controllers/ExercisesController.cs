@@ -50,18 +50,19 @@ public class ExercisesController : ControllerBase
             return BadRequest(new { message = "Invalid exercise data or mismatched ID." });
         }
         var result = await _exerciseService.UpdateExerciseAsync(id, exercise);
-        if (!result)
+        if (!result.Data)
         {
             return NotFound(new { message = "Exercise not found." });
         }
         return NoContent();
     }
 
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _exerciseService.DeleteExerciseAsync(id);
-        if (!result)
+        if (!result.Data)
         {
             return NotFound(new { message = "Exercise not found." });
         }

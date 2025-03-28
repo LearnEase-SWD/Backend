@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LearnEase.Repository.IRepository;
 using LearnEase.Core.Entities;
+using LearnEase.Service.IServices;
 
 [Route("api/flashcards")]
 [ApiController]
@@ -50,7 +51,7 @@ public class FlashcardsController : ControllerBase
             return BadRequest(new { message = "Invalid flashcard data or mismatched ID." });
         }
         var result = await _flashcardService.UpdateFlashcardAsync(id, flashcard);
-        if (!result)
+        if (!result.Data)
         {
             return NotFound(new { message = "Flashcard not found." });
         }
@@ -61,7 +62,7 @@ public class FlashcardsController : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _flashcardService.DeleteFlashcardAsync(id);
-        if (!result)
+        if (!result.Data)
         {
             return NotFound(new { message = "Flashcard not found." });
         }
