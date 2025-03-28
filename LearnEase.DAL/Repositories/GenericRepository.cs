@@ -33,10 +33,32 @@ namespace LearnEase.Repository.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task<T?> GetByIdAsync(object id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+		public async Task<T?> GetByIdAsync(object id, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null)
+		{
+			IQueryable<T> query = _dbSet;
+
+			// Include thêm entity liên quan
+			if (includeFunc != null)
+			{
+				query = includeFunc(query);
+			}
+
+			// Lấy tên property khóa chính động
+			var keyName = _context.Model
+								  .FindEntityType(typeof(T))
+								  ?.FindPrimaryKey()
+								  ?.Properties
+								  .FirstOrDefault()
+								  ?.Name;
+
+			if (keyName == null)
+				throw new InvalidOperationException($"Entity '{typeof(T).Name}' không xác định được khóa chính.");
+
+			// Sử dụng tên property động để truy vấn
+			var entity = await query.FirstOrDefaultAsync(e => EF.Property<object>(e, keyName) == id);
+
+			return entity;
+		}
 
 		public async Task<BasePaginatedList<T>> GetPaggingAsync(IQueryable<T> query,
 	                                                        int index,

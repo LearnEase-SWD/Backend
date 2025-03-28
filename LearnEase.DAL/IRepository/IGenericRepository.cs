@@ -11,7 +11,7 @@ namespace LearnEase.Repository.IRepository
                                                             int pageSize,
                                                             List<Func<IQueryable<T>, IQueryable<T>>>? filterFuncs = null,
                                                             Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
-		Task<T?> GetByIdAsync(object id);
+		Task<T?> GetByIdAsync(object id, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null);
         Task CreateAsync(T obj);
         Task UpdateAsync(T obj);
         Task DeleteAsync(object id);

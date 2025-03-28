@@ -6,6 +6,7 @@ using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services
@@ -68,13 +69,14 @@ namespace LearnEase.Service.Services
 		{
 			try
 			{
-				var course = await _unitOfWork.GetRepository<Course>().GetByIdAsync(id);
-				CourseResponse courseDTO = _mapper.Map<CourseResponse>(course);
+				var course = await _unitOfWork.GetRepository<Course>().GetByIdAsync(id, q => q.Include(c => c.Topic));
+				CourseResponse courseResponse = _mapper.Map<CourseResponse>(course);
+				courseResponse.TopicName = course.Topic.Name;
 
 				if (course == null)
 					return new BaseResponse<CourseResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Khóa học không tồn tại.");
 
-				return new BaseResponse<CourseResponse>(StatusCodeHelper.OK, "SUCCESS", courseDTO, "Lấy khóa học thành công.");
+				return new BaseResponse<CourseResponse>(StatusCodeHelper.OK, "SUCCESS", courseResponse, "Lấy khóa học thành công.");
 			}
 			catch (Exception)
 			{
@@ -99,7 +101,7 @@ namespace LearnEase.Service.Services
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học được tạo thành công.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo khóa học.");
