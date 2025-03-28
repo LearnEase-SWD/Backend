@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearnEase.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250328084637_Init")]
+    [Migration("20250328102324_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -48,6 +48,11 @@ namespace LearnEase.Repository.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -72,6 +77,34 @@ namespace LearnEase.Repository.Migrations
                     b.HasIndex("TopicID");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.CourseHistory", b =>
+                {
+                    b.Property<Guid>("PurchaseID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CourseID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("PurchasedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("PurchaseID");
+
+                    b.HasIndex("CourseID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("CourseHistories");
                 });
 
             modelBuilder.Entity("LearnEase.Core.Entities.Exercise", b =>
@@ -416,6 +449,25 @@ namespace LearnEase.Repository.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("LearnEase.Core.Entities.CourseHistory", b =>
+                {
+                    b.HasOne("LearnEase.Core.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearnEase.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LearnEase.Core.Entities.Exercise", b =>

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using LearnEase.Core;
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
@@ -43,7 +45,38 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<Lesson>> GetLessonByIdAsync(Guid id)
+		public async Task<BaseResponse<IEnumerable<LessonResponse>>> GetLessonsByCourseIdAsync(Guid courseId, int pageIndex, int pageSize)
+		{
+			try
+			{
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var paginatedLessons = await lessonRepository.GetPagging(
+					lessonRepository.Entities.Where(lesson => lesson.CourseID == courseId),
+					pageIndex,
+					pageSize
+				);
+
+				var lessonResponses = _mapper.Map<IEnumerable<LessonResponse>>(paginatedLessons.Items);
+
+				return new BaseResponse<IEnumerable<LessonResponse>>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					lessonResponses,
+					"Lấy danh sách bài học theo khóa học thành công."
+				);
+			}
+			catch (Exception ex)
+			{
+				return new BaseResponse<IEnumerable<LessonResponse>>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					null,
+					$"Lỗi hệ thống: {ex.Message}"
+				);
+			}
+		}
+
+		public async Task<BaseResponse<Lesson>> GetLessonByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
                 return new BaseResponse<Lesson>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");

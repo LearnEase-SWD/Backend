@@ -50,6 +50,7 @@ namespace LearnEase.Repository.Migrations
                     TopicID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Url = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     TotalLessons = table.Column<int>(type: "int", nullable: false),
@@ -65,6 +66,33 @@ namespace LearnEase.Repository.Migrations
                         column: x => x.TopicID,
                         principalTable: "Topic",
                         principalColumn: "TopicID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseHistories",
+                columns: table => new
+                {
+                    PurchaseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PurchasedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseHistories", x => x.PurchaseID);
+                    table.ForeignKey(
+                        name: "FK_CourseHistories_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseHistories_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -286,6 +314,16 @@ namespace LearnEase.Repository.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseHistories_CourseID",
+                table: "CourseHistories",
+                column: "CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseHistories_UserID",
+                table: "CourseHistories",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Courses_TopicID",
                 table: "Courses",
                 column: "TopicID");
@@ -362,6 +400,9 @@ namespace LearnEase.Repository.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "CourseHistories");
+
             migrationBuilder.DropTable(
                 name: "TheoryLessons");
 

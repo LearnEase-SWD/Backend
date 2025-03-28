@@ -14,6 +14,7 @@ namespace LearnEase.Repository
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<TheoryLesson> TheoryLessons { get; set; }
         public DbSet<Topic> Topic { get; set; }
+        public DbSet<CourseHistory> CourseHistories { get; set; }
         public DbSet<VideoLesson> VideoLessons { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserExercise> UserExercises { get; set; }

@@ -22,6 +22,10 @@ namespace LearnEase.Core.Entities
 		public string Description { get; set; }
 
 		[Required]
+		[MaxLength(50)]
+		public string Status { get; set; }
+
+		[Required]
 		[MaxLength(1000)]
 		public string Url { get; set; }
 

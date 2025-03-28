@@ -22,7 +22,14 @@ public class LessonController : ControllerBase
         return StatusCode((int)response.StatusCode, response);
     }
 
-    [HttpGet("{id}")]
+	[HttpGet("course/{courseId}")]
+	public async Task<IActionResult> GetLessonsByCourseId(Guid courseId, int pageIndex = 1, int pageSize = 10)
+	{
+		var response = await _lessonService.GetLessonsByCourseIdAsync(courseId, pageIndex, pageSize);
+		return StatusCode((int)response.StatusCode, response);
+	}
+
+	[HttpGet("{id}")]
     public async Task<IActionResult> GetLessonById(Guid id)
     {
         var response = await _lessonService.GetLessonByIdAsync(id);

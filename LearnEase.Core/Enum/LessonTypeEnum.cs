@@ -4,7 +4,6 @@
 	{
 		Video,
 		Theory,
-		Exercise,
-		Conversation
+		Exercise
 	}
 }

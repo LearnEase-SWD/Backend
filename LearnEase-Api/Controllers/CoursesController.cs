@@ -40,7 +40,7 @@ public class CoursesController : ControllerBase
             return BadRequest(new { message = "Invalid course data." });
         }
         var newCourse = await _courseService.CreateCourseAsync(course);
-        return CreatedAtAction(nameof(GetById), new { id = newCourse.Data }, newCourse);
+        return CreatedAtAction(nameof(GetByIdAsync), new { id = newCourse.Data }, newCourse);
     }
 
     [HttpPut("{id}")]

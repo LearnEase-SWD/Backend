@@ -48,38 +48,43 @@ INSERT INTO Topic (TopicID, Name)
 VALUES ('e5f67890-1234-5678-abcd-5678901234ef', N'Luyện nói');
 
 /* 3. Courses */
-INSERT INTO Courses (CourseID, TopicID, Title, Description, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+INSERT INTO Courses (CourseID, TopicID, Title, Description, Status, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
 VALUES ('a1b2c3d4-e5f6-7890-abcd-1234567890ab', 'a1b2c3d4-e5f6-7890-abcd-1234567890ab', 
         N'Giao tiếp tiếng Anh cơ bản', 
         N'Khóa học dành cho người mới bắt đầu, giúp bạn tự tin giao tiếp trong các tình huống hàng ngày.', 
+        N'Available',
         N'https://learnease.com/basic-english-communication', 
         500000, 0, N'Beginner', '2024-01-01', NULL);
 
-INSERT INTO Courses (CourseID, TopicID, Title, Description, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+INSERT INTO Courses (CourseID, TopicID, Title, Description, Status, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
 VALUES ('e5f67890-1234-5678-abcd-5678901234ef', 'b2c3d4e5-f678-9012-abcd-2345678901bc', 
         N'Tiếng Anh trung cấp', 
         N'Khóa học nâng cao kỹ năng giao tiếp và sử dụng tiếng Anh ở mức trung cấp.', 
+        N'Available',
         N'https://learnease.com/intermediate-english', 
         800000, 0, N'Intermediate', '2024-02-11', NULL);
 
-INSERT INTO Courses (CourseID, TopicID, Title, Description, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+INSERT INTO Courses (CourseID, TopicID, Title, Description, Status, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
 VALUES ('d4e5f678-9012-3456-abcd-4567890123de', 'c3d4e5f6-7890-1234-abcd-3456789012cd', 
         N'Tiếng Anh nâng cao', 
         N'Khóa học dành cho người sử dụng tiếng Anh thành thạo, tập trung vào các kỹ năng học thuật.', 
+        N'No Available',
         N'https://learnease.com/advanced-english', 
         1200000, 0, N'Advanced', '2024-02-11', NULL);
 
-INSERT INTO Courses (CourseID, TopicID, Title, Description, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+INSERT INTO Courses (CourseID, TopicID, Title, Description, Status, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
 VALUES ('c3d4e5f6-7890-1234-abcd-3456789012cd', 'd4e5f678-9012-3456-abcd-4567890123de', 
         N'Tiếng Nhật sơ cấp', 
         N'Khóa học dành cho người mới học tiếng Nhật với các chủ đề giao tiếp cơ bản.', 
+        N'Available',
         N'https://learnease.com/basic-japanese', 
         600000, 0, N'Beginner', '2024-02-11', NULL);
 
-INSERT INTO Courses (CourseID, TopicID, Title, Description, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
+INSERT INTO Courses (CourseID, TopicID, Title, Description, Status, Url, Price, TotalLessons, DifficultyLevel, CreatedAt, UpdatedAt) 
 VALUES ('b2c3d4e5-f678-9012-abcd-2345678901bc', 'e5f67890-1234-5678-abcd-5678901234ef', 
         N'Tiếng Nhật trung cấp', 
         N'Khóa học tập trung vào ngữ pháp và từ vựng trung cấp tiếng Nhật.', 
+        N'No Available',
         N'https://learnease.com/intermediate-japanese', 
         900000, 0, N'Intermediate', '2024-02-11', NULL);
 
