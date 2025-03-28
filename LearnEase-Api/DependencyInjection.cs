@@ -9,6 +9,9 @@ using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repositories;
+
+using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
@@ -82,12 +85,13 @@ namespace LearnEase_Api
             services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<ITheoryLessonService, TheoryLessonService>();
             services.AddScoped<IVnPayService, VnPayService>();
+            services.AddScoped<ITopicService, TopicService>();
+			services.AddScoped<IOpenAIService, OpenAIService>();
 
-            //Repo
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+			//Repo
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
-            services.AddScoped<IOpenAIService, OpenAIService>();
         }
 
         // Redis Cloud
@@ -154,7 +158,8 @@ namespace LearnEase_Api
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
                 options.Scope.Add("openid");
-            });
+				options.ClaimActions.MapJsonKey("urn:google:picture", "picture");
+			});
 
             services.AddAuthorization();
         }

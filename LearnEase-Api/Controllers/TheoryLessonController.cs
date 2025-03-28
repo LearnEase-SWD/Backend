@@ -30,7 +30,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTheoryLesson([FromBody] TheoryLessonCreationRequest request)
+        public async Task<IActionResult> CreateTheoryLesson([FromBody] TheoryLessonCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -40,7 +40,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTheoryLesson(Guid id, [FromBody] TheoryLessonCreationRequest request)
+        public async Task<IActionResult> UpdateTheoryLesson(Guid id, [FromBody] TheoryLessonCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

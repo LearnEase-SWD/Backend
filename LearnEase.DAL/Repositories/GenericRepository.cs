@@ -33,34 +33,66 @@ namespace LearnEase.Repository.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task<T?> GetByIdAsync(object id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+		public async Task<T?> GetByIdAsync(object id, Func<IQueryable<T>, IQueryable<T>>? includeFunc = null)
+		{
+			IQueryable<T> query = _dbSet;
 
-        public async Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query,
-                                                           int index,
-                                                           int pageSize,
-                                                           Func<IQueryable<T>, IQueryable<T>>? filterFunc = null)
-        {
-            query = query.AsNoTracking();
+			// Include thêm entity liên quan
+			if (includeFunc != null)
+			{
+				query = includeFunc(query);
+			}
 
-            // Áp dụng filter nếu có
-            if (filterFunc != null)
-            {
-                query = filterFunc(query);
-            }
+			// Lấy tên property khóa chính động
+			var keyName = _context.Model
+								  .FindEntityType(typeof(T))
+								  ?.FindPrimaryKey()
+								  ?.Properties
+								  .FirstOrDefault()
+								  ?.Name;
 
-            int count = await query.CountAsync();
-            IReadOnlyCollection<T> items = await query.Skip((index - 1) * pageSize)
-                                                      .Take(pageSize)
-                                                      .ToListAsync();
+			if (keyName == null)
+				throw new InvalidOperationException($"Entity '{typeof(T).Name}' không xác định được khóa chính.");
 
-            return new BasePaginatedList<T>(items, count, index, pageSize);
-        }
+			// Sử dụng tên property động để truy vấn
+			var entity = await query.FirstOrDefaultAsync(e => EF.Property<object>(e, keyName) == id);
+
+			return entity;
+		}
+
+		public async Task<BasePaginatedList<T>> GetPaggingAsync(IQueryable<T> query,
+	                                                        int index,
+	                                                        int pageSize,
+	                                                        List<Func<IQueryable<T>, IQueryable<T>>>? filterFuncs = null, 
+	                                                        Func<IQueryable<T>, IQueryable<T>>? includeFunc = null)
+		{
+			query = query.AsNoTracking();
+
+			// Include thêm entity liên quan
+			if (includeFunc != null)
+			{
+				query = includeFunc(query);
+			}
+
+			// Thêm filter để lọc 
+			if (filterFuncs != null)
+			{
+				foreach (var filter in filterFuncs)
+				{
+					query = filter(query);
+				}
+			}
+
+			int count = await query.CountAsync();
+			IReadOnlyCollection<T> items = await query.Skip((index - 1) * pageSize)
+													  .Take(pageSize)
+													  .ToListAsync();
+
+			return new BasePaginatedList<T>(items, count, index, pageSize);
+		}
 
 
-        public async Task SaveAsync()
+		public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }

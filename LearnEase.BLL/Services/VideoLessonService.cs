@@ -19,7 +19,7 @@ namespace LearnEase.Service.Services
 			_mapper = mapper;
 		}
 
-		public async Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreationRequest videoRequest)
+		public async Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreateRequest videoRequest)
 		{
 			if (videoRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");
@@ -53,7 +53,7 @@ namespace LearnEase.Service.Services
 			{
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
 				var query = videoLessonRepository.Entities;
-				var videoLessons = await videoLessonRepository.GetPagging(query, pageIndex, pageSize);
+				var videoLessons = await videoLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<VideoLesson>>(
 					StatusCodeHelper.OK,
@@ -89,7 +89,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreationRequest request)
+		public async Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreateRequest request)
 		{
 			if (request == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");

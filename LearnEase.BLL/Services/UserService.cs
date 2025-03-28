@@ -1,4 +1,5 @@
-﻿using LearnEase.Core.Entities;
+﻿using LearnEase.Core.Base;
+using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.Dtos.reponse;
@@ -13,16 +14,43 @@ namespace LearnEase_Api.LearnEase.Core.Services
 	public class UserService : IUserService
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly ILogger<UserService> _logger;
 		private readonly MapperUser _mapper = new MapperUser();
 
-		public UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger)
+		public UserService(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		public async Task<UserReponse> CreateNewUser(UserCreationRequest request)
+		public async Task<BaseResponse<IEnumerable<User>>> GetUserAsync(int pageIndex, int pageSize)
+		{
+			if (pageIndex < 1) pageIndex = 1;
+			if (pageSize < 1) pageSize = 10;
+
+			try
+			{
+				var userRepository = _unitOfWork.GetRepository<User>();
+				var query = userRepository.Entities;
+				var users = await userRepository.GetPaggingAsync(query, pageIndex, pageSize);
+
+				return new BaseResponse<IEnumerable<User>>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					users.Items,
+					"Lấy danh sách chủ đề thành công."
+				);
+			}
+			catch (Exception)
+			{
+				return new BaseResponse<IEnumerable<User>>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					new List<User>(),
+					"Lỗi hệ thống khi lấy danh sách chủ đề."
+				);
+			}
+		}
+
+		public async Task<UserReponse> CreateNewUser(UserCreateRequest request)
 		{
 			if (request == null)
 				throw new ArgumentNullException(nameof(request));

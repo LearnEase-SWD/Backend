@@ -20,10 +20,14 @@ namespace LearnEase_Api.Controllers
             _httpClient = httpClient;
         }
 
-        /// <summary>
-        /// Get a user by ID.
-        /// </summary>
-        [HttpGet("{id}")]
+		[HttpGet]
+		public async Task<IActionResult> GetUserAsync(int pageIndex = 1, int pageSize = 10)
+		{
+			var response = await _userService.GetUserAsync(pageIndex, pageSize);
+			return StatusCode((int)response.StatusCode, response);
+		}
+
+		[HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var result = await _userService.GetUserReponseById(id);
@@ -35,7 +39,7 @@ namespace LearnEase_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewUser([FromBody] UserCreationRequest request)
+        public async Task<IActionResult> CreateNewUser([FromBody] UserCreateRequest request)
         {
             if (request == null)
             {
@@ -77,10 +81,10 @@ namespace LearnEase_Api.Controllers
                 return NotFound(new { message = $"User with ID {id} not found." });
             }
 
-            return NoContent(); // 204 No Content response for successful deletion
+            return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("email")]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
             if (string.IsNullOrEmpty(email))

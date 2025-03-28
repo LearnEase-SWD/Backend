@@ -21,8 +21,6 @@ namespace LearnEase.Core.Entities
         public string Question { get; set; }
         public string AnswerOptions { get; set; }
 
-		
-
 		[Required]
 		public string CorrectAnswer { get; set; }
 		
