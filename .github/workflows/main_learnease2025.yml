@@ -21,13 +21,13 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore dependencies
-        run: dotnet restore LearnEase2025.sln
+        run: dotnet restore learnEase-api.sln
 
       - name: Build with dotnet
-        run: dotnet build LearnEase2025.sln --configuration Release
+        run: dotnet build learnEase-api.sln --configuration Release
 
       - name: Publish with dotnet
-        run: dotnet publish src/LearnEase2025.API/LearnEase2025.API.csproj -c Release -o myapp
+        run: dotnet publish learnEase-api.sln -c Release -o myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
