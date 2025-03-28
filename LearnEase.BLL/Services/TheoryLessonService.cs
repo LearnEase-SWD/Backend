@@ -14,13 +14,11 @@ namespace LearnEase.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<TheoryLessonService> _logger;
 
-        public TheoryLessonService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<TheoryLessonService> logger)
+        public TheoryLessonService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreateRequest theoryLessonRequest)
@@ -56,7 +54,6 @@ namespace LearnEase.Service.Services
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi tạo bài học: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học.");
             }
         }
@@ -79,9 +76,8 @@ namespace LearnEase.Service.Services
                     "Lấy danh sách bài học thành công."
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Lỗi khi lấy danh sách bài học: {ex.Message}");
                 return new BaseResponse<IEnumerable<TheoryLesson>>(
                     StatusCodeHelper.ServerError,
                     "ERROR",
@@ -101,9 +97,8 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<TheoryLesson>(StatusCodeHelper.OK, "SUCCESS", theoryLesson, "Lấy bài học thành công.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Lỗi khi lấy bài học với ID {id}: {ex.Message}");
                 return new BaseResponse<TheoryLesson>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học.");
             }
         }
@@ -132,7 +127,6 @@ namespace LearnEase.Service.Services
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi cập nhật bài học {id}: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài học.");
             }
         }
@@ -158,7 +152,6 @@ namespace LearnEase.Service.Services
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                _logger.LogError($"Lỗi khi xóa bài học {id}: {ex.Message}");
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
             }
         }

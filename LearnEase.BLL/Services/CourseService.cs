@@ -2,6 +2,7 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services
 {
-	public class CourseService : ICourseService
+    public class CourseService : ICourseService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
@@ -20,7 +21,7 @@ namespace LearnEase.Service.Services
 			_mapper = mapper;
 		}
 
-		public async Task<BaseResponse<IEnumerable<Course>>> GetCoursesAsync(int pageIndex, int pageSize)
+		public async Task<BaseResponse<IEnumerable<CourseResponse>>> GetCoursesAsync(int pageIndex, int pageSize)
 		{
 			if (pageIndex < 1) pageIndex = 1;
 			if (pageSize < 1) pageSize = 10;
@@ -31,37 +32,41 @@ namespace LearnEase.Service.Services
 				var query = courseRepository.Entities;
 				var paginatedResult = await courseRepository.GetPagging(query, pageIndex, pageSize);
 
-				return new BaseResponse<IEnumerable<Course>>(
+				var courseDTOs = _mapper.Map<IEnumerable<CourseResponse>>(paginatedResult.Items);
+
+				return new BaseResponse<IEnumerable<CourseResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					paginatedResult.Items,
+					courseDTOs,
 					"Lấy danh sách khóa học thành công."
 				);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				return new BaseResponse<IEnumerable<Course>>(
+				return new BaseResponse<IEnumerable<CourseResponse>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
-					new List<Course>(),
+					new List<CourseResponse>(),
 					"Lỗi hệ thống khi lấy danh sách khóa học."
 				);
 			}
 		}
 
-		public async Task<BaseResponse<Course>> GetCourseByIdAsync(Guid id)
+		public async Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id)
 		{
 			try
 			{
 				var course = await _unitOfWork.GetRepository<Course>().GetByIdAsync(id);
-				if (course == null)
-					return new BaseResponse<Course>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Khóa học không tồn tại.");
+				CourseResponse courseDTO = _mapper.Map<CourseResponse>(course);
 
-				return new BaseResponse<Course>(StatusCodeHelper.OK, "SUCCESS", course, "Lấy khóa học thành công.");
+				if (course == null)
+					return new BaseResponse<CourseResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Khóa học không tồn tại.");
+
+				return new BaseResponse<CourseResponse>(StatusCodeHelper.OK, "SUCCESS", courseDTO, "Lấy khóa học thành công.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				return new BaseResponse<Course>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy khóa học.");
+				return new BaseResponse<CourseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy khóa học.");
 			}
 		}
 

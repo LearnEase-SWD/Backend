@@ -1,4 +1,5 @@
-﻿using LearnEase.Core.Models.Request;
+﻿using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,13 @@ namespace LearnEase_Api.Controllers
 		public async Task<IActionResult> GetTopics(int pageIndex = 1, int pageSize = 10)
 		{
 			var response = await _topicService.GetTopicsAsync(pageIndex, pageSize);
+			return StatusCode((int)response.StatusCode, response);
+		}
+
+		[HttpGet("{topicId}/courses")]
+		public async Task<IActionResult> GetCoursesByTopic(Guid topicId, int pageIndex = 1, int pageSize = 10)
+		{
+			var response = await _topicService.GetCoursesByTopicAsync(topicId, pageIndex, pageSize);
 			return StatusCode((int)response.StatusCode, response);
 		}
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LearnEase.Core.DTO
+namespace LearnEase.Core.Models.Reponse
 {
-    public class CourseDTO
+    public class CourseResponse
     {
         public Guid CourseID { get; set; }
 
@@ -16,7 +16,7 @@ namespace LearnEase.Core.DTO
 
         public int TotalLessons { get; set; }
 
-        public string DifficultyLevel { get; set; } 
+        public string DifficultyLevel { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

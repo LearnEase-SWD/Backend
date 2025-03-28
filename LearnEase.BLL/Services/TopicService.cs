@@ -3,6 +3,8 @@ using LearnEase.Core;
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
+using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
 using Microsoft.Extensions.Logging;
@@ -48,6 +50,48 @@ namespace LearnEase.Service.Services
 					"ERROR",
 					new List<Topic>(),
 					"Lỗi hệ thống khi lấy danh sách chủ đề."
+				);
+			}
+		}
+
+		public async Task<BaseResponse<TopicResponse>> GetCoursesByTopicAsync(Guid topicId, int pageIndex, int pageSize)
+		{
+			// Kiểm tra đầu vào
+			if (pageIndex < 1) pageIndex = 1;
+			if (pageSize < 1) pageSize = 10;
+
+			try
+			{
+				var topicRepository = _unitOfWork.GetCustomRepository<ITopicRepository>();
+
+				var topicResponse = await topicRepository.GetCourseByTopic(topicId, pageIndex, pageSize);
+
+				// Nếu không tìm thấy Topic
+				if (string.IsNullOrEmpty(topicResponse.Name))
+				{
+					return new BaseResponse<TopicResponse>(
+						StatusCodeHelper.BadRequest,
+						"NOT_FOUND",
+						null,
+						"Không tìm thấy chủ đề hoặc không có khóa học nào trong chủ đề này."
+					);
+				}
+
+				return new BaseResponse<TopicResponse>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					topicResponse,
+					"Lấy danh sách khóa học theo chủ đề thành công."
+				);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"Lỗi khi lấy danh sách khóa học theo chủ đề {topicId}: {ex.Message}");
+				return new BaseResponse<TopicResponse>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					null,
+					"Lỗi hệ thống khi lấy danh sách khóa học theo chủ đề."
 				);
 			}
 		}
