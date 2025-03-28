@@ -40,6 +40,7 @@ namespace LearnEase.Repository.Repositories
 				var courseResponses = courses.Select(c => new CourseResponse
 				{
 					CourseID = c.CourseID,
+					TopicID = c.TopicID,
 					Title = c.Title,
 					Price = c.Price,
 					TotalLessons = c.TotalLessons,
