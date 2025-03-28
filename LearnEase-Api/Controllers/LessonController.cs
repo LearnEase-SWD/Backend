@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/lessons")]
-[Authorize]
+[AllowAnonymous]
 public class LessonController : ControllerBase
 {
     private readonly ILessonService _lessonService;

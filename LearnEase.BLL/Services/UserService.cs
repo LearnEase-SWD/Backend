@@ -30,7 +30,7 @@ namespace LearnEase_Api.LearnEase.Core.Services
 			{
 				var userRepository = _unitOfWork.GetRepository<User>();
 				var query = userRepository.Entities;
-				var users = await userRepository.GetPagging(query, pageIndex, pageSize);
+				var users = await userRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<User>>(
 					StatusCodeHelper.OK,

@@ -38,29 +38,39 @@ namespace LearnEase.Repository.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<BasePaginatedList<T>> GetPagging(IQueryable<T> query,
-                                                           int index,
-                                                           int pageSize,
-                                                           Func<IQueryable<T>, IQueryable<T>>? filterFunc = null)
-        {
-            query = query.AsNoTracking();
+		public async Task<BasePaginatedList<T>> GetPaggingAsync(IQueryable<T> query,
+	                                                        int index,
+	                                                        int pageSize,
+	                                                        List<Func<IQueryable<T>, IQueryable<T>>>? filterFuncs = null, 
+	                                                        Func<IQueryable<T>, IQueryable<T>>? includeFunc = null)
+		{
+			query = query.AsNoTracking();
 
-            // Áp dụng filter nếu có
-            if (filterFunc != null)
-            {
-                query = filterFunc(query);
-            }
+			// Include thêm entity liên quan
+			if (includeFunc != null)
+			{
+				query = includeFunc(query);
+			}
 
-            int count = await query.CountAsync();
-            IReadOnlyCollection<T> items = await query.Skip((index - 1) * pageSize)
-                                                      .Take(pageSize)
-                                                      .ToListAsync();
+			// Thêm filter để lọc 
+			if (filterFuncs != null)
+			{
+				foreach (var filter in filterFuncs)
+				{
+					query = filter(query);
+				}
+			}
 
-            return new BasePaginatedList<T>(items, count, index, pageSize);
-        }
+			int count = await query.CountAsync();
+			IReadOnlyCollection<T> items = await query.Skip((index - 1) * pageSize)
+													  .Take(pageSize)
+													  .ToListAsync();
+
+			return new BasePaginatedList<T>(items, count, index, pageSize);
+		}
 
 
-        public async Task SaveAsync()
+		public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }

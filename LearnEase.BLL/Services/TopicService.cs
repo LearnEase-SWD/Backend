@@ -33,7 +33,7 @@ namespace LearnEase.Service.Services
 			{
 				var topicRepository = _unitOfWork.GetRepository<Topic>();
 				var query = topicRepository.Entities;
-				var topics = await topicRepository.GetPagging(query, pageIndex, pageSize);
+				var topics = await topicRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<Topic>>(
 					StatusCodeHelper.OK,

@@ -29,13 +29,20 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var courseRepository = _unitOfWork.GetRepository<Course>();
+				var topicRepository = _unitOfWork.GetRepository<Topic>();
+
+				// Phân trang cho course
 				var query = courseRepository.Entities;
-				var paginatedResult = await courseRepository.GetPagging(query, pageIndex, pageSize);
+				var paginatedResult = await courseRepository.GetPaggingAsync(query, pageIndex, pageSize);
 				List<CourseResponse> course = new List<CourseResponse>();
 
                 foreach (var item in paginatedResult.Items)
                 {
 					var courseResponse = _mapper.Map<CourseResponse>(item);
+					// Lấy Topic name gán vào course response
+					var topic = await topicRepository.GetByIdAsync(item.TopicID);
+					courseResponse.TopicName = topic.Name;
+					// Thêm vào DB
 					course.Add(courseResponse);
 				}
 

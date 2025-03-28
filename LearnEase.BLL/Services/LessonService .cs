@@ -26,7 +26,7 @@ namespace LearnEase.Service.Services
             try
             {
                 var lessonRepository = _unitOfWork.GetRepository<Lesson>();
-                var paginatedLessons = await lessonRepository.GetPagging(lessonRepository.Entities, pageIndex, pageSize);
+                var paginatedLessons = await lessonRepository.GetPaggingAsync(lessonRepository.Entities, pageIndex, pageSize);
 
                 return new BaseResponse<IEnumerable<Lesson>>(
                     StatusCodeHelper.OK,
@@ -50,7 +50,7 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
-				var paginatedLessons = await lessonRepository.GetPagging(
+				var paginatedLessons = await lessonRepository.GetPaggingAsync(
 					lessonRepository.Entities.Where(lesson => lesson.CourseID == courseId),
 					pageIndex,
 					pageSize

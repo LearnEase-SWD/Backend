@@ -67,7 +67,7 @@ namespace LearnEase.Service.Services
             {
                 var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
                 var query = theoryLessonRepository.Entities;
-                var theoryLessons = await theoryLessonRepository.GetPagging(query, pageIndex, pageSize);
+                var theoryLessons = await theoryLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
                 return new BaseResponse<IEnumerable<TheoryLesson>>(
                     StatusCodeHelper.OK,

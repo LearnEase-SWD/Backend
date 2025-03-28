@@ -32,7 +32,7 @@ namespace LearnEase.Service.Services
 			{
 				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
 				var query = exerciseRepository.Entities;
-				var paginatedResult = await exerciseRepository.GetPagging(query, pageIndex, pageSize);
+				var paginatedResult = await exerciseRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<Exercise>>(
 					StatusCodeHelper.OK,

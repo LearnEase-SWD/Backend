@@ -9,7 +9,7 @@ namespace LearnEase.Core.Models.Reponse
     public class CourseResponse
     {
         public Guid CourseID { get; set; }
-		public Guid TopicID { get; set; }
+		public string TopicName { get; set; }
 		public string Title { get; set; }
         public decimal Price { get; set; }
 		public string Description { get; set; }

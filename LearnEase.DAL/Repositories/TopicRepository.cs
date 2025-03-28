@@ -32,19 +32,25 @@ namespace LearnEase.Repository.Repositories
 					};
 				}
 
+				// Lấy danh sách Courses với phân trang
 				var courses = topic.Courses
 					.Skip((pageIndex - 1) * pageSize)
 					.Take(pageSize)
 					.ToList();
 
+				// Mapping dữ liệu
 				var courseResponses = courses.Select(c => new CourseResponse
 				{
 					CourseID = c.CourseID,
-					TopicID = c.TopicID,
+					TopicName = topic.Name,
 					Title = c.Title,
 					Price = c.Price,
+					Description = c.Description,
+					Status = c.Status,
+					Url = c.Url,
 					TotalLessons = c.TotalLessons,
 					DifficultyLevel = c.DifficultyLevel,
+					UpdatedAt = c.UpdatedAt,
 					CreatedAt = c.CreatedAt
 				}).ToList();
 

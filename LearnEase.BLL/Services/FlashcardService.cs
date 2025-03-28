@@ -31,7 +31,7 @@ namespace LearnEase.Service.Services
 			{
 				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
 				var query = flashcardRepository.Entities;
-				var flashcards = await flashcardRepository.GetPagging(query, pageIndex, pageSize);
+				var flashcards = await flashcardRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<Flashcard>>(
 					StatusCodeHelper.OK,

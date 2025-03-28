@@ -53,7 +53,7 @@ namespace LearnEase.Service.Services
 			{
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
 				var query = videoLessonRepository.Entities;
-				var videoLessons = await videoLessonRepository.GetPagging(query, pageIndex, pageSize);
+				var videoLessons = await videoLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
 				return new BaseResponse<IEnumerable<VideoLesson>>(
 					StatusCodeHelper.OK,

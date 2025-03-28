@@ -1,12 +1,12 @@
-﻿using LearnEase.Core.Enum;
-using LearnEase.Core.Models.Request;
-using LearnEase.Service.IServices;
+﻿using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
 	[Route("api/topics")]
 	[ApiController]
+	[AllowAnonymous]
 	public class TopicController : ControllerBase
 	{
 		private readonly ITopicService _topicService;
