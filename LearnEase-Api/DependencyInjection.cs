@@ -83,12 +83,13 @@ namespace LearnEase_Api
             services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<ITheoryLessonService, TheoryLessonService>();
             services.AddScoped<IVnPayService, VnPayService>();
+            services.AddScoped<ITopicService, TopicService>();
+			services.AddScoped<IOpenAIService, OpenAIService>();
 
-            //Repo
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+			//Repo
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
-            services.AddScoped<IOpenAIService, OpenAIService>();
         }
 
         // Redis Cloud
