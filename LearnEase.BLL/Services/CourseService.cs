@@ -4,6 +4,7 @@ using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
+using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.EntityFrameworkCore;
@@ -31,26 +32,32 @@ namespace LearnEase.Service.Services
 			{
 				var courseRepository = _unitOfWork.GetRepository<Course>();
 				var topicRepository = _unitOfWork.GetRepository<Topic>();
+				var lessonRepository = _unitOfWork.GetCustomRepository<ILessonRepository>();
 
-				// Phân trang cho course
 				var query = courseRepository.Entities;
 				var paginatedResult = await courseRepository.GetPaggingAsync(query, pageIndex, pageSize);
-				List<CourseResponse> course = new List<CourseResponse>();
 
-                foreach (var item in paginatedResult.Items)
-                {
+				List<CourseResponse> courses = new List<CourseResponse>();
+
+				foreach (var item in paginatedResult.Items)
+				{
 					var courseResponse = _mapper.Map<CourseResponse>(item);
-					// Lấy Topic name gán vào course response
+
+					// Lấy Topic Name
 					var topic = await topicRepository.GetByIdAsync(item.TopicID);
 					courseResponse.TopicName = topic.Name;
-					// Thêm vào DB
-					course.Add(courseResponse);
+
+					// Lấy danh sách Lesson
+					var lessons = await lessonRepository.GetLessonsByCourseId(item.CourseID, pageIndex, pageSize);
+					courseResponse.Lessons = _mapper.Map<IEnumerable<LessonResponse>>(lessons.Items);
+
+					courses.Add(courseResponse);
 				}
 
 				return new BaseResponse<IEnumerable<CourseResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					course,
+					courses,
 					"Lấy danh sách khóa học thành công."
 				);
 			}
