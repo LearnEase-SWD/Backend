@@ -87,6 +87,7 @@ namespace LearnEase_Api
             services.AddScoped<ITopicService, TopicService>();
 			services.AddScoped<IOpenAIService, OpenAIService>();
 			services.AddScoped<IUserCourseService, UserCourseService>();
+			services.AddScoped<IVideoLessonService, VideoLessonService>();
 
 			//Repo
 			services.AddScoped<IUnitOfWork, UnitOfWork>();

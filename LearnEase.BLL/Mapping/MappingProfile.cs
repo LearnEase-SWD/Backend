@@ -21,6 +21,8 @@ namespace LearnEase.Service.Mapping
 
 			CreateMap<Lesson, LessonResponse>();
 			CreateMap<LessonResponse, Lesson>();
+			CreateMap<LessonCreateRequest, Lesson>();
+			CreateMap<Lesson, LessonCreateRequest>();
 
 			CreateMap<Topic, TopicResponse>();
 			CreateMap<TopicResponse, Topic>();
@@ -30,6 +32,11 @@ namespace LearnEase.Service.Mapping
 
 			CreateMap<UserCourseResponse, UserCourse>();
 			CreateMap<UserCourse, UserCourseResponse>();
+
+			CreateMap<VideoLesson, VideoLessonCreateRequest>();
+			CreateMap<VideoLessonCreateRequest, VideoLesson>();
+			CreateMap<VideoLessonResponse, VideoLesson>();
+			CreateMap<VideoLesson, VideoLessonResponse>();
 		}
 
     }

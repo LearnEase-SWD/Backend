@@ -32,13 +32,15 @@ namespace LearnEase.Service.Services
             if (lesson == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "ID bài học không tồn tại.");
 
-            // Kiểm tra có theory lesson nào đã tồn tại trong 1 lesson chưa 
-            var existedTheory = _unitOfWork.GetCustomRepository<ITheoryLessonRepository>()
-                                           .GetTheoryByLessonId(theoryLessonRequest.LessonID);
-            if (existedTheory == null)
-                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Bài học đã tồn tại.");
+			// Kiểm tra có theory lesson nào đã tồn tại trong 1 lesson chưa 
+			var existedTheory = _unitOfWork.GetCustomRepository<ITheoryLessonRepository>()
+										   .GetTheoryByLessonId(theoryLessonRequest.LessonID);
 
-            await _unitOfWork.BeginTransactionAsync();
+			// Nếu đã tồn tại thì báo lỗi
+			if (existedTheory != null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "DUPLICATE_THEORY_LESSON", false, "Đã tồn tại bài học lý thuyết cho LessonID này.");
+
+			await _unitOfWork.BeginTransactionAsync();
 
             try
             {
@@ -51,7 +53,7 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được tạo thành công.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài học.");
