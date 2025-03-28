@@ -8,7 +8,6 @@ namespace LearnEase.Core.Models.Request
         public Guid LessonID { get; set; }
 
         [Required(ErrorMessage = "Nội dung bài học không được để trống.")]
-        [Url(ErrorMessage = "Đường dẫn phải đúng định dạng")]
         public string Content { get; set; }
 
         [Required(ErrorMessage = "Ví dụ không được để trống.")]
