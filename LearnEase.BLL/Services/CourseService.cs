@@ -31,13 +31,18 @@ namespace LearnEase.Service.Services
 				var courseRepository = _unitOfWork.GetRepository<Course>();
 				var query = courseRepository.Entities;
 				var paginatedResult = await courseRepository.GetPagging(query, pageIndex, pageSize);
+				List<CourseResponse> course = new List<CourseResponse>();
 
-				var courseDTOs = _mapper.Map<IEnumerable<CourseResponse>>(paginatedResult.Items);
+                foreach (var item in paginatedResult.Items)
+                {
+					var courseResponse = _mapper.Map<CourseResponse>(item);
+					course.Add(courseResponse);
+				}
 
 				return new BaseResponse<IEnumerable<CourseResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					courseDTOs,
+					course,
 					"Lấy danh sách khóa học thành công."
 				);
 			}
