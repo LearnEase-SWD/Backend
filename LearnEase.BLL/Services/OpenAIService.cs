@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using LearnEase.Repository;
 using LearnEase.Service.IServices;
 using Microsoft.EntityFrameworkCore;
@@ -25,54 +26,77 @@ namespace LearnEase.Service.Services
             _logger = logger;
         }
 
-        // Xử lý yêu cầu từ người dùng và xác định cần truy vấn database hay không
-        public async Task<string> GetAIResponseAsync(string userInput, bool useDatabase = false)
+        public async Task<string> GetAIResponseAsync(string userInput, bool useDatabase = false, List<object> conversationHistory = null)
         {
             _logger.LogInformation($"Received input: {userInput}, useDatabase: {useDatabase}");
 
-            // Nếu yêu cầu liên quan đến khóa học, xử lý riêng
-            if (userInput.ToLower().Contains("mua khóa học") || userInput.ToLower().Contains("khóa học"))
+            string lowerInput = userInput.ToLower();
+
+            if (lowerInput.Contains("khóa học") || lowerInput.Contains("mua khóa học") || lowerInput.Contains("course") || lowerInput.Contains("lập trình"))
             {
-                return await HandleCourseRequest(userInput, useDatabase);
+                string clarifiedTopic = await AskForCourseTopic(userInput, conversationHistory);
+
+                if (!useDatabase)
+                {
+                    return clarifiedTopic;
+                }
+
+                if (clarifiedTopic.ToLower().Contains("chủ đề cụ thể nào") || clarifiedTopic.Contains("muốn học về chủ đề nào"))
+                {
+                    return clarifiedTopic;
+                }
+
+                string courseSuggestions = await GenerateCourseSuggestionsFromDatabase(clarifiedTopic, conversationHistory);
+
+                return !string.IsNullOrEmpty(courseSuggestions)
+                    ? courseSuggestions
+                    : $"Hiện tại chúng tôi không có khóa học về '{clarifiedTopic}'. Bạn có thể tham khảo các chủ đề khác bằng cách nhập 'hiện tại có chủ đề nào'.";
+            }
+            else if (lowerInput.Contains("chủ đề nào") || lowerInput.Contains("ví dụ đi") || lowerInput.Contains("web của bạn có khóa học nào"))
+            {
+                return await ListAllAvailableCourseTopicsFromDatabase();
             }
 
-            // Kiểm tra lỗi ngữ pháp và trả lời hội thoại
-            return await HandleConversationWithGrammarCheck(userInput);
+            return await HandleConversationWithGrammarCheck(userInput, conversationHistory);
         }
-
-        // Xử lý yêu cầu liên quan đến khóa học, có thể truy vấn database nếu cần
-        private async Task<string> HandleCourseRequest(string userInput, bool useDatabase)
+        private async Task<string> ListAllAvailableCourseTopicsFromDatabase()
         {
-            if (!useDatabase)
+            try
             {
-                return await AskForCourseTopic(userInput);
-            }
+                var courses = await _context.Courses
+                    .Select(c => c.Topic)
+                    .Distinct()
+                    .ToListAsync();
 
-            string courseSuggestions = await GenerateCourseSuggestionsFromDatabase(userInput);
-            if (!string.IsNullOrEmpty(courseSuggestions))
+                if (!courses.Any())
+                {
+                    return "Hiện tại chúng tôi chưa có khóa học nào trong hệ thống. Bạn có thể quay lại sau!";
+                }
+
+                var sb = new StringBuilder();
+                sb.AppendLine("Các khóa học đang có trên hệ thống thuộc các chủ đề sau:");
+                foreach (var topic in courses)
+                {
+                    sb.AppendLine($"- {topic}");
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
             {
-                _logger.LogInformation("Returning course suggestions from database.");
-                return courseSuggestions;
+                _logger.LogError($"Lỗi khi truy vấn database: {ex.Message}");
+                return "Xin lỗi, hệ thống đang gặp sự cố khi truy xuất dữ liệu khóa học.";
             }
-
-            return await AskForCourseTopic(userInput);
         }
 
-        // Kiểm tra lỗi chính tả/ngữ pháp và trả lời hội thoại
-        private async Task<string> HandleConversationWithGrammarCheck(string userInput)
+
+        private async Task<string> HandleConversationWithGrammarCheck(string userInput, List<object> conversationHistory = null)
         {
             string correctedText = await CheckGrammarAndSuggestFix(userInput);
 
-            if (string.IsNullOrEmpty(correctedText))
-            {
-                return await GenerateGeneralResponse(userInput);
-            }
-
-            return $"{await GenerateGeneralResponse(userInput)}\n\n{correctedText}";
+            return correctedText ?? await GenerateGeneralResponse(userInput);
         }
 
-        // Tạo danh sách gợi ý khóa học từ database
-        private async Task<string> GenerateCourseSuggestionsFromDatabase(string userPreference)
+        private async Task<string> GenerateCourseSuggestionsFromDatabase(string userPreference, List<object> conversationHistory = null)
         {
             try
             {
@@ -83,12 +107,11 @@ namespace LearnEase.Service.Services
 
                 if (!courses.Any())
                 {
-                    _logger.LogInformation("No courses found in database.");
-                    return null;
+                    return $"Hiện tại chúng tôi không có khóa học nào về '{userPreference}'. Bạn có thể nhập 'hiện tại có chủ đề nào' để xem danh sách khóa học có sẵn.";
                 }
 
                 var courseInfo = new StringBuilder();
-                courseInfo.AppendLine("Dựa trên thông tin bạn cung cấp, chúng tôi gợi ý các khóa học sau:");
+                courseInfo.AppendLine($"Các khóa học về '{userPreference}' mà chúng tôi có là:");
                 foreach (var course in courses)
                 {
                     courseInfo.AppendLine($"- {course.Title}, Giá: {course.Price}, Độ khó: {course.DifficultyLevel}");
@@ -102,50 +125,71 @@ namespace LearnEase.Service.Services
                 return "Xin lỗi, hệ thống đang gặp sự cố khi lấy dữ liệu khóa học. Vui lòng thử lại sau!";
             }
         }
-
-        // Hỏi thêm thông tin khi không tìm thấy khóa học phù hợp
-        private async Task<string> AskForCourseTopic(string userInput)
+        private async Task<string> AskForCourseTopic(string userInput, List<object> conversationHistory = null)
         {
-            string prompt = "Người dùng muốn mua khóa học nhưng chưa nói rõ chủ đề. Hãy hỏi họ về lĩnh vực hoặc kỹ năng mà họ muốn học, rồi tiếp tục đặt thêm câu hỏi để làm rõ nhu cầu của họ.";
-            return await CallOpenAI(prompt);
-        }
+            string pattern = @"(?:tôi muốn mua|mua|tôi cần|tôi muốn học|có khóa học gì về)?\s*(.*)";
+            Match match = Regex.Match(userInput, pattern, RegexOptions.IgnoreCase);
 
-        // Kiểm tra lỗi ngữ pháp và đề xuất sửa lỗi
-        private async Task<string> CheckGrammarAndSuggestFix(string userInput)
-        {
-            string prompt = $@"
-Bạn là một giáo viên tiếng Anh thân thiện. Nếu có lỗi chính tả hoặc ngữ pháp trong câu sau, hãy chỉ ra lỗi và đề xuất sửa lỗi.
-Hãy phản hồi như một cuộc trò chuyện tự nhiên, ví dụ:
-- 'Có phải bạn muốn nói ""today"" thay vì ""tuday"" không? 😊'
-- 'Mình thấy một lỗi nhỏ: ""He go"" → Có phải bạn muốn nói ""He goes"" không?'
-
-Nếu không có lỗi, chỉ cần trả lời tự nhiên mà không nhắc lỗi.
-
-Câu của người dùng: {JsonConvert.SerializeObject(userInput)}";
-
-            string aiResponse = await CallOpenAI(prompt);
-
-            if (aiResponse.ToLower().Contains("không có lỗi") || aiResponse.ToLower().Contains("câu này đúng rồi"))
+            if (match.Success)
             {
-                return null;
+                string extractedTopic = match.Groups[1].Value.Trim();
+
+                if (!string.IsNullOrEmpty(extractedTopic) && extractedTopic.Length > 2)
+                {
+                    _logger.LogInformation($"Chủ đề khóa học được xác định: {extractedTopic}");
+                    return extractedTopic;
+                }
             }
 
-            return aiResponse;
+            _logger.LogInformation($"Không xác định được chủ đề từ input: {userInput}");
+            return "Bạn đang tìm kiếm khóa học về lĩnh vực nào? Ví dụ: lập trình, thiết kế đồ họa, kinh doanh...";
         }
 
-        // Trả lời hội thoại thông thường
-        private async Task<string> GenerateGeneralResponse(string userInput)
+
+        private async Task<string> CheckGrammarAndSuggestFix(string userInput)
+{
+                    string prompt = $@"
+                Bạn là một giáo viên tiếng Anh thân thiện. 
+                Hãy kiểm tra các từ và cụm từ trong câu sau để tìm lỗi chính tả hoặc ngữ pháp.
+                Nếu có lỗi, hãy liệt kê các lỗi và đề xuất sửa lỗi, mỗi lỗi trên một dòng.
+                Nếu không có lỗi, trả về ""Không có lỗi"".
+
+                Câu của người dùng: {userInput}";
+
+    string response = await CallOpenAI(prompt);
+
+    // Kiểm tra phản hồi từ OpenAI
+    if (response.ToLower().Contains("không có lỗi"))
+    {
+        return null; // Không có lỗi, trả về null
+    }
+
+    return response; // Trả về danh sách lỗi và đề xuất sửa lỗi
+}
+
+
+        private async Task<string> GenerateGeneralResponse(string userInput, List<object> conversationHistory = null)
         {
-            return await CallOpenAI(userInput);
+            return await CallOpenAI(userInput, conversationHistory); // Pass conversationHistory here
         }
 
-        // Gửi yêu cầu đến API OpenAI
-        private async Task<string> CallOpenAI(string prompt)
+        private async Task<string> CallOpenAI(string prompt, List<object> conversationHistory = null)
         {
+            var messages = new List<object>();
+            messages.Add(new { role = "system", content = "Bạn là trợ lý ảo của LearnEase, một ứng dụng học trực tuyến chuyên bán các khóa học với nhiều thể loại/chủ đề và giá cả ưu đãi. Bạn sẽ hỗ trợ người dùng tìm kiếm và mua các khóa học phù hợp." });
+
+
+            if (conversationHistory != null)
+            {
+                messages.AddRange(conversationHistory);
+            }
+
+            messages.Add(new { role = "user", content = prompt });
+
             var requestData = new
             {
                 model = "gpt-3.5-turbo",
-                messages = new[] { new { role = "user", content = prompt } }
+                messages = messages
             };
 
             var json = JsonConvert.SerializeObject(requestData);
@@ -176,4 +220,5 @@ Câu của người dùng: {JsonConvert.SerializeObject(userInput)}";
             }
         }
     }
-}
+    }
+
