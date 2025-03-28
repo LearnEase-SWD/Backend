@@ -1,7 +1,14 @@
+
+﻿using Microsoft.AspNetCore.Mvc;
+using LearnEase.Repository.IRepository;
+using LearnEase.Core.Entities;
+using LearnEase.Service.IServices;
+
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LearnEase.Service.IServices;
 using LearnEase.Core.Models.Request;
+
 
 [ApiController]
 [Route("api/flashcards")]
@@ -55,4 +62,5 @@ public class FlashcardsController : ControllerBase
 		var response = await _flashcardService.DeleteFlashcardAsync(id);
 		return StatusCode((int)response.StatusCode, response);
 	}
+
 }
