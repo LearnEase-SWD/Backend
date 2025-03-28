@@ -14,7 +14,7 @@ namespace LearnEase.Repository.Repositories
 			_context = context;
 		}
 
-		public async Task<TopicResponse> GetCourseByTopic(Guid topicId, int pageIndex, int pageSize)
+		public async Task<TopicResponse> GetCourseByTopicAsync(Guid topicId, int pageIndex, int pageSize)
 		{
 			try
 			{

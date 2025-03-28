@@ -8,7 +8,6 @@ namespace LearnEase.Core.Entities
 		[Key]
 		public Guid CourseID { get; set; }
 
-		// 🔹 Thêm khóa ngoại đến Topic
 		[Required]
 		[ForeignKey("Topic")]
 		public Guid TopicID { get; set; }
@@ -18,9 +17,13 @@ namespace LearnEase.Core.Entities
 		[MaxLength(100)]
 		public string Title { get; set; }
 
-		/*[Required]
+		[Required]
 		[MaxLength(255)]
-		public string Description { get; set; }*/
+		public string Description { get; set; }
+
+		[Required]
+		[MaxLength(1000)]
+		public string Url { get; set; }
 
 		[Required]
 		public decimal Price { get; set; }

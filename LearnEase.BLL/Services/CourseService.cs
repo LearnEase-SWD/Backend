@@ -99,9 +99,9 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateCourseAsync(Guid id, CourseRequest course)
+		public async Task<BaseResponse<bool>> UpdateCourseAsync(Guid id, CourseRequest courseRequest)
 		{
-			if (course == null)
+			if (courseRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu khóa học không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
@@ -113,13 +113,14 @@ namespace LearnEase.Service.Services
 				if (existingCourse == null)
 					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy khóa học.");
 
-				existingCourse.Title = course.Title;
-				existingCourse.Price = course.Price;
-				existingCourse.DifficultyLevel = course.DifficultyLevel;
+				// ✅ Sử dụng AutoMapper để ánh xạ dữ liệu
+				_mapper.Map(courseRequest, existingCourse);
 				existingCourse.UpdatedAt = DateTime.UtcNow;
 
+				await courseRepository.UpdateAsync(existingCourse);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
+
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học đã được cập nhật.");
 			}
 			catch (Exception)

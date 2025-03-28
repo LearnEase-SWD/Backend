@@ -17,7 +17,7 @@ namespace LearnEase_Api.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetTopics(int pageIndex = 1, int pageSize = 10)
+		public async Task<IActionResult> GetTopicsAsync(int pageIndex = 1, int pageSize = 10)
 		{
 			var response = await _topicService.GetTopicsAsync(pageIndex, pageSize);
 			return StatusCode((int)response.StatusCode, response);

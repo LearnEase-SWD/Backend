@@ -15,14 +15,14 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAllAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         var course = await _courseService.GetCourseByIdAsync(id);
         if (course == null)
@@ -33,7 +33,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CourseRequest course)
+    public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
     {
         if (course == null)
         {
@@ -44,7 +44,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] CourseRequest course)
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] CourseRequest course)
     {
         if (course == null)
         {
@@ -59,7 +59,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var deleted = await _courseService.DeleteCourseAsync(id);
         if (!deleted.Data)

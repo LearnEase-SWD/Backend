@@ -48,7 +48,9 @@ namespace LearnEase.Repository.Migrations
                 {
                     CourseID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TopicID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     TotalLessons = table.Column<int>(type: "int", nullable: false),
                     DifficultyLevel = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),

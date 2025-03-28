@@ -4,7 +4,7 @@ namespace LearnEase.Core.Models.Request
 {
 	public class CourseRequest
 	{
-		public Guid TopicID { get; set; }
+		public Guid? TopicID { get; set; }
 
 		[Required(ErrorMessage = "Title cannot be empty!")]
 		[MaxLength(255)]
@@ -15,6 +15,10 @@ namespace LearnEase.Core.Models.Request
 
 		[Required(ErrorMessage = "TotalLessons cannot be empty!")]
 		public int TotalLessons { get; set; } = 0;
+		public string Description { get; set; }
+
+		[Url]
+		public string? Url { get; set; }
 
 		[Required]
 		[MaxLength(50)]

@@ -93,8 +93,8 @@ public class AuthController : ControllerBase
         await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
 
         // Chuyển hướng về frontend
-        return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
-        //Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
+        //return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
+        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
     }
 
     [HttpPost("verify-access-token")]

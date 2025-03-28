@@ -64,7 +64,7 @@ namespace LearnEase.Service.Services
 			{
 				var topicRepository = _unitOfWork.GetCustomRepository<ITopicRepository>();
 
-				var topicResponse = await topicRepository.GetCourseByTopic(topicId, pageIndex, pageSize);
+				var topicResponse = await topicRepository.GetCourseByTopicAsync(topicId, pageIndex, pageSize);
 
 				// Nếu không tìm thấy Topic
 				if (string.IsNullOrEmpty(topicResponse.Name))
