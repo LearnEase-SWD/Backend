@@ -1,4 +1,5 @@
-﻿using LearnEase.Repository;
+﻿using LearnEase.Core.IServices;
+using LearnEase.Repository;
 using LearnEase.Repository.IRepository;
 using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
@@ -85,6 +86,7 @@ namespace LearnEase_Api
             services.AddScoped<IVnPayService, VnPayService>();
             services.AddScoped<ITopicService, TopicService>();
 			services.AddScoped<IOpenAIService, OpenAIService>();
+			services.AddScoped<IUserCourseService, UserCourseService>();
 
 			//Repo
 			services.AddScoped<IUnitOfWork, UnitOfWork>();

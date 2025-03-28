@@ -23,6 +23,12 @@ namespace LearnEase.Service.Mapping
 
 			CreateMap<Topic, TopicResponse>();
 			CreateMap<TopicResponse, Topic>();
+			
+			CreateMap<Exercise, ExerciseRequest>();
+			CreateMap<ExerciseRequest, Exercise>();
+
+			CreateMap<UserCourseResponse, UserCourse>();
+			CreateMap<UserCourse, UserCourseResponse>();
 		}
 
     }
