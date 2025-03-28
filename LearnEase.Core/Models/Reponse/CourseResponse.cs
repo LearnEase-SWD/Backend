@@ -12,6 +12,7 @@
 		public string Status { get; set; }
 		public int TotalLessons { get; set; }
         public string DifficultyLevel { get; set; }
+        public IEnumerable<LessonResponse> Lessons { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -1,5 +1,4 @@
-﻿using LearnEase.Core.Entities;
-using LearnEase.Core.Models.Reponse;
+﻿using LearnEase.Core.Models.Reponse;
 using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,36 +27,22 @@ namespace LearnEase.Repository.Repositories
 					return new TopicResponse
 					{
 						Name = string.Empty,
-						Courses = new List<CourseResponse>(),
+						CourseIds = new List<Guid>()
 					};
 				}
 
-				// Lấy danh sách Courses với phân trang
-				var courses = topic.Courses
+				// Lấy danh sách CourseId với phân trang
+				var courseIds = topic.Courses
 					.Skip((pageIndex - 1) * pageSize)
 					.Take(pageSize)
+					.Select(c => c.CourseID)
 					.ToList();
-
-				// Mapping dữ liệu
-				var courseResponses = courses.Select(c => new CourseResponse
-				{
-					CourseID = c.CourseID,
-					TopicName = topic.Name,
-					Title = c.Title,
-					Price = c.Price,
-					Description = c.Description,
-					Status = c.Status,
-					Url = c.Url,
-					TotalLessons = c.TotalLessons,
-					DifficultyLevel = c.DifficultyLevel,
-					UpdatedAt = c.UpdatedAt,
-					CreatedAt = c.CreatedAt
-				}).ToList();
 
 				return new TopicResponse
 				{
+					TopicId = topic.TopicID,
 					Name = topic.Name,
-					Courses = courseResponses
+					CourseIds = courseIds
 				};
 			}
 			catch (Exception)
@@ -65,7 +50,7 @@ namespace LearnEase.Repository.Repositories
 				return new TopicResponse
 				{
 					Name = "Error",
-					Courses = new List<CourseResponse>(),
+					CourseIds = new List<Guid>()
 				};
 			}
 		}

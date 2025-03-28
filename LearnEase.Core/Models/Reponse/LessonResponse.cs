@@ -1,6 +1,4 @@
-﻿using LearnEase.Core.Entities;
-using LearnEase.Core.Enum;
-using System.ComponentModel.DataAnnotations;
+﻿using LearnEase.Core.Enum;
 
 namespace LearnEase.Core.Models.Reponse
 {

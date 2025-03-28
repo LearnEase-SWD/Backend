@@ -1,12 +1,11 @@
 ﻿using LearnEase.Core.Models.Request;
-using LearnEase.Service.IServices;
 using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/exercises")]
-[Authorize]
+[AllowAnonymous]
 public class ExercisesController : ControllerBase
 {
 	private readonly IExerciseService _exerciseService;

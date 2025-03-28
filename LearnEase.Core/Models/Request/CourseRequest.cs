@@ -17,6 +17,10 @@ namespace LearnEase.Core.Models.Request
 		public int TotalLessons { get; set; } = 0;
 		public string Description { get; set; }
 
+		[Required]
+		[MaxLength(50)]
+		public string Status { get; set; }
+
 		[Url]
 		public string? Url { get; set; }
 

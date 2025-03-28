@@ -44,7 +44,11 @@ namespace LearnEase_Api.Controllers
 				return BadRequest(ModelState);
 
 			var response = await _topicService.CreateTopicAsync(name);
-			return StatusCode((int)response.StatusCode, response);
+
+			if (response.Data)
+				return Created(nameof(GetTopicById), new { id = response.Data }); 
+			else
+				return StatusCode((int)response.StatusCode, response);
 		}
 
 		[HttpPut("{id}")]

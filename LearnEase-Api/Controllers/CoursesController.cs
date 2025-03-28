@@ -32,21 +32,20 @@ public class CoursesController : ControllerBase
         return Ok(course);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
-    {
-        if (course == null)
-        {
-            return BadRequest(new { message = "Invalid course data." });
-        }
-        var newCourse = await _courseService.CreateCourseAsync(course);
+	[HttpPost]
+	public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
+	{
+		if (course == null)
+			return BadRequest(new { message = "Invalid course data." });
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = newCourse.Data }, newCourse);
+		var newCourse = await _courseService.CreateCourseAsync(course);
 
-    }
+		// Phản hồi thành công với dữ liệu vừa tạo
+		return Ok(newCourse);
+	}
 
 
-    [HttpPut("{id}")]
+	[HttpPut("{id}")]
     public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] CourseRequest course)
     {
         if (course == null)

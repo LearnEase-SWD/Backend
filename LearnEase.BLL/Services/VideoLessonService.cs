@@ -2,6 +2,7 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
@@ -28,10 +29,27 @@ namespace LearnEase.Service.Services
 
 			try
 			{
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+
+				// Kiểm tra LessonID đã tồn tại chưa
+				var existingVideoLesson = await videoLessonRepository
+					.GetByIdAsync(videoRequest.LessonID);
+
+				if (existingVideoLesson == null)
+				{
+					await _unitOfWork.RollbackAsync();
+					return new BaseResponse<bool>(
+						StatusCodeHelper.BadRequest,
+						"DUPLICATE_LESSON_ID",
+						false,
+						"LessonID đã tồn tại. Mỗi VideoLesson chỉ được phép có một LessonID duy nhất."
+					);
+				}
+
 				var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
 				videoLesson.CreatedAt = DateTime.UtcNow;
 
-				await _unitOfWork.GetRepository<VideoLesson>().CreateAsync(videoLesson);
+				await videoLessonRepository.CreateAsync(videoLesson);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 
@@ -44,7 +62,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-		public async Task<BaseResponse<IEnumerable<VideoLesson>>> GetVideoLessonsAsync(int pageIndex, int pageSize)
+		public async Task<BaseResponse<IEnumerable<VideoLessonResponse>>> GetVideoLessonsAsync(int pageIndex, int pageSize)
 		{
 			if (pageIndex < 1) pageIndex = 1;
 			if (pageSize < 1) pageSize = 10;
@@ -55,37 +73,40 @@ namespace LearnEase.Service.Services
 				var query = videoLessonRepository.Entities;
 				var videoLessons = await videoLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
-				return new BaseResponse<IEnumerable<VideoLesson>>(
+				var response = _mapper.Map<IEnumerable<VideoLessonResponse>>(videoLessons.Items);
+
+				return new BaseResponse<IEnumerable<VideoLessonResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					videoLessons.Items,
+					response,
 					"Lấy danh sách bài học video thành công."
 				);
 			}
 			catch (Exception)
 			{
-				return new BaseResponse<IEnumerable<VideoLesson>>(
+				return new BaseResponse<IEnumerable<VideoLessonResponse>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
-					new List<VideoLesson>(),
+					new List<VideoLessonResponse>(),
 					"Lỗi hệ thống khi lấy danh sách bài học video."
 				);
 			}
 		}
 
-		public async Task<BaseResponse<VideoLesson>> GetVideoLessonByIdAsync(Guid id)
+		public async Task<BaseResponse<VideoLessonResponse>> GetVideoLessonByIdAsync(Guid id)
 		{
 			try
 			{
 				var videoLesson = await _unitOfWork.GetRepository<VideoLesson>().GetByIdAsync(id);
 				if (videoLesson == null)
-					return new BaseResponse<VideoLesson>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài học video không tồn tại.");
+					return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài học video không tồn tại.");
 
-				return new BaseResponse<VideoLesson>(StatusCodeHelper.OK, "SUCCESS", videoLesson, "Lấy bài học video thành công.");
+				var response = _mapper.Map<VideoLessonResponse>(videoLesson);
+				return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy bài học video thành công.");
 			}
 			catch (Exception)
 			{
-				return new BaseResponse<VideoLesson>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học video.");
+				return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học video.");
 			}
 		}
 
