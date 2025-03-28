@@ -113,7 +113,7 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được cập nhật.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài học.");
