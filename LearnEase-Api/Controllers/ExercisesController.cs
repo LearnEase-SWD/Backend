@@ -56,6 +56,7 @@ public class ExercisesController : ControllerBase
 		var response = await _exerciseService.DeleteExerciseAsync(id);
 		return StatusCode((int)response.StatusCode, response);
 	}
+
     [HttpPost("mark-exercise-completed")]
     public async Task<IActionResult> MarkExerciseCompleted(string userId, Guid exerciseId)
     {
