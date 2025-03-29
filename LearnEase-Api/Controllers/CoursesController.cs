@@ -15,28 +15,28 @@ public class CoursesController : ControllerBase
 {
 	private readonly ICourseService _courseService;
 
-	public CoursesController(ICourseService courseService)
-	{
-		_courseService = courseService;
-	}
+    public CoursesController(ICourseService courseService)
+    {
+        _courseService = courseService;
+    }
+    [HttpGet("{courseid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid courseid)
+    {
+        var course = await _courseService.GetCourseByIdAsync(courseid);
+        if (course == null)
+        {
+            return NotFound(new { message = "Course not found." });
+        }
+        return Ok(course);
 
-	[HttpGet("{id}")]
-	public async Task<IActionResult> GetByIdAsync(Guid id)
-	{
-		var course = await _courseService.GetCourseByIdAsync(id);
-		if (course == null)
-		{
-			return NotFound(new { message = "Course not found." });
-		}
-		return Ok(course);
-	}
-
-	[HttpGet]
-	public async Task<IActionResult> GetCoursesAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
-	{
-		var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
-		return Ok(courses);
-	}
+        }
+            [HttpGet]
+    public async Task<IActionResult> GetCoursesAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+    {
+        var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
+        return Ok(courses);
+        //mua khoa hoc
+    }
 
 	[HttpGet("available-course")]
 	public async Task<IActionResult> GetAvailableCoursesAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
