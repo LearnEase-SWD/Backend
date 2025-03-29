@@ -59,9 +59,9 @@ public class CoursesController : ControllerBase
         }
 
         return StatusCode((int)purchaseResult.StatusCode, purchaseResult);
-    }*/
+    }
 
-	[HttpGet("{id}")]
+	[HttpGet("{idcourse}")]
 	public async Task<IActionResult> GetCourseByIdAsync(Guid id)
 	{
 		if (id == Guid.Empty)
@@ -130,7 +130,7 @@ public class CoursesController : ControllerBase
         }
     }
    
-    [HttpDelete("{id}")]
+    [HttpDelete("{idcourse}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var deleted = await _courseService.DeleteCourseAsync(id);
