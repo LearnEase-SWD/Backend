@@ -39,7 +39,7 @@ public class CoursesController : ControllerBase
     }
 
 
-    [HttpPost("{purchase}/purchase")]
+    [HttpPost("{courseId}/purchase")]
     [AllowAnonymous]  // Không yêu cầu xác thực
     public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string userid)
 
