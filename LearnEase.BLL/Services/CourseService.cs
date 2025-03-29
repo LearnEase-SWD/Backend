@@ -26,6 +26,7 @@ namespace LearnEase.Service.Services
 			_mapper = mapper;
             _logger = logger;
         }
+
         public async Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id)
         {
             try
