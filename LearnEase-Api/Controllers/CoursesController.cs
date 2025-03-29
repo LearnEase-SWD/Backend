@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Models.Request;
 using Microsoft.AspNetCore.Authorization;
+using LearnEase.Core.Base;
+using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
+using System.Security.Claims;
 
 [Route("api/courses")]
 [ApiController]
@@ -21,20 +25,32 @@ public class CoursesController : ControllerBase
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
+        //mua khoa hoc
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(Guid id)
+    [HttpPost("{courseId}/purchase")]
+    [AllowAnonymous]  // Không yêu cầu xác thực
+    public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string id)
     {
-        var course = await _courseService.GetCourseByIdAsync(id);
-        if (course == null)
+        // Kiểm tra id có tồn tại không
+        if (string.IsNullOrEmpty(id))
         {
-            return NotFound(new { message = "Course not found." });
+            return BadRequest(new { message = "User ID is required." });
         }
-        return Ok(course);
+
+        // Gọi Service để thực hiện mua khóa học
+        var purchaseResult = await _courseService.PurchaseCourseAsync(courseId, id);
+
+        if (!purchaseResult.Data)
+        {
+            return StatusCode((int)purchaseResult.StatusCode, new { message = purchaseResult.Message });
+        }
+
+        return StatusCode((int)purchaseResult.StatusCode, purchaseResult);
     }
 
-	[HttpPost]
+   
+    [HttpPost]
 	public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
 	{
 		if (course == null)
