@@ -12,5 +12,7 @@ namespace LearnEase_Api.LearnEase.Core.IServices
 		Task<BaseResponse<bool>> CreateExerciseAsync(ExerciseRequest exercise);
 		Task<BaseResponse<bool>> UpdateExerciseAsync(Guid id, ExerciseRequest exercise);
 		Task<BaseResponse<bool>> DeleteExerciseAsync(Guid id);
-	}
+        Task<BaseResponse<bool>> MarkExerciseAsCompletedAsync(string userId, Guid exerciseId);
+
+    }
 }

@@ -1,4 +1,5 @@
-﻿using LearnEase.Core.Models.Request;
+﻿using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
 using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,5 +56,19 @@ public class ExercisesController : ControllerBase
 		var response = await _exerciseService.DeleteExerciseAsync(id);
 		return StatusCode((int)response.StatusCode, response);
 	}
+    [HttpPost("mark-exercise-completed")]
+    public async Task<IActionResult> MarkExerciseCompleted(string userId, Guid exerciseId)
+    {
+        var response = await _exerciseService.MarkExerciseAsCompletedAsync(userId, exerciseId);
+
+        if (response.StatusCode == StatusCodeHelper.OK && response.Code == "SUCCESS")
+        {
+            return Ok(response);
+        }
+        else
+        {
+            return BadRequest(response);
+        }
+    }
 
 }

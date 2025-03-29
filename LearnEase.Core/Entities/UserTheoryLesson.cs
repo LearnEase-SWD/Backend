@@ -22,6 +22,6 @@ namespace LearnEase.Core.Entities
 
         public DateTime? LastAccessedAt { get; set; } // Lần cuối truy cập lý thuyết
         public bool IsCompleted { get; set; } = false; // Đã đọc xong lý thuyết chưa?
-        public int TimeSpent { get; set; } = 0; // Thời gian dành cho lý thuyết (giây)
+       
     }
 }

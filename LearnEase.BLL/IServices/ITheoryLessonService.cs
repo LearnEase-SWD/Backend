@@ -11,5 +11,7 @@ namespace LearnEase.Service.IServices
         Task<BaseResponse<bool>> CreateTheoryLessonAsync(TheoryLessonCreateRequest theoryLessonRequest);
         Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreateRequest request);
         Task<BaseResponse<bool>> DeleteTheoryLessonAsync(Guid id);
+        Task<BaseResponse<bool>> MarkTheoryLessonAsCompletedAsync(string userId, Guid theoryLessonId);
+
     }
 }

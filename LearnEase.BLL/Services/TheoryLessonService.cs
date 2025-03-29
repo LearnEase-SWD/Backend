@@ -187,5 +187,67 @@ namespace LearnEase.Service.Services
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
             }
         }
-    }
+        public async Task<BaseResponse<bool>> MarkTheoryLessonAsCompletedAsync(string userId, Guid theoryLessonId)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var userTheoryLessonRepository = _unitOfWork.GetRepository<UserTheoryLesson>();
+                var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
+                var userLessonRepository = _unitOfWork.GetRepository<UserLesson>();
+
+                // Kiểm tra xem TheoryLesson có tồn tại không
+                var theoryLesson = await theoryLessonRepository.GetByIdAsync(theoryLessonId);
+                if (theoryLesson == null)
+                {
+                    return new BaseResponse<bool>(StatusCodeHelper.NotFound, "THEORY_LESSON_NOT_FOUND", false, "Bài học lý thuyết không tồn tại.");
+                }
+
+                // Tìm UserLesson tương ứng
+                var userLesson = await userLessonRepository.FirstOrDefaultAsync(ul => ul.UserID == userId && ul.LessonID == theoryLesson.LessonID);
+                if (userLesson == null)
+                {
+                    return new BaseResponse<bool>(StatusCodeHelper.NotFound, "USER_LESSON_NOT_FOUND", false, "UserLesson không tồn tại");
+                }
+
+                // Kiểm tra xem UserTheoryLesson có tồn tại không
+                var existingUserTheoryLesson = await userTheoryLessonRepository.FirstOrDefaultAsync(utl => utl.UserID == userId && utl.TheoryLessonID == theoryLessonId);
+
+                if (existingUserTheoryLesson == null)
+                {
+                    // Nếu chưa tồn tại, tạo mới và đánh dấu là đã hoàn thành
+                    var newUserTheoryLesson = new UserTheoryLesson
+                    {
+                        UserID = userId,
+                        TheoryLessonID = theoryLessonId,
+                        IsCompleted = true,
+                        LastAccessedAt = DateTime.UtcNow
+                    };
+
+                    await userTheoryLessonRepository.CreateAsync(newUserTheoryLesson);
+                }
+                else
+                {
+                    // Nếu đã tồn tại, cập nhật trạng thái đã hoàn thành
+                    existingUserTheoryLesson.IsCompleted = true;
+                    existingUserTheoryLesson.LastAccessedAt = DateTime.UtcNow;
+                    await userTheoryLessonRepository.UpdateAsync(existingUserTheoryLesson);
+                }
+
+                // Cập nhật UserLesson
+                userLesson.IsTheoryCompleted = true;
+                await userLessonRepository.UpdateAsync(userLesson);
+
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học lý thuyết đã được đánh dấu là hoàn thành.");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi đánh dấu bài học lý thuyết.");
+            }
+        }
 }

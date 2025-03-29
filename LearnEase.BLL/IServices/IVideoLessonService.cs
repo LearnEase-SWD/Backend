@@ -12,5 +12,6 @@ namespace LearnEase.Service.IServices
         Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreateRequest videoRequest);
         Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreateRequest request);
         Task<BaseResponse<bool>> DeleteVideoLessonAsync(Guid id);
+        Task<BaseResponse<bool>> MarkVideoLessonAsCompletedAsync(string userId, Guid videoLessonId);
     }
 }
