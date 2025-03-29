@@ -20,9 +20,9 @@ public class CoursesController : ControllerBase
         _courseService = courseService;
     }
     [HttpGet("{courseid}")]
-    public async Task<IActionResult> GetByIdAsync(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid courseid)
     {
-        var course = await _courseService.GetCourseByIdAsync(id);
+        var course = await _courseService.GetCourseByIdAsync(courseid);
         if (course == null)
         {
             return NotFound(new { message = "Course not found." });
