@@ -73,7 +73,7 @@ namespace LearnEase.Service.Services
 					{
 						ExerciseID = ex.ExerciseID,
 						LessonID = ex.LessonID,
-						Type = ex.Type,
+						ExerciseType = ex.Type,
 						CorrectAnswer = ex.CorrectAnswer,
 						LessonType = (LessonTypeEnum)lesson.LessonType,
 						Question = ex.Question,
@@ -105,15 +105,19 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var exercise = await _unitOfWork.GetRepository<Exercise>().GetByIdAsync(id);
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
 				if (exercise == null)
 					return new BaseResponse<ExerciseResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Bài tập không tồn tại.");
+
+				var lesson = await lessonRepository.GetByIdAsync(exercise.LessonID);
 
 				var response = new ExerciseResponse
 				{
 					ExerciseID = exercise.ExerciseID,
 					LessonID = exercise.LessonID,
-					LessonType = (LessonTypeEnum)exercise.Lesson.LessonType,
+					ExerciseType = exercise.Type,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
 					Question = exercise.Question,
 					AnswerOptions = exercise.AnswerOptions,
 					CorrectAnswer = exercise.CorrectAnswer,

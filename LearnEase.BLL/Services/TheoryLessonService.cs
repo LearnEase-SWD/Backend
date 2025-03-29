@@ -4,6 +4,7 @@ using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
+using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
 
@@ -109,15 +110,18 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var theoryLesson = await _unitOfWork.GetRepository<TheoryLesson>().GetByIdAsync(id);
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
 				if (theoryLesson == null)
 					return new BaseResponse<TheoryLessonResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Bài học không tồn tại.");
+
+				var lesson = await lessonRepository.GetByIdAsync(theoryLesson.LessonID);
 
 				var response = new TheoryLessonResponse
 				{
 					TheoryID = theoryLesson.TheoryID,
 					LessonID = theoryLesson.LessonID,
-					LessonType = (LessonTypeEnum)theoryLesson.Lesson.LessonType,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
 					Content = theoryLesson.Content,
 					Examples = theoryLesson.Examples,
 					CreatedAt = theoryLesson.CreatedAt

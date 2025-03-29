@@ -6,7 +6,7 @@ namespace LearnEase.Core.Models.Reponse
     {
         public Guid ExerciseID { get; set; }
         public Guid LessonID { get; set; }
-        public string Type { get; set; }
+        public string ExerciseType { get; set; }
 		public LessonTypeEnum LessonType { get; set; }
 		public string Question { get; set; }
         public string AnswerOptions { get; set; }

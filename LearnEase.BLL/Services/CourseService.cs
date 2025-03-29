@@ -75,8 +75,8 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-        //mua khóa học 
-        /*public async Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId)
+		//mua khóa học 
+		/*public async Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId)
         {
             // Kiểm tra userId hợp lệ trước khi mở transaction
             if (string.IsNullOrWhiteSpace(userId))
@@ -132,7 +132,51 @@ namespace LearnEase.Service.Services
             }
         }*/
 
-        public async Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id, string userId)
+		public async Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id)
+		{
+			try
+			{
+				var courseRepository = _unitOfWork.GetRepository<Course>();
+				var topicRepository = _unitOfWork.GetRepository<Topic>();
+				var lessonRepository = _unitOfWork.GetCustomRepository<ILessonRepository>();
+
+				var course = await courseRepository.GetByIdAsync(id, q => q.Include(c => c.Topic));
+
+				if (course == null)
+				{
+					return new BaseResponse<CourseResponse>(
+						StatusCodeHelper.BadRequest,
+						"NOT_FOUND",
+						null,
+						"Khóa học không tồn tại."
+					);
+				}
+
+				var courseResponse = _mapper.Map<CourseResponse>(course);
+				courseResponse.TopicName = course.Topic.Name;
+
+				var lessons = await lessonRepository.GetLessonsByCourseId(id, 1, int.MaxValue); // Lấy tất cả
+				courseResponse.Lessons = _mapper.Map<IEnumerable<LessonResponse>>(lessons.Items);
+
+				return new BaseResponse<CourseResponse>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					courseResponse,
+					"Lấy thông tin khóa học thành công."
+				);
+			}
+			catch (Exception ex)
+			{
+				return new BaseResponse<CourseResponse>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					null,
+					"Lỗi hệ thống khi lấy khóa học."
+				);
+			}
+		}
+
+		public async Task<BaseResponse<CourseResponse>> GetCourseByUserIdAsync(Guid id, string userId)
         {
             try
             {
@@ -209,6 +253,7 @@ namespace LearnEase.Service.Services
                 );
             }
         }
+
         public async Task<BaseResponse<bool>> CreateCourseAsync(CourseRequest courseRequest)
 		{
 			if (courseRequest == null)

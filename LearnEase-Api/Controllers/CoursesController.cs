@@ -28,7 +28,7 @@ public class CoursesController : ControllerBase
         //mua khoa hoc
     }
 
-    /*[HttpPost("{courseId}/purchase")]
+	/*[HttpPost("{courseId}/purchase")]
     [AllowAnonymous]  // Không yêu cầu xác thực
     public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string id)
     {
@@ -49,8 +49,21 @@ public class CoursesController : ControllerBase
         return StatusCode((int)purchaseResult.StatusCode, purchaseResult);
     }*/
 
-   
-    [HttpPost]
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetCourseByIdAsync(Guid id)
+	{
+		if (id == Guid.Empty)
+			return BadRequest(new { message = "Invalid Course ID." });
+
+		var course = await _courseService.GetCourseByIdAsync(id);
+
+		if (course.Data == null)
+			return NotFound(new { message = "Course not found." });
+
+		return Ok(course);
+	}
+
+	[HttpPost]
 	public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
 	{
 		if (course == null)
