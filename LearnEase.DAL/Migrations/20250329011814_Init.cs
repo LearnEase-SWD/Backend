@@ -346,8 +346,7 @@ namespace LearnEase.Repository.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TheoryLessons_LessonID",
                 table: "TheoryLessons",
-                column: "LessonID",
-                unique: true);
+                column: "LessonID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCourses_CourseID",
@@ -393,8 +392,7 @@ namespace LearnEase.Repository.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_VideoLessons_LessonID",
                 table: "VideoLessons",
-                column: "LessonID",
-                unique: true);
+                column: "LessonID");
         }
 
         /// <inheritdoc />

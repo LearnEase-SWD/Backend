@@ -223,8 +223,7 @@ namespace LearnEase.Repository.Migrations
 
                     b.HasKey("TheoryID");
 
-                    b.HasIndex("LessonID")
-                        .IsUnique();
+                    b.HasIndex("LessonID");
 
                     b.ToTable("TheoryLessons");
                 });
@@ -431,8 +430,7 @@ namespace LearnEase.Repository.Migrations
 
                     b.HasKey("VideoID");
 
-                    b.HasIndex("LessonID")
-                        .IsUnique();
+                    b.HasIndex("LessonID");
 
                     b.ToTable("VideoLessons");
                 });
@@ -503,8 +501,8 @@ namespace LearnEase.Repository.Migrations
             modelBuilder.Entity("LearnEase.Core.Entities.TheoryLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
-                        .WithOne("TheoryLesson")
-                        .HasForeignKey("LearnEase.Core.Entities.TheoryLesson", "LessonID")
+                        .WithMany("TheoryLessons")
+                        .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -590,8 +588,8 @@ namespace LearnEase.Repository.Migrations
             modelBuilder.Entity("LearnEase.Core.Entities.VideoLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
-                        .WithOne("VideoLesson")
-                        .HasForeignKey("LearnEase.Core.Entities.VideoLesson", "LessonID")
+                        .WithMany("VideoLessons")
+                        .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -621,14 +619,12 @@ namespace LearnEase.Repository.Migrations
 
                     b.Navigation("Flashcards");
 
-                    b.Navigation("TheoryLesson")
-                        .IsRequired();
+                    b.Navigation("TheoryLessons");
 
                     b.Navigation("UserProgress")
                         .IsRequired();
 
-                    b.Navigation("VideoLesson")
-                        .IsRequired();
+                    b.Navigation("VideoLessons");
                 });
 
             modelBuilder.Entity("LearnEase.Core.Entities.Topic", b =>
