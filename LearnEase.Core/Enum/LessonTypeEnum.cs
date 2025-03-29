@@ -4,6 +4,7 @@
 	{
 		Video,
 		Theory,
-		Exercise
+		Exercise,
+		Flashcard
 	}
 }

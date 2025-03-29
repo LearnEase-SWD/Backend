@@ -2,10 +2,10 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
-using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services
 {
@@ -13,16 +13,14 @@ namespace LearnEase.Service.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly ILogger<FlashcardService> _logger;
 
-		public FlashcardService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<FlashcardService> logger)
+		public FlashcardService(IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-			_logger = logger;
 		}
 
-		public async Task<BaseResponse<IEnumerable<Flashcard>>> GetFlashcardsAsync(int pageIndex, int pageSize)
+		public async Task<BaseResponse<IEnumerable<FlashcardResponse>>> GetFlashcardsAsync(int pageIndex, int pageSize)
 		{
 			if (pageIndex < 1) pageIndex = 1;
 			if (pageSize < 1) pageSize = 10;
@@ -30,73 +28,112 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+
 				var query = flashcardRepository.Entities;
 				var flashcards = await flashcardRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
-				return new BaseResponse<IEnumerable<Flashcard>>(
+				var responseList = new List<FlashcardResponse>();
+				foreach (var fc in flashcards.Items)
+				{
+					var lesson = await lessonRepository.GetByIdAsync(fc.LessonID);
+
+					responseList.Add(new FlashcardResponse
+					{
+						FlashcardID = fc.FlashcardID,
+						LessonID = fc.LessonID,
+						LessonType = (LessonTypeEnum)lesson.LessonType,
+						Front = fc.Front,
+						Back = fc.Back,
+						PronunciationAudioURL = fc.PronunciationAudioURL,
+						CreatedAt = fc.CreatedAt
+					});
+				}
+
+				return new BaseResponse<IEnumerable<FlashcardResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					flashcards.Items,
+					responseList,
 					"Lấy danh sách flashcard thành công."
 				);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				_logger.LogError($"Lỗi khi lấy danh sách flashcard: {ex.Message}");
-				return new BaseResponse<IEnumerable<Flashcard>>(
+				return new BaseResponse<IEnumerable<FlashcardResponse>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
-					new List<Flashcard>(),
+					new List<FlashcardResponse>(),
 					"Lỗi hệ thống khi lấy danh sách flashcard."
 				);
 			}
 		}
 
-		public async Task<BaseResponse<Flashcard>> GetFlashcardByIdAsync(Guid id)
+		public async Task<BaseResponse<FlashcardResponse>> GetFlashcardByIdAsync(Guid id)
 		{
 			try
 			{
-				var flashcard = await _unitOfWork.GetRepository<Flashcard>().GetByIdAsync(id);
-				if (flashcard == null)
-					return new BaseResponse<Flashcard>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Flashcard không tồn tại.");
+				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
-				return new BaseResponse<Flashcard>(StatusCodeHelper.OK, "SUCCESS", flashcard, "Lấy flashcard thành công.");
+				var flashcard = await flashcardRepository.GetByIdAsync(id);
+				if (flashcard == null)
+					return new BaseResponse<FlashcardResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Flashcard không tồn tại.");
+
+				var lesson = await lessonRepository.GetByIdAsync(flashcard.LessonID);
+
+				var response = new FlashcardResponse
+				{
+					FlashcardID = flashcard.FlashcardID,
+					LessonID = flashcard.LessonID,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
+					Front = flashcard.Front,
+					Back = flashcard.Back,
+					PronunciationAudioURL = flashcard.PronunciationAudioURL,
+					CreatedAt = flashcard.CreatedAt
+				};
+
+				return new BaseResponse<FlashcardResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy flashcard thành công.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				_logger.LogError($"Lỗi khi lấy flashcard với ID {id}: {ex.Message}");
-				return new BaseResponse<Flashcard>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy flashcard.");
+				return new BaseResponse<FlashcardResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy flashcard.");
 			}
 		}
 
 		public async Task<BaseResponse<bool>> CreateFlashcardAsync(FlashcardRequest flashcardRequest)
 		{
-			if (flashcardRequest == null || string.IsNullOrWhiteSpace(flashcardRequest.Front) || string.IsNullOrWhiteSpace(flashcardRequest.Back))
+			if (flashcardRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu flashcard không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var lesson = await lessonRepository.GetByIdAsync(flashcardRequest.LessonID);
+
+				if (lesson == null)
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "LESSON_NOT_FOUND", false, "Lesson không tồn tại.");
+
 				var flashcard = _mapper.Map<Flashcard>(flashcardRequest);
 				flashcard.CreatedAt = DateTime.UtcNow;
-				
+
+				lesson.LessonType = LessonTypeEnum.Flashcard;
 				await _unitOfWork.GetRepository<Flashcard>().CreateAsync(flashcard);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Flashcard được tạo thành công.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi tạo flashcard: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo flashcard.");
 			}
 		}
 
 		public async Task<BaseResponse<bool>> UpdateFlashcardAsync(Guid id, FlashcardRequest flashcardRequest)
 		{
-			if (flashcardRequest == null || string.IsNullOrWhiteSpace(flashcardRequest.Front) || string.IsNullOrWhiteSpace(flashcardRequest.Back))
+			if (flashcardRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu flashcard không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
@@ -106,24 +143,18 @@ namespace LearnEase.Service.Services
 				var existingFlashcard = await flashcardRepository.GetByIdAsync(id);
 
 				if (existingFlashcard == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy flashcard.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy flashcard.");
 
-				existingFlashcard.Front = flashcardRequest.Front;
-				existingFlashcard.Back = flashcardRequest.Back;
-				existingFlashcard.PronunciationAudioURL = flashcardRequest.PronunciationAudioURL;
-				existingFlashcard.LessonID = flashcardRequest.LessonID;
-				existingFlashcard.CreatedAt = DateTime.UtcNow;
-
+				_mapper.Map(flashcardRequest, existingFlashcard);
 				await flashcardRepository.UpdateAsync(existingFlashcard);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Flashcard đã được cập nhật.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi cập nhật flashcard {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật flashcard.");
 			}
 		}
@@ -137,7 +168,7 @@ namespace LearnEase.Service.Services
 				var existingFlashcard = await flashcardRepository.GetByIdAsync(id);
 
 				if (existingFlashcard == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy flashcard.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy flashcard.");
 
 				await flashcardRepository.DeleteAsync(existingFlashcard);
 				await _unitOfWork.SaveAsync();
@@ -145,10 +176,9 @@ namespace LearnEase.Service.Services
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Flashcard đã được xóa.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi xóa flashcard {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa flashcard.");
 			}
 		}

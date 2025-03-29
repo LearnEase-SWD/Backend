@@ -35,6 +35,5 @@ namespace LearnEase.Core.Entities
 		public ICollection<UserLesson> UserProgresses { get; set; } = new List<UserLesson>();
 		public ICollection<UserCourse> UserCourses { get; set; } = new List<UserCourse>();
 		public ICollection<UserExercise> UserExercises { get; set; } = new List<UserExercise>();
-		public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>();
 	}
 }
