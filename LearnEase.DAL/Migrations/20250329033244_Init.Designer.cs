@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearnEase.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250329011814_Init")]
+    [Migration("20250329033244_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -358,31 +358,6 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
-                {
-                    b.Property<Guid>("UserFlashcardID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FlashcardID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Progress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserFlashcardID");
-
-                    b.HasIndex("FlashcardID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("UserFlashcards");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
                 {
                     b.Property<Guid>("ProgressID")
@@ -550,25 +525,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
-                {
-                    b.HasOne("LearnEase.Core.Entities.Flashcard", "Flashcard")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("FlashcardID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase.Core.Entities.User", "User")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Flashcard");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
@@ -611,11 +567,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.Flashcard", b =>
-                {
-                    b.Navigation("UserFlashcards");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.Lesson", b =>
                 {
                     b.Navigation("Exercises");
@@ -640,8 +591,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("UserCourses");
 
                     b.Navigation("UserExercises");
-
-                    b.Navigation("UserFlashcards");
 
                     b.Navigation("UserProgresses");
                 });

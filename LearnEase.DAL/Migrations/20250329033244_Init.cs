@@ -289,30 +289,6 @@ namespace LearnEase.Repository.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UserFlashcards",
-                columns: table => new
-                {
-                    UserFlashcardID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FlashcardID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Progress = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserFlashcards", x => x.UserFlashcardID);
-                    table.ForeignKey(
-                        name: "FK_UserFlashcards_Flashcards_FlashcardID",
-                        column: x => x.FlashcardID,
-                        principalTable: "Flashcards",
-                        principalColumn: "FlashcardID");
-                    table.ForeignKey(
-                        name: "FK_UserFlashcards_Users_UserID",
-                        column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CourseHistories_CourseID",
                 table: "CourseHistories",
@@ -369,16 +345,6 @@ namespace LearnEase.Repository.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserFlashcards_FlashcardID",
-                table: "UserFlashcards",
-                column: "FlashcardID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserFlashcards_UserID",
-                table: "UserFlashcards",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserLesson_LessonID",
                 table: "UserLesson",
                 column: "LessonID",
@@ -402,6 +368,9 @@ namespace LearnEase.Repository.Migrations
                 name: "CourseHistories");
 
             migrationBuilder.DropTable(
+                name: "Flashcards");
+
+            migrationBuilder.DropTable(
                 name: "TheoryLessons");
 
             migrationBuilder.DropTable(
@@ -411,9 +380,6 @@ namespace LearnEase.Repository.Migrations
                 name: "UserExercises");
 
             migrationBuilder.DropTable(
-                name: "UserFlashcards");
-
-            migrationBuilder.DropTable(
                 name: "UserLesson");
 
             migrationBuilder.DropTable(
@@ -421,9 +387,6 @@ namespace LearnEase.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Exercises");
-
-            migrationBuilder.DropTable(
-                name: "Flashcards");
 
             migrationBuilder.DropTable(
                 name: "Users");
