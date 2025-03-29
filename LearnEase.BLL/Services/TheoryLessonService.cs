@@ -2,11 +2,11 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
-using LearnEase.Repository.IRepository;
+using LearnEase.Repository.Repositories;
 using LearnEase.Repository.UOW;
 using LearnEase.Service.IServices;
-using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services
 {
@@ -32,7 +32,6 @@ namespace LearnEase.Service.Services
             if (lesson == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "ID bài học không tồn tại.");
 
-			
 			await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -40,7 +39,10 @@ namespace LearnEase.Service.Services
                 var theoryLesson = _mapper.Map<TheoryLesson>(theoryLessonRequest);
                 theoryLesson.CreatedAt = DateTime.UtcNow;
 
-                await _unitOfWork.GetRepository<TheoryLesson>().CreateAsync(theoryLesson);
+                // Sửa lessontype
+                lesson.LessonType = LessonTypeEnum.Theory;
+
+				await _unitOfWork.GetRepository<TheoryLesson>().CreateAsync(theoryLesson);
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -53,52 +55,87 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<TheoryLesson>>> GetTheoryLessonsAsync(int pageIndex, int pageSize)
-        {
-            if (pageIndex < 1) pageIndex = 1;
-            if (pageSize < 1) pageSize = 10;
+		public async Task<BaseResponse<IEnumerable<TheoryLessonResponse>>> GetTheoryLessonsAsync(int pageIndex, int pageSize)
+		{
+			if (pageIndex < 1) pageIndex = 1;
+			if (pageSize < 1) pageSize = 10;
 
-            try
-            {
-                var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
-                var query = theoryLessonRepository.Entities;
-                var theoryLessons = await theoryLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
+			try
+			{
+				var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
-                return new BaseResponse<IEnumerable<TheoryLesson>>(
-                    StatusCodeHelper.OK,
-                    "SUCCESS",
-                    theoryLessons.Items,
-                    "Lấy danh sách bài học thành công."
-                );
-            }
-            catch (Exception)
-            {
-                return new BaseResponse<IEnumerable<TheoryLesson>>(
-                    StatusCodeHelper.ServerError,
-                    "ERROR",
-                    new List<TheoryLesson>(),
-                    "Lỗi hệ thống khi lấy danh sách bài học."
-                );
-            }
-        }
+				// Lấy danh sách TheoryLesson với phân trang
+				var query = theoryLessonRepository.Entities;
+				var theoryLessons = await theoryLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
-        public async Task<BaseResponse<TheoryLesson>> GetTheoryLessonByIdAsync(Guid id)
-        {
-            try
-            {
-                var theoryLesson = await _unitOfWork.GetRepository<TheoryLesson>().GetByIdAsync(id);
-                if (theoryLesson == null)
-                    return new BaseResponse<TheoryLesson>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài học không tồn tại.");
+				// Duyệt từng phần tử và lấy Lesson tương ứng
+				var responseList = new List<TheoryLessonResponse>();
+				foreach (var tl in theoryLessons.Items)
+				{
+					// Lấy từng lesson theo ID
+					var lesson = await lessonRepository.GetByIdAsync(tl.LessonID);
 
-                return new BaseResponse<TheoryLesson>(StatusCodeHelper.OK, "SUCCESS", theoryLesson, "Lấy bài học thành công.");
-            }
-            catch (Exception)
-            {
-                return new BaseResponse<TheoryLesson>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học.");
-            }
-        }
+					responseList.Add(new TheoryLessonResponse
+					{
+						TheoryID = tl.TheoryID,
+						LessonID = tl.LessonID,
+						LessonType = (LessonTypeEnum)lesson.LessonType,
+						Content = tl.Content,
+						Examples = tl.Examples,
+						CreatedAt = tl.CreatedAt
+					});
+				}
 
-        public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreateRequest request)
+				return new BaseResponse<IEnumerable<TheoryLessonResponse>>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					responseList,
+					"Lấy danh sách bài học thành công."
+				);
+			}
+			catch (Exception)
+			{
+				return new BaseResponse<IEnumerable<TheoryLessonResponse>>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					new List<TheoryLessonResponse>(),
+					"Lỗi hệ thống khi lấy danh sách bài học."
+				);
+			}
+		}
+
+		public async Task<BaseResponse<TheoryLessonResponse>> GetTheoryLessonByIdAsync(Guid id)
+		{
+			try
+			{
+				var theoryLesson = await _unitOfWork.GetRepository<TheoryLesson>().GetByIdAsync(id);
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+
+				if (theoryLesson == null)
+					return new BaseResponse<TheoryLessonResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Bài học không tồn tại.");
+
+				var lesson = await lessonRepository.GetByIdAsync(theoryLesson.LessonID);
+
+				var response = new TheoryLessonResponse
+				{
+					TheoryID = theoryLesson.TheoryID,
+					LessonID = theoryLesson.LessonID,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
+					Content = theoryLesson.Content,
+					Examples = theoryLesson.Examples,
+					CreatedAt = theoryLesson.CreatedAt
+				};
+
+				return new BaseResponse<TheoryLessonResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy bài học thành công.");
+			}
+			catch (Exception)
+			{
+				return new BaseResponse<TheoryLessonResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài học.");
+			}
+		}
+
+		public async Task<BaseResponse<bool>> UpdateTheoryLessonAsync(Guid id, TheoryLessonCreateRequest request)
         {
             if (request == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài học không hợp lệ.");

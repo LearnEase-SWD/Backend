@@ -1,18 +1,12 @@
 
 ﻿using Microsoft.AspNetCore.Mvc;
-using LearnEase.Repository.IRepository;
-using LearnEase.Core.Entities;
 using LearnEase.Service.IServices;
-
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using LearnEase.Service.IServices;
 using LearnEase.Core.Models.Request;
 
 
 [ApiController]
 [Route("api/flashcards")]
-[Authorize]
 [AllowAnonymous]
 public class FlashcardsController : ControllerBase
 {

@@ -19,23 +19,10 @@ namespace LearnEase.Repository
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserExercise> UserExercises { get; set; }
         public DbSet<UserLesson> UserLesson { get; set; }
-        public DbSet<UserFlashcard> UserFlashcards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<UserFlashcard>()
-               .HasOne(uf => uf.User)
-               .WithMany(u => u.UserFlashcards)
-               .HasForeignKey(uf => uf.UserID)
-               .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<UserFlashcard>()
-                .HasOne(uf => uf.Flashcard)
-                .WithMany(f => f.UserFlashcards)
-                .HasForeignKey(uf => uf.FlashcardID)
-                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Course>()
                 .Property(c => c.Price)

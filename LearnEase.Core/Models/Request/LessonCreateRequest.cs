@@ -14,8 +14,5 @@ namespace LearnEase.Core.Models.Request
         [Required(ErrorMessage = "Tiêu đề không được để trống.")]
         [MaxLength(200, ErrorMessage = "Tiêu đề không được vượt quá 200 ký tự.")]
         public string Title { get; set; }
-
-        [Required(ErrorMessage = "Loại bài học không được để trống.")]
-        public LessonTypeEnum LessonType { get; set; }
     }
 }

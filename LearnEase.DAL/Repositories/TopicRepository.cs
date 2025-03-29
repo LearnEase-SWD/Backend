@@ -27,7 +27,6 @@ namespace LearnEase.Repository.Repositories
 					return new TopicResponse
 					{
 						Name = string.Empty,
-						CourseIds = new List<Guid>()
 					};
 				}
 
@@ -42,7 +41,6 @@ namespace LearnEase.Repository.Repositories
 				{
 					TopicId = topic.TopicID,
 					Name = topic.Name,
-					CourseIds = courseIds
 				};
 			}
 			catch (Exception)
@@ -50,7 +48,6 @@ namespace LearnEase.Repository.Repositories
 				return new TopicResponse
 				{
 					Name = "Error",
-					CourseIds = new List<Guid>()
 				};
 			}
 		}

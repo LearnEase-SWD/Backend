@@ -22,7 +22,6 @@ namespace LearnEase.Core.Entities
         public string? PronunciationAudioURL { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public ICollection<UserFlashcard> UserFlashcards { get; set; } = new List<UserFlashcard>();
     }
 
 }

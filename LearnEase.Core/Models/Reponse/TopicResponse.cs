@@ -4,6 +4,5 @@
     {
 		public Guid TopicId { get; set; }
 		public string Name { get; set; }
-		public List<Guid> CourseIds { get; set; }
 	}
 }

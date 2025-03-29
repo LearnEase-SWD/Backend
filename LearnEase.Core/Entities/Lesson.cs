@@ -22,13 +22,12 @@ namespace LearnEase.Core.Entities
 
         [Required]
         [MaxLength(50)]
-        public LessonTypeEnum LessonType { get; set; }
-
+        public LessonTypeEnum? LessonType { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<VideoLesson> VideoLessons { get; set; } = new List<VideoLesson>();
+		public UserLesson UserProgress { get; set; }
+		public ICollection<VideoLesson> VideoLessons { get; set; } = new List<VideoLesson>();
         public ICollection<TheoryLesson> TheoryLessons { get; set; } = new List<TheoryLesson>();
-        public UserLesson UserProgress { get; set; }
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
         public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
 
