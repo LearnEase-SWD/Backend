@@ -1,4 +1,4 @@
-﻿namespace LearnEase_Api.Dtos.request
+﻿namespace LearnEase.Core.Models.Request
 {
     public record UserUpdateRequest(string userName, string email);
 }
