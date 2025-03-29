@@ -13,6 +13,7 @@ using LearnEase.Core.Models.Request;
 [ApiController]
 [Route("api/flashcards")]
 [Authorize]
+[AllowAnonymous]
 public class FlashcardsController : ControllerBase
 {
 	private readonly IFlashcardService _flashcardService;

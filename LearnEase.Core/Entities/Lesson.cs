@@ -26,8 +26,8 @@ namespace LearnEase.Core.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public VideoLesson VideoLesson { get; set; }
-        public TheoryLesson TheoryLesson { get; set; }
+        public ICollection<VideoLesson> VideoLessons { get; set; } = new List<VideoLesson>();
+        public ICollection<TheoryLesson> TheoryLessons { get; set; } = new List<TheoryLesson>();
         public UserLesson UserProgress { get; set; }
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
         public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();

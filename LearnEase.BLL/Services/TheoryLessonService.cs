@@ -32,14 +32,7 @@ namespace LearnEase.Service.Services
             if (lesson == null)
                 return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "ID bài học không tồn tại.");
 
-			// Kiểm tra có theory lesson nào đã tồn tại trong 1 lesson chưa 
-			var existedTheory = _unitOfWork.GetCustomRepository<ITheoryLessonRepository>()
-										   .GetTheoryByLessonId(theoryLessonRequest.LessonID);
-
-			// Nếu đã tồn tại thì báo lỗi
-			if (existedTheory != null)
-				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "DUPLICATE_THEORY_LESSON", false, "Đã tồn tại bài học lý thuyết cho LessonID này.");
-
+			
 			await _unitOfWork.BeginTransactionAsync();
 
             try

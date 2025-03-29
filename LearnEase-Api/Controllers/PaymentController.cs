@@ -1,9 +1,11 @@
 ﻿using LearnEase.Core.Entities;
 using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
+    [AllowAnonymous]
     public class PaymentController : Controller
     {
         private readonly IVnPayService _vnPayService;
