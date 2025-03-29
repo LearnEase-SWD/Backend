@@ -19,26 +19,39 @@ public class CoursesController : ControllerBase
     {
         _courseService = courseService;
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        var course = await _courseService.GetCourseByIdAsync(id);
+        if (course == null)
+        {
+            return NotFound(new { message = "Course not found." });
+        }
+        return Ok(course);
 
-    [HttpGet]
+        }
+            [HttpGet]
     public async Task<IActionResult> GetAllAsync([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
+        //mua khoa hoc
     }
 
-	/*[HttpPost("{courseId}/purchase")]
+
+    [HttpPost("{courseId}/purchase")]
     [AllowAnonymous]  // Không yêu cầu xác thực
-    public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string id)
+    public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string userid)
+
     {
         // Kiểm tra id có tồn tại không
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(userid))
         {
             return BadRequest(new { message = "User ID is required." });
         }
 
         // Gọi Service để thực hiện mua khóa học
-        var purchaseResult = await _courseService.PurchaseCourseAsync(courseId, id);
+        var purchaseResult = await _courseService.PurchaseCourseAsync(courseId, userid);
 
         if (!purchaseResult.Data)
         {
@@ -89,7 +102,45 @@ public class CoursesController : ControllerBase
         }
         return NoContent();
     }
+    [HttpGet("users/{userId}/courses")]
+    [AllowAnonymous] // Chỉ người dùng đã đăng nhập mới xem được thông tin của mình
+    public async Task<IActionResult> GetUserCoursesWithProgress(string userId)
+    {
+        try
+        {
+            // **Quan trọng:** Ở đây, bạn cần đảm bảo rằng userId được lấy từ xác thực (Authorization)
+            // và KHÔNG được truyền trực tiếp từ client (để tránh giả mạo)
+            string authenticatedUserId = GetCurrentUserId(); // Lấy userId từ token (hoặc từ session)
 
+            if (authenticatedUserId != userId)
+            {
+                return Forbid("Bạn không có quyền xem thông tin khóa học của người dùng khác.");
+            }
+
+            var response = await _courseService.GetUserCoursesWithProgressAsync(userId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            // Ghi log lỗi (thay Console.WriteLine bằng ILogger)
+            Console.WriteLine($"Error in GetUserCoursesWithProgress: {ex}");
+            return StatusCode(500, new BaseResponse<IEnumerable<UserCourseResponse>>(
+                StatusCodeHelper.ServerError,
+                "ERROR",
+                null,
+                "Lỗi hệ thống khi lấy thông tin khóa học của người dùng."
+            ));
+        }
+    }
+    private string GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new Exception("Không tìm thấy User ID.");
+        }
+        return userId;
+    }
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
