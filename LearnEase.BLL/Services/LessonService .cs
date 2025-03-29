@@ -99,6 +99,10 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
+				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
+				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
 
 				// Lấy danh sách bài học theo CourseID
 				var paginatedLessons = await lessonRepository.GetPaggingAsync(
@@ -107,8 +111,41 @@ namespace LearnEase.Service.Services
 					pageSize
 				);
 
-				// Ánh xạ sang LessonResponse
-				var lessonResponses = _mapper.Map<IEnumerable<LessonResponse>>(paginatedLessons.Items);
+				// Lấy danh sách ID bài học
+				var lessonIds = paginatedLessons.Items.Select(l => l.LessonID).ToList();
+
+				// Lấy dữ liệu liên quan
+				var videoLessons = await videoLessonRepository.Entities
+					.Where(v => lessonIds.Contains(v.LessonID))
+					.ToListAsync();
+
+				var theoryLessons = await theoryLessonRepository.Entities
+					.Where(t => lessonIds.Contains(t.LessonID))
+					.ToListAsync();
+
+				var exercises = await exerciseRepository.Entities
+					.Where(e => lessonIds.Contains(e.LessonID))
+					.ToListAsync();
+
+				var flashcards = await flashcardRepository.Entities
+					.Where(f => lessonIds.Contains(f.LessonID))
+					.ToListAsync();
+
+				// Ánh xạ dữ liệu sang LessonResponse
+				var lessonResponses = paginatedLessons.Items.Select(lesson => new LessonResponse
+				{
+					LessonID = lesson.LessonID,
+					CourseID = lesson.CourseID,
+					Index = lesson.Index,
+					Title = lesson.Title,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
+					CreatedAt = lesson.CreatedAt,
+
+					VideoLessons = _mapper.Map<IEnumerable<VideoLessonResponse>>(videoLessons.Where(v => v.LessonID == lesson.LessonID)),
+					TheoryLessons = _mapper.Map<IEnumerable<TheoryLessonResponse>>(theoryLessons.Where(t => t.LessonID == lesson.LessonID)),
+					Exercises = _mapper.Map<IEnumerable<ExerciseResponse>>(exercises.Where(e => e.LessonID == lesson.LessonID)),
+					Flashcards = _mapper.Map<IEnumerable<FlashcardResponse>>(flashcards.Where(f => f.LessonID == lesson.LessonID))
+				});
 
 				return new BaseResponse<IEnumerable<LessonResponse>>(
 					StatusCodeHelper.OK,
@@ -141,6 +178,10 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
+				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
+				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
 
 				// Lấy bài học theo ID
 				var lesson = await lessonRepository.GetByIdAsync(id);
@@ -152,8 +193,38 @@ namespace LearnEase.Service.Services
 						"Bài học không tồn tại."
 					);
 
+				// Lấy dữ liệu liên quan
+				var videoLessons = await videoLessonRepository.Entities
+					.Where(v => v.LessonID == id)
+					.ToListAsync();
+
+				var theoryLessons = await theoryLessonRepository.Entities
+					.Where(t => t.LessonID == id)
+					.ToListAsync();
+
+				var exercises = await exerciseRepository.Entities
+					.Where(e => e.LessonID == id)
+					.ToListAsync();
+
+				var flashcards = await flashcardRepository.Entities
+					.Where(f => f.LessonID == id)
+					.ToListAsync();
+
 				// Ánh xạ sang LessonResponse
-				var lessonResponse = _mapper.Map<LessonResponse>(lesson);
+				var lessonResponse = new LessonResponse
+				{
+					LessonID = lesson.LessonID,
+					CourseID = lesson.CourseID,
+					Index = lesson.Index,
+					Title = lesson.Title,
+					LessonType = (LessonTypeEnum)lesson.LessonType,
+					CreatedAt = lesson.CreatedAt,
+
+					VideoLessons = _mapper.Map<IEnumerable<VideoLessonResponse>>(videoLessons),
+					TheoryLessons = _mapper.Map<IEnumerable<TheoryLessonResponse>>(theoryLessons),
+					Exercises = _mapper.Map<IEnumerable<ExerciseResponse>>(exercises),
+					Flashcards = _mapper.Map<IEnumerable<FlashcardResponse>>(flashcards)
+				};
 
 				return new BaseResponse<LessonResponse>(
 					StatusCodeHelper.OK,

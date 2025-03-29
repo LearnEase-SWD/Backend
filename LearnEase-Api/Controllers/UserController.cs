@@ -7,7 +7,6 @@ namespace LearnEase_Api.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize]
 	[AllowAnonymous]
 	public class UserController : ControllerBase
     {

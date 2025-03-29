@@ -2,10 +2,10 @@
 using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
-using Microsoft.Extensions.Logging;
 
 namespace LearnEase.Service.Services
 {
@@ -20,7 +20,38 @@ namespace LearnEase.Service.Services
 			_mapper = mapper;
 		}
 
-		public async Task<BaseResponse<IEnumerable<Exercise>>> GetExercisesAsync(int pageIndex, int pageSize)
+		public async Task<BaseResponse<bool>> CreateExerciseAsync(ExerciseRequest exerciseRequest)
+		{
+			if (exerciseRequest == null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");
+
+			var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+			Lesson lesson = await lessonRepository.GetByIdAsync(exerciseRequest.LessonID);
+			if (lesson == null)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "ID bài học không tồn tại.");
+
+			await _unitOfWork.BeginTransactionAsync();
+			try
+			{
+				var exercise = _mapper.Map<Exercise>(exerciseRequest);
+				exercise.CreatedAt = DateTime.UtcNow;
+
+				lesson.LessonType = LessonTypeEnum.Exercise;
+
+				await _unitOfWork.GetRepository<Exercise>().CreateAsync(exercise);
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
+
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài tập đã được tạo thành công.");
+			}
+			catch (Exception)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài tập.");
+			}
+		}
+
+		public async Task<BaseResponse<IEnumerable<ExerciseResponse>>> GetExercisesAsync(int pageIndex, int pageSize)
 		{
 			if (pageIndex < 1) pageIndex = 1;
 			if (pageSize < 1) pageSize = 10;
@@ -28,106 +59,97 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
-				var query = exerciseRepository.Entities;
-				var paginatedResult = await exerciseRepository.GetPaggingAsync(query, pageIndex, pageSize);
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
-				return new BaseResponse<IEnumerable<Exercise>>(
+				var query = exerciseRepository.Entities;
+				var exercises = await exerciseRepository.GetPaggingAsync(query, pageIndex, pageSize);
+
+				var responseList = new List<ExerciseResponse>();
+				foreach (var ex in exercises.Items)
+				{
+					var lesson = await lessonRepository.GetByIdAsync(ex.LessonID);
+
+					responseList.Add(new ExerciseResponse
+					{
+						ExerciseID = ex.ExerciseID,
+						LessonID = ex.LessonID,
+						Type = ex.Type,
+						CorrectAnswer = ex.CorrectAnswer,
+						LessonType = (LessonTypeEnum)lesson.LessonType,
+						Question = ex.Question,
+						AnswerOptions = ex.AnswerOptions,
+						CreatedAt = ex.CreatedAt
+					});
+				}
+
+				return new BaseResponse<IEnumerable<ExerciseResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					paginatedResult.Items,
+					responseList,
 					"Lấy danh sách bài tập thành công."
 				);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				return new BaseResponse<IEnumerable<Exercise>>(
+				return new BaseResponse<IEnumerable<ExerciseResponse>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
-					new List<Exercise>(),
+					new List<ExerciseResponse>(),
 					"Lỗi hệ thống khi lấy danh sách bài tập."
 				);
 			}
 		}
 
-		public async Task<BaseResponse<Exercise>> GetExerciseByIdAsync(Guid id)
+		public async Task<BaseResponse<ExerciseResponse>> GetExerciseByIdAsync(Guid id)
 		{
 			try
 			{
 				var exercise = await _unitOfWork.GetRepository<Exercise>().GetByIdAsync(id);
+
 				if (exercise == null)
-					return new BaseResponse<Exercise>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài tập không tồn tại.");
+					return new BaseResponse<ExerciseResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Bài tập không tồn tại.");
 
-				return new BaseResponse<Exercise>(StatusCodeHelper.OK, "SUCCESS", exercise, "Lấy bài tập thành công.");
-			}
-			catch (Exception ex)
-			{
-				return new BaseResponse<Exercise>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài tập.");
-			}
-		}
-
-		public async Task<BaseResponse<bool>> CreateExerciseAsync(ExerciseRequest exerciseRequest)
-		{
-			// Kiểm tra dữ liệu đầu vào
-			if (exerciseRequest == null)
-				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");
-
-			await _unitOfWork.BeginTransactionAsync();
-			try
-			{
-				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
-				var lesson = await lessonRepository.GetByIdAsync(exerciseRequest.LessonID);
-
-				if (lesson == null)
+				var response = new ExerciseResponse
 				{
-					await _unitOfWork.RollbackAsync();
-					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "LESSON_NOT_FOUND", false, "Lesson không tồn tại.");
-				}
+					ExerciseID = exercise.ExerciseID,
+					LessonID = exercise.LessonID,
+					LessonType = (LessonTypeEnum)exercise.Lesson.LessonType,
+					Question = exercise.Question,
+					AnswerOptions = exercise.AnswerOptions,
+					CorrectAnswer = exercise.CorrectAnswer,
+					CreatedAt = exercise.CreatedAt
+				};
 
-				lesson.LessonType = LessonTypeEnum.Exercise;
-				await lessonRepository.UpdateAsync(lesson);
-
-				var exercise = _mapper.Map<Exercise>(exerciseRequest);
-				exercise.CreatedAt = DateTime.UtcNow;
-
-				await _unitOfWork.GetRepository<Exercise>().CreateAsync(exercise);
-				await _unitOfWork.SaveAsync();
-				await _unitOfWork.CommitTransactionAsync();
-
-				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài tập được tạo thành công.");
+				return new BaseResponse<ExerciseResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy bài tập thành công.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				await _unitOfWork.RollbackAsync();
-				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài tập.");
+				return new BaseResponse<ExerciseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài tập.");
 			}
 		}
 
-		public async Task<BaseResponse<bool>> UpdateExerciseAsync(Guid id, ExerciseRequest exercise)
+		public async Task<BaseResponse<bool>> UpdateExerciseAsync(Guid id, ExerciseRequest request)
 		{
-			if (exercise == null)
+			if (request == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
+
 			try
 			{
 				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
 				var existingExercise = await exerciseRepository.GetByIdAsync(id);
 
 				if (existingExercise == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài tập.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài tập.");
 
-				existingExercise.Type = exercise.Type;
-				existingExercise.Type = exercise.Type;
-				existingExercise.Question = exercise.Question;
-				existingExercise.CorrectAnswer = exercise.CorrectAnswer;
-				existingExercise.LessonID = exercise.LessonID;
-				existingExercise.CreatedAt = DateTime.UtcNow;
+				_mapper.Map(request, existingExercise);
 
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài tập đã được cập nhật.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài tập.");
@@ -137,13 +159,14 @@ namespace LearnEase.Service.Services
 		public async Task<BaseResponse<bool>> DeleteExerciseAsync(Guid id)
 		{
 			await _unitOfWork.BeginTransactionAsync();
+
 			try
 			{
 				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
 				var existingExercise = await exerciseRepository.GetByIdAsync(id);
 
 				if (existingExercise == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài tập.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài tập.");
 
 				await exerciseRepository.DeleteAsync(existingExercise);
 				await _unitOfWork.SaveAsync();
@@ -151,7 +174,7 @@ namespace LearnEase.Service.Services
 
 				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài tập đã được xóa.");
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				await _unitOfWork.RollbackAsync();
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài tập.");

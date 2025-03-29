@@ -20,6 +20,7 @@ namespace LearnEase.Service.Services
 			_mapper = mapper;
 		}
 
+		// 1. Tạo VideoLesson
 		public async Task<BaseResponse<bool>> CreateVideoLessonAsync(VideoLessonCreateRequest videoRequest)
 		{
 			if (videoRequest == null)
@@ -32,19 +33,13 @@ namespace LearnEase.Service.Services
 				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
 
-				// ✅ Kiểm tra Lesson tồn tại
 				var lesson = await lessonRepository.GetByIdAsync(videoRequest.LessonID);
 				if (lesson == null)
-				{
-					await _unitOfWork.RollbackAsync();
 					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "LESSON_NOT_FOUND", false, "Lesson không tồn tại.");
-				}
 
-				// ✅ Thiết lập LessonType thành Video
 				lesson.LessonType = LessonTypeEnum.Video;
 				await lessonRepository.UpdateAsync(lesson);
 
-				// ✅ Tạo VideoLesson
 				var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
 				videoLesson.CreatedAt = DateTime.UtcNow;
 
@@ -61,6 +56,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
+		// 2. Lấy danh sách VideoLesson
 		public async Task<BaseResponse<IEnumerable<VideoLessonResponse>>> GetVideoLessonsAsync(int pageIndex, int pageSize)
 		{
 			if (pageIndex < 1) pageIndex = 1;
@@ -69,15 +65,34 @@ namespace LearnEase.Service.Services
 			try
 			{
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+
+				// Lấy danh sách VideoLesson với phân trang
 				var query = videoLessonRepository.Entities;
 				var videoLessons = await videoLessonRepository.GetPaggingAsync(query, pageIndex, pageSize);
 
-				var response = _mapper.Map<IEnumerable<VideoLessonResponse>>(videoLessons.Items);
+				// Duyệt từng phần tử và lấy Lesson tương ứng
+				var responseList = new List<VideoLessonResponse>();
+				foreach (var vl in videoLessons.Items)
+				{
+					// Lấy từng lesson theo ID
+					var lesson = await lessonRepository.GetByIdAsync(vl.LessonID);
+
+					responseList.Add(new VideoLessonResponse
+					{
+						VideoID = vl.VideoID,
+						LessonID = vl.LessonID,
+						LessonType = (LessonTypeEnum)lesson.LessonType,
+						Duration = vl.Duration,
+						VideoURL = vl.VideoURL,
+						CreatedAt = vl.CreatedAt
+					});
+				}
 
 				return new BaseResponse<IEnumerable<VideoLessonResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
-					response,
+					responseList,
 					"Lấy danh sách bài học video thành công."
 				);
 			}
@@ -92,13 +107,14 @@ namespace LearnEase.Service.Services
 			}
 		}
 
+		// 3. Lấy VideoLesson theo ID
 		public async Task<BaseResponse<VideoLessonResponse>> GetVideoLessonByIdAsync(Guid id)
 		{
 			try
 			{
 				var videoLesson = await _unitOfWork.GetRepository<VideoLesson>().GetByIdAsync(id);
 				if (videoLesson == null)
-					return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Bài học video không tồn tại.");
+					return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.NotFound, "NOT_FOUND", null, "Bài học video không tồn tại.");
 
 				var response = _mapper.Map<VideoLessonResponse>(videoLesson);
 				return new BaseResponse<VideoLessonResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy bài học video thành công.");
@@ -109,6 +125,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
+		// 4. Cập nhật VideoLesson
 		public async Task<BaseResponse<bool>> UpdateVideoLessonAsync(Guid id, VideoLessonCreateRequest request)
 		{
 			if (request == null)
@@ -122,7 +139,7 @@ namespace LearnEase.Service.Services
 				var existingLesson = await videoLessonRepository.GetByIdAsync(id);
 
 				if (existingLesson == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài học video.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài học video.");
 
 				_mapper.Map(request, existingLesson);
 
@@ -137,6 +154,7 @@ namespace LearnEase.Service.Services
 			}
 		}
 
+		// 5. Xóa VideoLesson
 		public async Task<BaseResponse<bool>> DeleteVideoLessonAsync(Guid id)
 		{
 			await _unitOfWork.BeginTransactionAsync();
@@ -147,7 +165,7 @@ namespace LearnEase.Service.Services
 				var existingLesson = await videoLessonRepository.GetByIdAsync(id);
 
 				if (existingLesson == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài học video.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài học video.");
 
 				await videoLessonRepository.DeleteAsync(existingLesson);
 				await _unitOfWork.SaveAsync();
