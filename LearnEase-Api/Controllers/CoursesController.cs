@@ -25,7 +25,6 @@ public class CoursesController : ControllerBase
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
-        //mua khoa hoc
     }
 
 	/*[HttpPost("{courseId}/purchase")]
