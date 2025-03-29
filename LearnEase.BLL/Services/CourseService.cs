@@ -199,8 +199,7 @@ namespace LearnEase.Service.Services
                     );
                 }
 
-                // 2. Kiểm tra quyền truy cập của người dùng (đã đăng ký khóa học chưa)
-                //    Sử dụng FirstOrDefaultAsync (hoặc phương pháp tương đương trong repository của bạn)
+            
                 //    Nếu GetByIdAsync không hỗ trợ predicate, hãy sử dụng một cách khác (xem bên dưới)
 
                 UserCourse? userCourse = null; // Initialize to null
@@ -318,7 +317,7 @@ namespace LearnEase.Service.Services
                 var courseRepository = _unitOfWork.GetRepository<Course>();
                 var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
-                // 1. Lấy danh sách các UserCourse của người dùng (Get All)
+                // 1. Lấy danh sách các UserCourse của người dùng
                 var userCourses = await userCourseRepository.Entities
                     .Where(uc => uc.UserId == userId)
                     .Include(uc => uc.Course)
@@ -349,11 +348,13 @@ namespace LearnEase.Service.Services
 
                     if (totalLessons > 0)
                     {
+                        // **Use this approach**
+                        var lessonIds = lessonsInCourse.Select(l => l.LessonID).ToList();
                         completedLessons = await _unitOfWork.GetRepository<UserLesson>().Entities
                             .CountAsync(ul => ul.UserID == userId &&
                                              ul.LessonID != null &&
-                                             lessonsInCourse.Any(l => l.LessonID == ul.LessonID) &&
-                                             ul.Progress == 100); // Giả sử Progress = 100 là hoàn thành
+                                             lessonIds.Contains(ul.LessonID) &&
+                                             ul.Progress == 100);
                     }
 
                     int progressPercentage = totalLessons > 0 ? (int)((double)completedLessons / totalLessons * 100) : 0;
@@ -426,11 +427,19 @@ namespace LearnEase.Service.Services
                 }
 
                 // 3. Lấy số bài học mà người dùng đã hoàn thành
-                var completedLessons = await userLessonRepository.Entities
-                    .CountAsync(ul => ul.UserID == userId &&
-                                     ul.Lesson.CourseID == courseId &&
-                                     ul.Progress == 100); // Giả sử Progress == 100 là hoàn thành
-
+                var lessonsInCourse = await lessonRepository.Entities
+    .Where(l => l.CourseID == course.CourseID)
+    .ToListAsync();
+                var completedLessons = await _unitOfWork.GetRepository<UserLesson>().Entities
+                        .Join(
+                            lessonsInCourse,
+                            ul => ul.LessonID,
+                            l => l.LessonID,
+                            (ul, l) => new { UserLesson = ul, Lesson = l } // Project into an anonymous type
+                        )
+                        .CountAsync(joined => joined.UserLesson.UserID == userId &&
+                     joined.UserLesson.LessonID != null &&
+                     joined.UserLesson.Progress == 100);
                 // 4. Tính toán trạng thái hoàn thành
                 bool isCompleted = (completedLessons == totalLessons) && (totalLessons > 0);
                 int progressPercentage = totalLessons > 0 ? (int)((double)completedLessons / totalLessons * 100) : 0;
@@ -516,5 +525,67 @@ namespace LearnEase.Service.Services
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, $"Lỗi hệ thống khi xóa bài học: {ex.Message}");
 			}
 		}
-	}
+        public async Task<BaseResponse<IEnumerable<CourseResponse>>> SearchCoursesByTitleAsync(string title, int pageIndex, int pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.BadRequest,
+                    "INVALID_SEARCH_TERM",
+                    new List<CourseResponse>(),
+                    "Từ khóa tìm kiếm không hợp lệ."
+                );
+            }
+
+            if (pageIndex < 1) pageIndex = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            try
+            {
+                var courseRepository = _unitOfWork.GetRepository<Course>();
+                var topicRepository = _unitOfWork.GetRepository<Topic>();
+                var lessonRepository = _unitOfWork.GetCustomRepository<ILessonRepository>();
+
+                // 1. Tìm kiếm các khóa học theo tiêu đề (sử dụng Contains để tìm kiếm gần đúng)
+                var query = courseRepository.Entities.Where(c => c.Title.Contains(title));
+
+                // 2. Áp dụng phân trang
+                var paginatedResult = await courseRepository.GetPaggingAsync(query, pageIndex, pageSize);
+
+                List<CourseResponse> courses = new List<CourseResponse>();
+
+                foreach (var item in paginatedResult.Items)
+                {
+                    var courseResponse = _mapper.Map<CourseResponse>(item);
+
+                    // Lấy Topic Name
+                    var topic = await topicRepository.GetByIdAsync(item.TopicID);
+                    courseResponse.TopicName = topic.Name;
+
+                    // Lấy danh sách Lesson
+                    var lessons = await lessonRepository.GetLessonsByCourseId(item.CourseID, pageIndex, pageSize);
+                    courseResponse.Lessons = _mapper.Map<IEnumerable<LessonResponse>>(lessons.Items);
+
+                    courses.Add(courseResponse);
+                }
+
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.OK,
+                    "SUCCESS",
+                    courses,
+                    "Tìm kiếm khóa học thành công."
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tìm kiếm khóa học theo tiêu đề. Title: {Title}", title);
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.ServerError,
+                    "ERROR",
+                    new List<CourseResponse>(),
+                    "Lỗi hệ thống khi tìm kiếm khóa học."
+                );
+            }
+        }
+    }
 }
