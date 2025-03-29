@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using LearnEase_Api.LearnEase.Core.IServices;
-using LearnEase_Api.Dtos.request;
+using LearnEase.Core.Models.Request;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize]
 	[AllowAnonymous]
 	public class UserController : ControllerBase
     {

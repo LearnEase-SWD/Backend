@@ -9,10 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Listen(IPAddress.Any, 5121);  // Lắng nghe trên tất cả các địa chỉ IP của máy và cổng 5121
-});
+
 // Load Configurations
 builder.Services.AddConfig(builder.Configuration);
 

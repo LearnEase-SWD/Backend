@@ -1,4 +1,4 @@
-﻿namespace LearnEase_Api.Dtos.request
+﻿namespace LearnEase.Core.Models.Request
 {
     public record UserCreateRequest(string userName, string email,string urlImage);
 }

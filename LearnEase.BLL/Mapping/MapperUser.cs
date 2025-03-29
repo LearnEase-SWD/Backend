@@ -1,5 +1,5 @@
 ﻿using LearnEase.Core.Entities;
-using LearnEase_Api.Dtos.reponse;
+using LearnEase.Core.Models.Reponse;
 
 namespace LearnEase_Api.Mapper
 {

@@ -19,27 +19,28 @@ namespace LearnEase.Repository
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserExercise> UserExercises { get; set; }
         public DbSet<UserLesson> UserLesson { get; set; }
-        public DbSet<UserFlashcard> UserFlashcards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserFlashcard>()
-               .HasOne(uf => uf.User)
-               .WithMany(u => u.UserFlashcards)
-               .HasForeignKey(uf => uf.UserID)
-               .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<UserFlashcard>()
-                .HasOne(uf => uf.Flashcard)
-                .WithMany(f => f.UserFlashcards)
-                .HasForeignKey(uf => uf.FlashcardID)
-                .OnDelete(DeleteBehavior.NoAction);
-
             modelBuilder.Entity<Course>()
                 .Property(c => c.Price)
                 .HasPrecision(18, 2);
+
+            // Cấu hình quan hệ một-nhiều giữa Lesson và TheoryLesson
+            modelBuilder.Entity<Lesson>()
+                .HasMany(l => l.TheoryLessons)
+                .WithOne(tl => tl.Lesson)
+                .HasForeignKey(tl => tl.LessonID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình quan hệ một-nhiều giữa Lesson và VideoLesson
+            modelBuilder.Entity<Lesson>()
+                .HasMany(l => l.VideoLessons)
+                .WithOne(vl => vl.Lesson)
+                .HasForeignKey(vl => vl.LessonID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

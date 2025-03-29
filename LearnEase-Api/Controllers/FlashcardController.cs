@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+
+﻿using Microsoft.AspNetCore.Mvc;
 using LearnEase.Service.IServices;
+﻿using Microsoft.AspNetCore.Authorization;
 using LearnEase.Core.Models.Request;
+
 
 [ApiController]
 [Route("api/flashcards")]
-[Authorize]
+[AllowAnonymous]
 public class FlashcardsController : ControllerBase
 {
 	private readonly IFlashcardService _flashcardService;
@@ -55,4 +57,5 @@ public class FlashcardsController : ControllerBase
 		var response = await _flashcardService.DeleteFlashcardAsync(id);
 		return StatusCode((int)response.StatusCode, response);
 	}
+
 }

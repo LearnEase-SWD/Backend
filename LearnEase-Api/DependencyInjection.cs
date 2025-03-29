@@ -10,7 +10,9 @@ using LearnEase_Api.LearnEase.Core.IServices;
 using LearnEase_Api.LearnEase.Core.Services;
 using LearnEase_Api.LearnEase.Infrastructure.IRepository;
 using LearnEase_Api.LearnEase.Infrastructure.Repositories;
+
 using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +89,7 @@ namespace LearnEase_Api
             services.AddScoped<ITopicService, TopicService>();
 			services.AddScoped<IOpenAIService, OpenAIService>();
 			services.AddScoped<IUserCourseService, UserCourseService>();
+			services.AddScoped<IVideoLessonService, VideoLessonService>();
 
 			//Repo
 			services.AddScoped<IUnitOfWork, UnitOfWork>();

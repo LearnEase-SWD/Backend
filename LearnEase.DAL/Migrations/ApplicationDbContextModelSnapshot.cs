@@ -223,8 +223,7 @@ namespace LearnEase.Repository.Migrations
 
                     b.HasKey("TheoryID");
 
-                    b.HasIndex("LessonID")
-                        .IsUnique();
+                    b.HasIndex("LessonID");
 
                     b.ToTable("TheoryLessons");
                 });
@@ -356,36 +355,26 @@ namespace LearnEase.Repository.Migrations
                     b.ToTable("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
-                {
-                    b.Property<Guid>("UserFlashcardID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FlashcardID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Progress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserFlashcardID");
-
-                    b.HasIndex("FlashcardID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("UserFlashcards");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
                 {
                     b.Property<Guid>("ProgressID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasAccessedFlashcards")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsExerciseCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTheoryCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVideoCompleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastAccessedAt")
                         .HasColumnType("datetime2");
@@ -395,6 +384,9 @@ namespace LearnEase.Repository.Migrations
 
                     b.Property<int>("Progress")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserID")
                         .IsRequired()
@@ -431,8 +423,7 @@ namespace LearnEase.Repository.Migrations
 
                     b.HasKey("VideoID");
 
-                    b.HasIndex("LessonID")
-                        .IsUnique();
+                    b.HasIndex("LessonID");
 
                     b.ToTable("VideoLessons");
                 });
@@ -503,8 +494,8 @@ namespace LearnEase.Repository.Migrations
             modelBuilder.Entity("LearnEase.Core.Entities.TheoryLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
-                        .WithOne("TheoryLesson")
-                        .HasForeignKey("LearnEase.Core.Entities.TheoryLesson", "LessonID")
+                        .WithMany("TheoryLessons")
+                        .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -549,25 +540,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.UserFlashcard", b =>
-                {
-                    b.HasOne("LearnEase.Core.Entities.Flashcard", "Flashcard")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("FlashcardID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("LearnEase.Core.Entities.User", "User")
-                        .WithMany("UserFlashcards")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Flashcard");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.UserLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
@@ -590,8 +562,8 @@ namespace LearnEase.Repository.Migrations
             modelBuilder.Entity("LearnEase.Core.Entities.VideoLesson", b =>
                 {
                     b.HasOne("LearnEase.Core.Entities.Lesson", "Lesson")
-                        .WithOne("VideoLesson")
-                        .HasForeignKey("LearnEase.Core.Entities.VideoLesson", "LessonID")
+                        .WithMany("VideoLessons")
+                        .HasForeignKey("LessonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -610,25 +582,18 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("UserExercises");
                 });
 
-            modelBuilder.Entity("LearnEase.Core.Entities.Flashcard", b =>
-                {
-                    b.Navigation("UserFlashcards");
-                });
-
             modelBuilder.Entity("LearnEase.Core.Entities.Lesson", b =>
                 {
                     b.Navigation("Exercises");
 
                     b.Navigation("Flashcards");
 
-                    b.Navigation("TheoryLesson")
-                        .IsRequired();
+                    b.Navigation("TheoryLessons");
 
                     b.Navigation("UserProgress")
                         .IsRequired();
 
-                    b.Navigation("VideoLesson")
-                        .IsRequired();
+                    b.Navigation("VideoLessons");
                 });
 
             modelBuilder.Entity("LearnEase.Core.Entities.Topic", b =>
@@ -641,8 +606,6 @@ namespace LearnEase.Repository.Migrations
                     b.Navigation("UserCourses");
 
                     b.Navigation("UserExercises");
-
-                    b.Navigation("UserFlashcards");
 
                     b.Navigation("UserProgresses");
                 });

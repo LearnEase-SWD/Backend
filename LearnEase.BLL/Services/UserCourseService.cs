@@ -6,18 +6,12 @@ using LearnEase.Core.IServices;
 using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
-using LearnEase.Service.IServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LearnEase.Service.Services
 {
-	public class UserCourseService: IUserCourseService
+	public class UserCourseService : IUserCourseService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
@@ -69,6 +63,50 @@ namespace LearnEase.Service.Services
 			{
 				_logger.LogError(ex.Message);
 				return new BaseResponse<UserCourseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
+			}
+		}
+
+		// Lấy course theo user (user mua course nào thì hiện course đó)
+		public async Task<BaseResponse<IEnumerable<CourseResponse>>> GetCoursesByUserAsync(string userId)
+		{
+			try
+			{
+				var userCourseRepository = _unitOfWork.GetRepository<UserCourse>();
+				var courseRepository = _unitOfWork.GetRepository<Course>();
+
+				var userCourses = await userCourseRepository.FindAllAsync(
+					uc => uc.UserId == userId,
+					query => query.Include(uc => uc.Course)
+				);
+
+				if (userCourses == null || !userCourses.Any())
+				{
+					return new BaseResponse<IEnumerable<CourseResponse>>(
+						StatusCodeHelper.OK,
+						"NOT_FOUND",
+						null,
+						"Người dùng chưa đăng ký bất kỳ khóa học nào."
+					);
+				}
+
+				var courses = userCourses.Select(uc => uc.Course).ToList();
+				var courseResponses = _mapper.Map<IEnumerable<CourseResponse>>(courses);
+
+				return new BaseResponse<IEnumerable<CourseResponse>>(
+					StatusCodeHelper.OK,
+					"SUCCESS",
+					courseResponses,
+					"Lấy danh sách khóa học của người dùng thành công."
+				);
+			}
+			catch (Exception ex)
+			{
+				return new BaseResponse<IEnumerable<CourseResponse>>(
+					StatusCodeHelper.ServerError,
+					"ERROR",
+					null,
+					"Lỗi hệ thống khi lấy danh sách khóa học của người dùng."
+				);
 			}
 		}
 
@@ -145,52 +183,26 @@ namespace LearnEase.Service.Services
 			}
 		}
 
-        public async Task<BaseResponse<UserCourseResponse>> GetUserCourseByIdCourseAsync(Guid CourseId,string userId)
-        {
-            await _unitOfWork.BeginTransactionAsync();
+		public async Task<BaseResponse<UserCourseResponse>> GetUserCourseByIdCourseAsync(Guid CourseId, Guid userId)
+		{
+			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
 				var repository = _unitOfWork.GetRepository<UserCourse>();
-                var existingUserCourse = await repository.FindOneAsync(u=> u.CourseID==CourseId&& u.UserId.Equals(userId));
-                if (existingUserCourse == null)
+				var existingUserCourse = await repository.FindOneAsync(u => u.CourseID == CourseId && u.UserId.Equals(userId));
+				if (existingUserCourse == null)
 				{
-                    return new BaseResponse<UserCourseResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Không tìm thấy UserCourse.");
-                }
+					return new BaseResponse<UserCourseResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Không tìm thấy UserCourse.");
+				}
 
-                var response = _mapper.Map<UserCourseResponse>(existingUserCourse);
-                return new BaseResponse<UserCourseResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy UserCourse thành công.");
-
-
-            }
-			catch(Exception e)
+				var response = _mapper.Map<UserCourseResponse>(existingUserCourse);
+				return new BaseResponse<UserCourseResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy UserCourse thành công.");
+			}
+			catch (Exception e)
 			{
-                _logger.LogError(e.Message);
-                return new BaseResponse<UserCourseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
-            }
-        }
-
-        public async Task<BaseResponse<IEnumerable<UserCourseResponse>>> GetUserCourseUserIDAsync(string userId)
-        {
-            try
-            {
-                var repository = _unitOfWork.GetRepository<UserCourse>();
-                var userCourses = await repository.FindAllAsync(uc => uc.UserId == userId,
-                    query => query.Include(uc => uc.Course));
-
-                if (userCourses == null )
-                {
-                    return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.OK, "NOT_FOUND", null, "Không tìm thấy UserCourse.");
-                }
-
-                var response = _mapper.Map<IEnumerable<UserCourseResponse>>(userCourses);
-                return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy danh sách UserCourse thành công.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
-            }
-        }
-
-    }
+				_logger.LogError(e.Message);
+				return new BaseResponse<UserCourseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
+			}
+		}
+	}
 }

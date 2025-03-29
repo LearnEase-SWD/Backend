@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LearnEase.Core.Models.Request;
 
 [Route("api/auth")]
 [ApiController]
+[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -64,6 +66,7 @@ public class AuthController : ControllerBase
         var properties = new AuthenticationProperties { RedirectUri = redirectUri };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
+    
 
     [HttpGet("callback")]
     public async Task<IActionResult> Callback()
@@ -94,7 +97,8 @@ public class AuthController : ControllerBase
 
         // Chuyển hướng về frontend
         //return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
-        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
+        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}");
+
     }
 
     [HttpPost("verify-access-token")]
