@@ -314,7 +314,7 @@ namespace LearnEase.Service.Services
                 if (existingLesson == null)
                     return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", "Không tìm thấy bài học.");
 
-                await lessonRepository.DeleteAsync(existingLesson);
+                await lessonRepository.DeleteAsync(existingLesson.LessonID);
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -326,7 +326,5 @@ namespace LearnEase.Service.Services
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
             }
         }
-
-
     }
 }
