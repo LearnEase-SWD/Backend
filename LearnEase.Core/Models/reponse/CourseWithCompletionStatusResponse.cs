@@ -14,5 +14,6 @@ namespace LearnEase.Core.Models.reponse
         public int TotalLessons { get; set; }
         public int CompletedLessonsCount { get; set; }
         public int ProgressPercentage { get; set; }
+
     }
 }
