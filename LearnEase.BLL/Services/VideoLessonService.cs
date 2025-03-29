@@ -31,20 +31,7 @@ namespace LearnEase.Service.Services
 			{
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
 
-				// Kiểm tra LessonID đã tồn tại chưa
-				var existingVideoLesson = await videoLessonRepository
-					.GetByIdAsync(videoRequest.LessonID);
-
-				if (existingVideoLesson == null)
-				{
-					await _unitOfWork.RollbackAsync();
-					return new BaseResponse<bool>(
-						StatusCodeHelper.BadRequest,
-						"DUPLICATE_LESSON_ID",
-						false,
-						"LessonID đã tồn tại. Mỗi VideoLesson chỉ được phép có một LessonID duy nhất."
-					);
-				}
+				
 
 				var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
 				videoLesson.CreatedAt = DateTime.UtcNow;
