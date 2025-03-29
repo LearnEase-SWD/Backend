@@ -141,7 +141,7 @@ namespace LearnEase.Service.Services
                 }
 
                 // 2. Check if the user has already purchased the course
-                var existingPurchase = await courseHistoryRepository.FirstOrDefaultAsync(
+                var existingPurchase = await courseHistoryRepository.Entities.FirstOrDefaultAsync(
                     ch => ch.CourseID == courseId && ch.UserID == userId
                 );
 

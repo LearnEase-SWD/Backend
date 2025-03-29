@@ -172,7 +172,7 @@ namespace LearnEase.Service.Services
 				if (existingExercise == null)
 					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài tập.");
 
-				await exerciseRepository.DeleteAsync(existingExercise);
+				await exerciseRepository.DeleteAsync(existingExercise.ExerciseID);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 

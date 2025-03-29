@@ -167,7 +167,7 @@ namespace LearnEase.Service.Services
 				if (existingLesson == null)
 					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy bài học video.");
 
-				await videoLessonRepository.DeleteAsync(existingLesson);
+				await videoLessonRepository.DeleteAsync(existingLesson.VideoID);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 
