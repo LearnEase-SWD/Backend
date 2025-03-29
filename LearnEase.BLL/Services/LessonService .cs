@@ -299,32 +299,55 @@ namespace LearnEase.Service.Services
             }
         }
 
-        public async Task<BaseResponse<bool>> DeleteLessonAsync(Guid id)
-        {
-            if (id == Guid.Empty)
-                return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");
+		public async Task<BaseResponse<bool>> DeleteLessonAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");
 
-            await _unitOfWork.BeginTransactionAsync();
+			await _unitOfWork.BeginTransactionAsync();
 
-            try
-            {
-                var lessonRepository = _unitOfWork.GetRepository<Lesson>();
-                var existingLesson = await lessonRepository.GetByIdAsync(id);
+			try
+			{
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+				var theoryLessonRepository = _unitOfWork.GetRepository<TheoryLesson>();
+				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
+				var flashcardRepository = _unitOfWork.GetRepository<Flashcard>();
 
-                if (existingLesson == null)
-                    return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", "Không tìm thấy bài học.");
+				// Kiểm tra lesson có tồn tại không
+				var existingLesson = await lessonRepository.GetByIdAsync(id);
+				if (existingLesson == null)
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", "Không tìm thấy bài học.");
 
-                await lessonRepository.DeleteAsync(existingLesson.LessonID);
-                await _unitOfWork.SaveAsync();
-                await _unitOfWork.CommitTransactionAsync();
+				// Kiểm tra sự tồn tại của VideoLesson, TheoryLesson, Exercise, Flashcard
+				var hasVideoLessons = await videoLessonRepository.Entities.AnyAsync(v => v.LessonID == id);
+				var hasTheoryLessons = await theoryLessonRepository.Entities.AnyAsync(t => t.LessonID == id);
+				var hasExercises = await exerciseRepository.Entities.AnyAsync(e => e.LessonID == id);
+				var hasFlashcards = await flashcardRepository.Entities.AnyAsync(f => f.LessonID == id);
 
-                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được xóa.");
-            }
-            catch (Exception)
-            {
-                await _unitOfWork.RollbackAsync();
-                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học.");
-            }
-        }
-    }
+				// Nếu bất kỳ thành phần nào tồn tại, từ chối xóa
+				if (hasVideoLessons || hasTheoryLessons || hasExercises || hasFlashcards)
+				{
+					var errorMessage = "Không thể xóa bài học vì vẫn còn các thành phần liên quan:";
+					if (hasVideoLessons) errorMessage += " VideoLesson";
+					if (hasTheoryLessons) errorMessage += " TheoryLesson";
+					if (hasExercises) errorMessage += " Exercise";
+					if (hasFlashcards) errorMessage += " Flashcard";
+
+					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "RELATED_ITEMS_EXIST", errorMessage);
+				}
+
+				await lessonRepository.DeleteAsync(existingLesson.LessonID);
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
+
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học đã được xóa.");
+			}
+			catch (Exception ex)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, $"Lỗi hệ thống khi xóa bài học: {ex.Message}");
+			}
+		}
+	}
 }
