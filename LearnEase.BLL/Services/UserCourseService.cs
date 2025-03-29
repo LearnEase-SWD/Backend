@@ -144,5 +144,53 @@ namespace LearnEase.Service.Services
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi khi xóa UserCourse.");
 			}
 		}
-	}
+
+        public async Task<BaseResponse<UserCourseResponse>> GetUserCourseByIdCourseAsync(Guid CourseId,string userId)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+			try
+			{
+				var repository = _unitOfWork.GetRepository<UserCourse>();
+                var existingUserCourse = await repository.FindOneAsync(u=> u.CourseID==CourseId&& u.UserId.Equals(userId));
+                if (existingUserCourse == null)
+				{
+                    return new BaseResponse<UserCourseResponse>(StatusCodeHelper.BadRequest, "NOT_FOUND", null, "Không tìm thấy UserCourse.");
+                }
+
+                var response = _mapper.Map<UserCourseResponse>(existingUserCourse);
+                return new BaseResponse<UserCourseResponse>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy UserCourse thành công.");
+
+
+            }
+			catch(Exception e)
+			{
+                _logger.LogError(e.Message);
+                return new BaseResponse<UserCourseResponse>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<UserCourseResponse>>> GetUserCourseUserIDAsync(string userId)
+        {
+            try
+            {
+                var repository = _unitOfWork.GetRepository<UserCourse>();
+                var userCourses = await repository.FindAllAsync(uc => uc.UserId == userId,
+                    query => query.Include(uc => uc.Course));
+
+                if (userCourses == null )
+                {
+                    return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.OK, "NOT_FOUND", null, "Không tìm thấy UserCourse.");
+                }
+
+                var response = _mapper.Map<IEnumerable<UserCourseResponse>>(userCourses);
+                return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.OK, "SUCCESS", response, "Lấy danh sách UserCourse thành công.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return new BaseResponse<IEnumerable<UserCourseResponse>>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống.");
+            }
+        }
+
+    }
 }

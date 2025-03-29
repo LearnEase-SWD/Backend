@@ -14,10 +14,12 @@ namespace LearnEase_Api.LearnEase.Core.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly MapperUser _mapper = new MapperUser();
+		private readonly IUserRepository _userRepository;
 
-		public UserService(IUnitOfWork unitOfWork)
+		public UserService(IUnitOfWork unitOfWork,IUserRepository userRepository)
 		{
 			_unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+			_userRepository = userRepository;
 		}
 
 		public async Task<BaseResponse<IEnumerable<User>>> GetUserAsync(int pageIndex, int pageSize)
@@ -54,7 +56,10 @@ namespace LearnEase_Api.LearnEase.Core.Services
 			if (request == null)
 				throw new ArgumentNullException(nameof(request));
 
-			var nameParts = request.userName?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+			var checkUserExist = await _userRepository.FindByEmail(request.email);
+			if (checkUserExist != null) return _mapper.MapperUserReponse(checkUserExist);
+
+            var nameParts = request.userName?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 			string firstName = nameParts.FirstOrDefault() ?? string.Empty;
 			string lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty;
 
