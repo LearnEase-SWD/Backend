@@ -179,5 +179,69 @@ namespace LearnEase.Service.Services
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài học video.");
 			}
 		}
+
+            public async Task<BaseResponse<bool>> MarkVideoLessonAsCompletedAsync(string userId, Guid videoLessonId)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var userVideoLessonRepository = _unitOfWork.GetRepository<UserVideoLesson>();
+                var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
+                var userLessonRepository = _unitOfWork.GetRepository<UserLesson>();
+
+                // Kiểm tra xem VideoLesson có tồn tại không
+                var videoLesson = await videoLessonRepository.GetByIdAsync(videoLessonId);
+                if (videoLesson == null)
+                {
+                    return new BaseResponse<bool>(StatusCodeHelper.NotFound, "VIDEO_LESSON_NOT_FOUND", false, "Bài học video không tồn tại.");
+                }
+
+                // Tìm UserLesson tương ứng
+                var userLesson = await userLessonRepository.FirstOrDefaultAsync(ul => ul.UserID == userId && ul.LessonID == videoLesson.LessonID);
+                if (userLesson == null)
+                {
+                    return new BaseResponse<bool>(StatusCodeHelper.NotFound, "USER_LESSON_NOT_FOUND", false, "UserLesson không tồn tại");
+                }
+
+                // Kiểm tra xem UserVideoLesson có tồn tại không
+                var existingUserVideoLesson = await userVideoLessonRepository.FirstOrDefaultAsync(uvl => uvl.UserID == userId && uvl.VideoLessonID == videoLessonId);
+
+                if (existingUserVideoLesson == null)
+                {
+                    // Nếu chưa tồn tại, tạo mới và đánh dấu là đã hoàn thành
+                    var newUserVideoLesson = new UserVideoLesson
+                    {
+                        UserID = userId,
+                        VideoLessonID = videoLessonId,
+                        IsCompleted = true,
+                        LastAccessedAt = DateTime.UtcNow
+                    };
+
+                    await userVideoLessonRepository.CreateAsync(newUserVideoLesson);
+                }
+                else
+                {
+                    // Nếu đã tồn tại, cập nhật trạng thái đã hoàn thành
+                    existingUserVideoLesson.IsCompleted = true;
+                    existingUserVideoLesson.LastAccessedAt = DateTime.UtcNow;
+                    await userVideoLessonRepository.UpdateAsync(existingUserVideoLesson);
+                }
+
+                // Cập nhật UserLesson
+                userLesson.IsVideoCompleted = true;
+                await userLessonRepository.UpdateAsync(userLesson);
+
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài học video đã được đánh dấu là hoàn thành.");
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi đánh dấu bài học video.");
+            }
+        }
 	}
 }
