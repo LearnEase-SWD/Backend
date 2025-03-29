@@ -35,7 +35,7 @@ namespace LearnEase.Api.Controllers
 
 			return StatusCode((int)result.StatusCode, result);
 		}
-        [HttpGet("getByCourse/{courseId}")]
+        [HttpGet("getByCourse/{courseId}/{userId}")]
         public async Task<IActionResult> GetByCourseId(Guid courseId,string userId)
         {
             var result = await _userCourseService.GetUserCourseByIdCourseAsync(courseId, userId);
