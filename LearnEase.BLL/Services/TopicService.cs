@@ -36,13 +36,6 @@ namespace LearnEase.Service.Services
 				var topics = await topicRepository.GetPaggingAsync(query, pageIndex, pageSize);
 				var topicResponses = _mapper.Map<IEnumerable<TopicResponse>>(topics.Items);
 
-				// Lấy danh sách CourseId cho từng chủ đề
-				foreach (var topic in topicResponses)
-				{
-					var courseResult = await topicCustomRepository.GetCourseByTopicAsync(topic.TopicId, 1, int.MaxValue);
-					topic.CourseIds = courseResult.CourseIds;
-				}
-
 				return new BaseResponse<IEnumerable<TopicResponse>>(
 					StatusCodeHelper.OK,
 					"SUCCESS",
@@ -50,7 +43,7 @@ namespace LearnEase.Service.Services
 					"Lấy danh sách chủ đề thành công."
 				);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				return new BaseResponse<IEnumerable<TopicResponse>>(
 					StatusCodeHelper.ServerError,
