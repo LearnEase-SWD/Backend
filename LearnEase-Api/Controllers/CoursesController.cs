@@ -25,12 +25,10 @@ public class CoursesController : ControllerBase
     {
         var courses = await _courseService.GetCoursesAsync(pageIndex, pageSize);
         return Ok(courses);
-        //mua khoa hoc
     }
 
-    [HttpPost("{courseId}/purchase")]
-    [AllowAnonymous]  // Không yêu cầu xác thực
-    public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         // Kiểm tra id có tồn tại không
         if (string.IsNullOrEmpty(id))
