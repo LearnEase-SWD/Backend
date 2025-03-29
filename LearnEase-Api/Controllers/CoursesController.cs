@@ -45,9 +45,9 @@ public class CoursesController : ControllerBase
 		return Ok(courses);
 	}
 
-	[HttpPost("{courseId}/purchase")]
-	[AllowAnonymous]  // Không yêu cầu xác thực
-	public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string userid)
+    [HttpPost("{courseId}/purchase")]
+    [AllowAnonymous]  // Không yêu cầu xác thực
+    public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string userid)
 
 	{
 		// Kiểm tra id có tồn tại không
