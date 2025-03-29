@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LearnEase_Api.Controllers
 {
     [AllowAnonymous]
+    [Route("api/pay")]
+    [ApiController]
     public class PaymentController : Controller
     {
         private readonly IVnPayService _vnPayService;
