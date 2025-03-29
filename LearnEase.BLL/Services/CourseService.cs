@@ -496,5 +496,67 @@ namespace LearnEase.Service.Services
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa khóa học.");
 			}
 		}
-	}
+        public async Task<BaseResponse<IEnumerable<CourseResponse>>> SearchCoursesByTitleAsync(string title, int pageIndex, int pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.BadRequest,
+                    "INVALID_SEARCH_TERM",
+                    new List<CourseResponse>(),
+                    "Từ khóa tìm kiếm không hợp lệ."
+                );
+            }
+
+            if (pageIndex < 1) pageIndex = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            try
+            {
+                var courseRepository = _unitOfWork.GetRepository<Course>();
+                var topicRepository = _unitOfWork.GetRepository<Topic>();
+                var lessonRepository = _unitOfWork.GetCustomRepository<ILessonRepository>();
+
+                // 1. Tìm kiếm các khóa học theo tiêu đề (sử dụng Contains để tìm kiếm gần đúng)
+                var query = courseRepository.Entities.Where(c => c.Title.Contains(title));
+
+                // 2. Áp dụng phân trang
+                var paginatedResult = await courseRepository.GetPaggingAsync(query, pageIndex, pageSize);
+
+                List<CourseResponse> courses = new List<CourseResponse>();
+
+                foreach (var item in paginatedResult.Items)
+                {
+                    var courseResponse = _mapper.Map<CourseResponse>(item);
+
+                    // Lấy Topic Name
+                    var topic = await topicRepository.GetByIdAsync(item.TopicID);
+                    courseResponse.TopicName = topic.Name;
+
+                    // Lấy danh sách Lesson
+                    var lessons = await lessonRepository.GetLessonsByCourseId(item.CourseID, pageIndex, pageSize);
+                    courseResponse.Lessons = _mapper.Map<IEnumerable<LessonResponse>>(lessons.Items);
+
+                    courses.Add(courseResponse);
+                }
+
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.OK,
+                    "SUCCESS",
+                    courses,
+                    "Tìm kiếm khóa học thành công."
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tìm kiếm khóa học theo tiêu đề. Title: {Title}", title);
+                return new BaseResponse<IEnumerable<CourseResponse>>(
+                    StatusCodeHelper.ServerError,
+                    "ERROR",
+                    new List<CourseResponse>(),
+                    "Lỗi hệ thống khi tìm kiếm khóa học."
+                );
+            }
+        }
+    }
 }
