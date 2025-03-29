@@ -1,5 +1,6 @@
 ﻿using LearnEase.Core.Base;
 using LearnEase.Core.Entities;
+using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -53,5 +54,19 @@ namespace LearnEase.API.Controllers
 			var response = await _videoLessonService.DeleteVideoLessonAsync(id);
 			return StatusCode((int)response.StatusCode, response);
 		}
-	}
+        [HttpPost("mark-completed")]
+        public async Task<IActionResult> MarkVideoCompleted(string userId, Guid videoLessonId)
+        {
+            var response = await _videoLessonService.MarkVideoLessonAsCompletedAsync(userId, videoLessonId);
+
+            if (response.StatusCode == StatusCodeHelper.OK && response.Code == "SUCCESS") // Kiểm tra StatusCode và Code
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+    }
 }

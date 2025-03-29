@@ -1,4 +1,5 @@
-﻿using LearnEase.Core.Models.Request;
+﻿using LearnEase.Core.Enum;
+using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,20 @@ namespace LearnEase_Api.Controllers
         {
             var response = await _theoryLessonService.DeleteTheoryLessonAsync(id);
             return StatusCode((int)response.StatusCode, response);
+        }
+        [HttpPost("mark-theory-completed")]
+        public async Task<IActionResult> MarkTheoryCompleted(string userId, Guid theoryLessonId)
+        {
+            var response = await _theoryLessonService.MarkTheoryLessonAsCompletedAsync(userId, theoryLessonId);
+
+            if (response.StatusCode == StatusCodeHelper.OK && response.Code == "SUCCESS")
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
         }
 
     }

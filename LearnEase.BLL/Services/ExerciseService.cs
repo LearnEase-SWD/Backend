@@ -184,5 +184,64 @@ namespace LearnEase.Service.Services
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài tập.");
 			}
 		}
+		public async Task<BaseResponse<bool>> MarkExerciseAsCompletedAsync(string userId, Guid exerciseId)
+		{
+			await _unitOfWork.BeginTransactionAsync();
+
+			try
+			{
+				var userExerciseRepository = _unitOfWork.GetRepository<UserExercise>();
+				var exerciseRepository = _unitOfWork.GetRepository<Exercise>();
+				var userLessonRepository = _unitOfWork.GetRepository<UserLesson>();
+
+				// Kiểm tra xem Exercise có tồn tại không
+				var exercise = await exerciseRepository.GetByIdAsync(exerciseId);
+				if (exercise == null)
+				{
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "EXERCISE_NOT_FOUND", false, "Bài tập không tồn tại.");
+				}
+
+				// Tìm UserLesson tương ứng
+				var userLesson = await userLessonRepository.FirstOrDefaultAsync(ul => ul.UserID == userId && ul.LessonID == exercise.LessonID);
+				if (userLesson == null)
+				{
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "USER_LESSON_NOT_FOUND", false, "UserLesson không tồn tại");
+				}
+
+				// Tạo mới UserExercise hoặc cập nhật
+				var existingUserExercise = await userExerciseRepository.FirstOrDefaultAsync(ue => ue.UserID == userId && ue.ExerciseID == exerciseId);
+
+				if (existingUserExercise == null)
+				{
+					// Tạo mới UserExercise nếu chưa tồn tại.
+					var newUserExercise = new UserExercise()
+					{
+						UserID = userId,
+						ExerciseID = exerciseId,
+						Progress = "Completed"
+					};
+					await userExerciseRepository.CreateAsync(newUserExercise);
+				}
+				else
+				{
+					existingUserExercise.Progress = "Completed";
+					await userExerciseRepository.UpdateAsync(existingUserExercise);
+				}
+
+				// Cập nhật UserLesson
+				userLesson.IsExerciseCompleted = true;
+				await userLessonRepository.UpdateAsync(userLesson);
+
+				await _unitOfWork.SaveAsync();
+				await _unitOfWork.CommitTransactionAsync();
+
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Bài tập đã được đánh dấu là hoàn thành.");
+			}
+			catch (Exception)
+			{
+				await _unitOfWork.RollbackAsync();
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi đánh dấu bài tập.");
+			}
+		}
 	}
 }
