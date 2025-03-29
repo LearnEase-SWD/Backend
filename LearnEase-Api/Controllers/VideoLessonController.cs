@@ -2,12 +2,14 @@
 using LearnEase.Core.Entities;
 using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[AllowAnonymous]
 	public class VideoLessonController : ControllerBase
 	{
 		private readonly IVideoLessonService _videoLessonService;

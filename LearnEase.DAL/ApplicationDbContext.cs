@@ -40,6 +40,20 @@ namespace LearnEase.Repository
             modelBuilder.Entity<Course>()
                 .Property(c => c.Price)
                 .HasPrecision(18, 2);
+
+            // Cấu hình quan hệ một-nhiều giữa Lesson và TheoryLesson
+            modelBuilder.Entity<Lesson>()
+                .HasMany(l => l.TheoryLessons)
+                .WithOne(tl => tl.Lesson)
+                .HasForeignKey(tl => tl.LessonID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cấu hình quan hệ một-nhiều giữa Lesson và VideoLesson
+            modelBuilder.Entity<Lesson>()
+                .HasMany(l => l.VideoLessons)
+                .WithOne(vl => vl.Lesson)
+                .HasForeignKey(vl => vl.LessonID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

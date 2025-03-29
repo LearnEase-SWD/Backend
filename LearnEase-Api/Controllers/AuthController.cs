@@ -9,6 +9,7 @@ using LearnEase.Core.Models.Request;
 
 [Route("api/auth")]
 [ApiController]
+[AllowAnonymous]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -65,45 +66,7 @@ public class AuthController : ControllerBase
         var properties = new AuthenticationProperties { RedirectUri = redirectUri };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
-    [HttpGet("loginPage")]
-    public IActionResult loginPage()
-    {
-        var redirectUri = "http://localhost:5121/api/auth/callbackPage";
-        var properties = new AuthenticationProperties { RedirectUri = redirectUri };
-        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-    }
-    [HttpGet("callbackPage")]
-    public async Task<IActionResult> CallbackPage()
-    {
-        var info = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-        if (info?.Principal == null)
-        {
-            return Unauthorized();
-        }
-
-        var accessToken = info.Properties.GetTokenValue("access_token");
-        var userEmail = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
-        var userName = info.Principal.Identity?.Name;
-
-        if (userEmail != null)
-        {
-            var findUserEmail = await _userService.FindUserByEmail(userEmail);
-            if (findUserEmail == null)
-            {
-                await _userService.CreateNewUser(new UserCreateRequest(userName, userEmail, null));
-            }
-        }
-
-        CacheRequest cacheRequest = new CacheRequest(accessToken, userEmail, 60);
-        await _redisCacheService.SetAsync(cacheRequest.key, cacheRequest.value, TimeSpan.FromMinutes(cacheRequest.time));
-
-        // Encode dữ liệu để đưa vào URL
-        var queryParams = $"accessToken={Uri.EscapeDataString(accessToken)}&userEmail={Uri.EscapeDataString(userEmail)}&userName={Uri.EscapeDataString(userName)}";
-
-        // Chuyển hướng về frontend
-        return Redirect($"http://localhost:5173/callback?{queryParams}");
-    }
+    
 
     [HttpGet("callback")]
     public async Task<IActionResult> Callback()
@@ -134,7 +97,8 @@ public class AuthController : ControllerBase
 
         // Chuyển hướng về frontend
         //return Ok(new {AccessToken = accessToken, UserEmail = userEmail, UserName = userName});
-        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}&userName={userName}");
+        return Redirect($"http://localhost:5173/callback?accessToken={accessToken}&userEmail={userEmail}");
+
     }
 
     [HttpPost("verify-access-token")]

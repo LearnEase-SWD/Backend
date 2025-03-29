@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using LearnEase.Core.Entities;
 using LearnEase.Core.Models.Request;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/courses")]
 [ApiController]
+[AllowAnonymous]
 public class CoursesController : ControllerBase
 {
     private readonly ICourseService _courseService;

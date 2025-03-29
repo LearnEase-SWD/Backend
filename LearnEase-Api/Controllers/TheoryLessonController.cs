@@ -1,11 +1,13 @@
 ﻿using LearnEase.Core.Models.Request;
 using LearnEase.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnEase_Api.Controllers
 {
     [Route("api/theory-lessons")]
     [ApiController]
+    [AllowAnonymous]
     public class TheoryLessonController : ControllerBase
     {
         private readonly ITheoryLessonService _theoryLessonService;
