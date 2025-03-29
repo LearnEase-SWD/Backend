@@ -1,4 +1,5 @@
-﻿using LearnEase.Core;
+﻿using System.Linq.Expressions;
+using LearnEase.Core;
 
 namespace LearnEase.Repository.IRepository
 {
@@ -16,5 +17,6 @@ namespace LearnEase.Repository.IRepository
         Task UpdateAsync(T obj);
         Task DeleteAsync(object id);
         Task SaveAsync();
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
     }
 }

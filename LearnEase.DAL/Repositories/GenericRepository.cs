@@ -1,4 +1,5 @@
-﻿using LearnEase.Core;
+﻿using System.Linq.Expressions;
+using LearnEase.Core;
 using LearnEase.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,9 +91,13 @@ namespace LearnEase.Repository.Repositories
 
 			return new BasePaginatedList<T>(items, count, index, pageSize);
 		}
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
+        }
 
 
-		public async Task SaveAsync()
+        public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }
