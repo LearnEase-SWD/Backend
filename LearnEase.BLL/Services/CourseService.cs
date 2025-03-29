@@ -198,8 +198,7 @@ namespace LearnEase.Service.Services
                     );
                 }
 
-                // 2. Kiểm tra quyền truy cập của người dùng (đã đăng ký khóa học chưa)
-                //    Sử dụng FirstOrDefaultAsync (hoặc phương pháp tương đương trong repository của bạn)
+            
                 //    Nếu GetByIdAsync không hỗ trợ predicate, hãy sử dụng một cách khác (xem bên dưới)
 
                 UserCourse? userCourse = null; // Initialize to null
@@ -317,7 +316,7 @@ namespace LearnEase.Service.Services
                 var courseRepository = _unitOfWork.GetRepository<Course>();
                 var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 
-                // 1. Lấy danh sách các UserCourse của người dùng (Get All)
+                // 1. Lấy danh sách các UserCourse của người dùng
                 var userCourses = await userCourseRepository.Entities
                     .Where(uc => uc.UserId == userId)
                     .Include(uc => uc.Course)
@@ -348,11 +347,13 @@ namespace LearnEase.Service.Services
 
                     if (totalLessons > 0)
                     {
+                        // **Use this approach**
+                        var lessonIds = lessonsInCourse.Select(l => l.LessonID).ToList();
                         completedLessons = await _unitOfWork.GetRepository<UserLesson>().Entities
                             .CountAsync(ul => ul.UserID == userId &&
                                              ul.LessonID != null &&
-                                             lessonsInCourse.Any(l => l.LessonID == ul.LessonID) &&
-                                             ul.Progress == 100); // Giả sử Progress = 100 là hoàn thành
+                                             lessonIds.Contains(ul.LessonID) &&
+                                             ul.Progress == 100);
                     }
 
                     int progressPercentage = totalLessons > 0 ? (int)((double)completedLessons / totalLessons * 100) : 0;
@@ -425,11 +426,19 @@ namespace LearnEase.Service.Services
                 }
 
                 // 3. Lấy số bài học mà người dùng đã hoàn thành
-                var completedLessons = await userLessonRepository.Entities
-                    .CountAsync(ul => ul.UserID == userId &&
-                                     ul.Lesson.CourseID == courseId &&
-                                     ul.Progress == 100); // Giả sử Progress == 100 là hoàn thành
-
+                var lessonsInCourse = await lessonRepository.Entities
+    .Where(l => l.CourseID == course.CourseID)
+    .ToListAsync();
+                var completedLessons = await _unitOfWork.GetRepository<UserLesson>().Entities
+                        .Join(
+                            lessonsInCourse,
+                            ul => ul.LessonID,
+                            l => l.LessonID,
+                            (ul, l) => new { UserLesson = ul, Lesson = l } // Project into an anonymous type
+                        )
+                        .CountAsync(joined => joined.UserLesson.UserID == userId &&
+                     joined.UserLesson.LessonID != null &&
+                     joined.UserLesson.Progress == 100);
                 // 4. Tính toán trạng thái hoàn thành
                 bool isCompleted = (completedLessons == totalLessons) && (totalLessons > 0);
                 int progressPercentage = totalLessons > 0 ? (int)((double)completedLessons / totalLessons * 100) : 0;
