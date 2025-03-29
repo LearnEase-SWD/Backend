@@ -10,12 +10,20 @@ namespace LearnEase.Core.Entities
         public Guid UserFlashcardID { get; set; }
 
         [Required]
+        [ForeignKey("User")]
         public string UserID { get; set; }
         public User User { get; set; }
 
         [Required]
+        [ForeignKey("Flashcard")]
         public Guid FlashcardID { get; set; }
         public Flashcard Flashcard { get; set; }
-        public string? Progress { get; set; }
+
+        public DateTime? LastReviewedAt { get; set; } // Lần cuối xem lại flashcard (tùy chọn)
+        public int ReviewCount { get; set; } = 0; // Số lần xem lại flashcard (tùy chọn)
+
+        [ForeignKey("Lesson")]
+        public Guid LessonID { get; set; }
+        public Lesson Lesson { get; set; }
     }
 }
