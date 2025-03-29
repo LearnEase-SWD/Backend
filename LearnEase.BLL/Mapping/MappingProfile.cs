@@ -10,9 +10,12 @@ namespace LearnEase.Service.Mapping
         public MappingProfile()
         {
             CreateMap<TheoryLessonCreateRequest, TheoryLesson>();
+            CreateMap<TheoryLessonResponse, TheoryLesson>();
+            CreateMap<TheoryLesson, TheoryLessonResponse>();
             CreateMap<LessonCreateRequest, Lesson>();
 			
 			CreateMap<FlashcardRequest, Flashcard>();
+			CreateMap<FlashcardResponse, Flashcard>();
 
 			CreateMap<CourseRequest, Course>();
 			CreateMap<Course, CourseRequest>();
@@ -29,6 +32,8 @@ namespace LearnEase.Service.Mapping
 			
 			CreateMap<Exercise, ExerciseRequest>();
 			CreateMap<ExerciseRequest, Exercise>();
+			CreateMap<ExerciseResponse, Exercise>();
+			CreateMap<Exercise, ExerciseResponse>();
 
 			CreateMap<UserCourseResponse, UserCourse>();
 			CreateMap<UserCourse, UserCourseResponse>();
@@ -37,7 +42,10 @@ namespace LearnEase.Service.Mapping
 			CreateMap<VideoLessonCreateRequest, VideoLesson>();
 			CreateMap<VideoLessonResponse, VideoLesson>();
 			CreateMap<VideoLesson, VideoLessonResponse>();
-		}
+			
+			CreateMap<Flashcard, FlashcardResponse>();
+			CreateMap<FlashcardResponse, Flashcard>();
 
+		}
     }
 }

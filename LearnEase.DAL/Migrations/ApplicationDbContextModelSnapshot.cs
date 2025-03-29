@@ -361,6 +361,21 @@ namespace LearnEase.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasAccessedFlashcards")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsExerciseCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTheoryCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVideoCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LastAccessedAt")
                         .HasColumnType("datetime2");
 
@@ -369,6 +384,9 @@ namespace LearnEase.Repository.Migrations
 
                     b.Property<int>("Progress")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserID")
                         .IsRequired()

@@ -221,6 +221,12 @@ namespace LearnEase.Repository.Migrations
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LessonID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Progress = table.Column<int>(type: "int", nullable: false),
+                    IsVideoCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsExerciseCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    HasAccessedFlashcards = table.Column<bool>(type: "bit", nullable: false),
+                    IsTheoryCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastAccessedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

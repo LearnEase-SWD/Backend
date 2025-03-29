@@ -2,18 +2,12 @@
 
 namespace LearnEase.Core.Enum
 {
-    public enum StatusCodeHelper
-    {
-        [ResponseName("Success")]
-        OK = 200,
-
-        [ResponseName("Bad Request")]
-        BadRequest = 400,
-
-        [ResponseName("Unauthorized")]
-        Unauthorized = 401,
-
-        [ResponseName("Internal Server Error")]
-        ServerError = 500
-    }
+	public enum StatusCodeHelper
+	{
+		OK = 200,
+		BadRequest = 400,
+		Unauthorized = 401,
+		NotFound = 404,
+		ServerError = 500
+	}
 }

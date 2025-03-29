@@ -4,7 +4,6 @@ using LearnEase.Core.Entities;
 using LearnEase.Core.Enum;
 using LearnEase.Core.Models.Request;
 using LearnEase.Repository.UOW;
-using LearnEase.Service.IServices;
 using LearnEase_Api.LearnEase.Core.IServices;
 using Microsoft.Extensions.Logging;
 
@@ -14,13 +13,11 @@ namespace LearnEase.Service.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly ILogger<ExerciseService> _logger;
 
-		public ExerciseService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ExerciseService> logger)
+		public ExerciseService(IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-			_logger = logger;
 		}
 
 		public async Task<BaseResponse<IEnumerable<Exercise>>> GetExercisesAsync(int pageIndex, int pageSize)
@@ -43,7 +40,6 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy danh sách bài tập: {ex.Message}");
 				return new BaseResponse<IEnumerable<Exercise>>(
 					StatusCodeHelper.ServerError,
 					"ERROR",
@@ -65,21 +61,34 @@ namespace LearnEase.Service.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Lỗi khi lấy bài tập với ID {id}: {ex.Message}");
 				return new BaseResponse<Exercise>(StatusCodeHelper.ServerError, "ERROR", null, "Lỗi hệ thống khi lấy bài tập.");
 			}
 		}
 
 		public async Task<BaseResponse<bool>> CreateExerciseAsync(ExerciseRequest exerciseRequest)
 		{
+			// Kiểm tra dữ liệu đầu vào
 			if (exerciseRequest == null)
 				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_REQUEST", false, "Dữ liệu bài tập không hợp lệ.");
 
 			await _unitOfWork.BeginTransactionAsync();
 			try
 			{
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+				var lesson = await lessonRepository.GetByIdAsync(exerciseRequest.LessonID);
+
+				if (lesson == null)
+				{
+					await _unitOfWork.RollbackAsync();
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "LESSON_NOT_FOUND", false, "Lesson không tồn tại.");
+				}
+
+				lesson.LessonType = LessonTypeEnum.Exercise;
+				await lessonRepository.UpdateAsync(lesson);
+
 				var exercise = _mapper.Map<Exercise>(exerciseRequest);
-				exercise.CreatedAt = DateTime.Now;
+				exercise.CreatedAt = DateTime.UtcNow;
+
 				await _unitOfWork.GetRepository<Exercise>().CreateAsync(exercise);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
@@ -89,7 +98,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi tạo bài tập: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi tạo bài tập.");
 			}
 		}
@@ -109,6 +117,7 @@ namespace LearnEase.Service.Services
 					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy bài tập.");
 
 				existingExercise.Type = exercise.Type;
+				existingExercise.Type = exercise.Type;
 				existingExercise.Question = exercise.Question;
 				existingExercise.CorrectAnswer = exercise.CorrectAnswer;
 				existingExercise.LessonID = exercise.LessonID;
@@ -121,7 +130,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi cập nhật bài tập {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi cập nhật bài tập.");
 			}
 		}
@@ -146,7 +154,6 @@ namespace LearnEase.Service.Services
 			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				_logger.LogError($"Lỗi khi xóa bài tập {id}: {ex.Message}");
 				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa bài tập.");
 			}
 		}

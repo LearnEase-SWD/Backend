@@ -29,10 +29,22 @@ namespace LearnEase.Service.Services
 
 			try
 			{
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
 				var videoLessonRepository = _unitOfWork.GetRepository<VideoLesson>();
 
-				
+				// ✅ Kiểm tra Lesson tồn tại
+				var lesson = await lessonRepository.GetByIdAsync(videoRequest.LessonID);
+				if (lesson == null)
+				{
+					await _unitOfWork.RollbackAsync();
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "LESSON_NOT_FOUND", false, "Lesson không tồn tại.");
+				}
 
+				// ✅ Thiết lập LessonType thành Video
+				lesson.LessonType = LessonTypeEnum.Video;
+				await lessonRepository.UpdateAsync(lesson);
+
+				// ✅ Tạo VideoLesson
 				var videoLesson = _mapper.Map<VideoLesson>(videoRequest);
 				videoLesson.CreatedAt = DateTime.UtcNow;
 
