@@ -19,7 +19,7 @@ public class CoursesController : ControllerBase
     {
         _courseService = courseService;
     }
-    [HttpGet("{id}")]
+    [HttpGet("{courseid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         var course = await _courseService.GetCourseByIdAsync(id);
@@ -61,20 +61,7 @@ public class CoursesController : ControllerBase
         return StatusCode((int)purchaseResult.StatusCode, purchaseResult);
     }
 
-	[HttpGet("{idcourse}")]
-	public async Task<IActionResult> GetCourseByIdAsync(Guid id)
-	{
-		if (id == Guid.Empty)
-			return BadRequest(new { message = "Invalid Course ID." });
-
-		var course = await _courseService.GetCourseByIdAsync(id);
-
-		if (course.Data == null)
-			return NotFound(new { message = "Course not found." });
-
-		return Ok(course);
-	}
-
+	
 	[HttpPost]
 	public async Task<IActionResult> CreateAsync([FromBody] CourseRequest course)
 	{
@@ -139,5 +126,25 @@ public class CoursesController : ControllerBase
             return NotFound(new { message = "Course not found." });
         }
         return NoContent();
+    }
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchCourses(string title, int pageIndex = 1, int pageSize = 10)
+    {
+        try
+        {
+            var response = await _courseService.SearchCoursesByTitleAsync(title, pageIndex, pageSize);
+            return StatusCode((int)response.StatusCode, response);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception properly!
+            Console.WriteLine($"Error in SearchCourses: {ex}");
+            return StatusCode(500, new BaseResponse<IEnumerable<CourseResponse>>(
+                StatusCodeHelper.ServerError,
+                "ERROR",
+                null,
+                "Lỗi hệ thống khi tìm kiếm khóa học."
+            ));
+        }
     }
 }

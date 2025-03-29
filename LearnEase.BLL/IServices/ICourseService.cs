@@ -20,6 +20,7 @@ namespace LearnEase_Api.LearnEase.Core.IServices
 		Task<BaseResponse<bool>> DeleteCourseAsync(Guid id);
         Task<BaseResponse<CourseWithCompletionStatusResponse>> GetCourseWithCompletionStatusAsync(Guid courseId, string userId);
         Task<BaseResponse<IEnumerable<UserCourseResponse>>> GetUserCoursesWithProgressAsync(string userId);
+        Task<BaseResponse<IEnumerable<CourseResponse>>> SearchCoursesByTitleAsync(string title, int pageIndex, int pageSize);
 
     }
 }
