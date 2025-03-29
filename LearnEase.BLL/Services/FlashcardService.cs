@@ -170,7 +170,7 @@ namespace LearnEase.Service.Services
 				if (existingFlashcard == null)
 					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", false, "Không tìm thấy flashcard.");
 
-				await flashcardRepository.DeleteAsync(existingFlashcard);
+				await flashcardRepository.DeleteAsync(existingFlashcard.FlashcardID);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 

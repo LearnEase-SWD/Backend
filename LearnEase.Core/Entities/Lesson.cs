@@ -24,7 +24,6 @@ namespace LearnEase.Core.Entities
         [MaxLength(50)]
         public LessonTypeEnum? LessonType { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
 		public UserLesson UserProgress { get; set; }
 		public ICollection<VideoLesson> VideoLessons { get; set; } = new List<VideoLesson>();
         public ICollection<TheoryLesson> TheoryLessons { get; set; } = new List<TheoryLesson>();

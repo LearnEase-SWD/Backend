@@ -6,6 +6,7 @@ using LearnEase.Core.Enum;
 using LearnEase.Core.Models.reponse;
 using LearnEase.Core.Models.Reponse;
 using LearnEase.Core.Models.Request;
+using LearnEase.Core.Utils;
 using LearnEase.Repository.IRepository;
 using LearnEase.Repository.UOW;
 using LearnEase_Api.LearnEase.Core.IServices;
@@ -141,7 +142,7 @@ namespace LearnEase.Service.Services
                 }
 
                 // 2. Check if the user has already purchased the course
-                var existingPurchase = await courseHistoryRepository.FirstOrDefaultAsync(
+                var existingPurchase = await courseHistoryRepository.Entities.FirstOrDefaultAsync(
                     ch => ch.CourseID == courseId && ch.UserID == userId
                 );
 
@@ -397,30 +398,46 @@ namespace LearnEase.Service.Services
                 );
             }
         }
-        public async Task<BaseResponse<bool>> DeleteCourseAsync(Guid id)
+
+		public async Task<BaseResponse<bool>> DeleteCourseAsync(Guid id)
 		{
+			if (id == Guid.Empty)
+				return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "INVALID_ID", "ID không hợp lệ.");
+
 			await _unitOfWork.BeginTransactionAsync();
+
 			try
 			{
 				var courseRepository = _unitOfWork.GetRepository<Course>();
+				var lessonRepository = _unitOfWork.GetRepository<Lesson>();
+
+				// Kiểm tra course có tồn tại không
 				var existingCourse = await courseRepository.GetByIdAsync(id);
-
 				if (existingCourse == null)
-					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "NOT_FOUND", false, "Không tìm thấy khóa học.");
+					return new BaseResponse<bool>(StatusCodeHelper.NotFound, "NOT_FOUND", "Không tìm thấy khóa học.");
 
-				await courseRepository.DeleteAsync(existingCourse);
+				// Kiểm tra sự tồn tại của Lesson trong Course
+				var hasLessons = await lessonRepository.Entities.AnyAsync(l => l.CourseID == id);
+
+				// Nếu tồn tại Lesson, từ chối xóa Course
+				if (hasLessons)
+					return new BaseResponse<bool>(StatusCodeHelper.BadRequest, "RELATED_ITEMS_EXIST", "Không thể xóa khóa học vì vẫn còn bài học liên quan.");
+
+				// Thực hiện xóa Course
+				await courseRepository.DeleteAsync(existingCourse.CourseID);
 				await _unitOfWork.SaveAsync();
 				await _unitOfWork.CommitTransactionAsync();
 
-				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học đã được xóa.");
+				return new BaseResponse<bool>(StatusCodeHelper.OK, "SUCCESS", true, "Khóa học đã được xóa thành công.");
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				await _unitOfWork.RollbackAsync();
-				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, "Lỗi hệ thống khi xóa khóa học.");
+				return new BaseResponse<bool>(StatusCodeHelper.ServerError, "ERROR", false, $"Lỗi hệ thống khi xóa khóa học: {ex.Message}");
 			}
 		}
-        public async Task<BaseResponse<IEnumerable<CourseResponse>>> SearchCoursesByTitleAsync(string title, int pageIndex, int pageSize)
+
+		public async Task<BaseResponse<IEnumerable<CourseResponse>>> SearchCoursesByTitleAsync(string title, int pageIndex, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(title))
             {
