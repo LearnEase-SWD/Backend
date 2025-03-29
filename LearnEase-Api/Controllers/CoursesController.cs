@@ -28,7 +28,7 @@ public class CoursesController : ControllerBase
         //mua khoa hoc
     }
 
-    [HttpPost("{courseId}/purchase")]
+    /*[HttpPost("{courseId}/purchase")]
     [AllowAnonymous]  // Không yêu cầu xác thực
     public async Task<IActionResult> PurchaseCourse(Guid courseId, [FromQuery] string id)
     {
@@ -47,7 +47,7 @@ public class CoursesController : ControllerBase
         }
 
         return StatusCode((int)purchaseResult.StatusCode, purchaseResult);
-    }
+    }*/
 
    
     [HttpPost]

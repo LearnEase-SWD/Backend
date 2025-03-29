@@ -8,8 +8,7 @@ namespace LearnEase_Api.LearnEase.Core.IServices
     {
 		Task<BaseResponse<IEnumerable<CourseResponse>>> GetCoursesAsync(int pageIndex, int pageSize);
 		Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id, string userId );
-		Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId);
-
+		/*Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId);*/
         Task<BaseResponse<bool>> CreateCourseAsync(CourseRequest courseRequest);
 		Task<BaseResponse<bool>> UpdateCourseAsync(Guid id, CourseRequest course);
 		Task<BaseResponse<bool>> DeleteCourseAsync(Guid id);

@@ -74,8 +74,9 @@ namespace LearnEase.Service.Services
 				);
 			}
 		}
+
         //mua khóa học 
-        public async Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId)
+        /*public async Task<BaseResponse<bool>> PurchaseCourseAsync(Guid courseId, string userId)
         {
             // Kiểm tra userId hợp lệ trước khi mở transaction
             if (string.IsNullOrWhiteSpace(userId))
@@ -129,8 +130,7 @@ namespace LearnEase.Service.Services
 
                 return new BaseResponse<bool>(StatusCodeHelper.ServerError, "PURCHASE_FAILED", false, "Failed to purchase course.");
             }
-        }
-
+        }*/
 
         public async Task<BaseResponse<CourseResponse>> GetCourseByIdAsync(Guid id, string userId)
         {
